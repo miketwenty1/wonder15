@@ -8,7 +8,6 @@ use bevy::{
 use bevy_ecs_tilemap::prelude::*;
 use canvas::fit_canvas_to_parent;
 use rand::Rng;
-use wasm_bindgen::prelude::wasm_bindgen;
 mod canvas;
 mod helpers;
 
@@ -232,10 +231,7 @@ struct ChunkManager {
     pub spawned_chunks: HashSet<IVec2>,
 }
 
-pub fn main() {}
-
-#[wasm_bindgen]
-pub fn game15() {
+pub fn main() {
     App::new()
         .add_plugins(
             DefaultPlugins
