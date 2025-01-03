@@ -4,10 +4,10 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-bevy = { version = "0.15", features = ["trace"]}
-tracy-client = "0.18"
-tracy-client-sys = "0.24"
-
+# bevy = { version = "0.15", features = ["trace"]}
+# tracy-client = "0.18"
+# tracy-client-sys = "0.24"
+bevy = "0.15"
 wasm-bindgen = "0.2.99"
 ulam = "0.6"
 rand = "0.8"
@@ -28,8 +28,8 @@ web-sys = { version = "0.3", features = [
     #"UserActivation",
 ] }
 
-[patch.crates-io]
-tracy-client = { git = "https://github.com/nagisa/rust_tracy_client", tag = "tracy-client-v0.18.0" }
+# [patch.crates-io]
+# tracy-client = { git = "https://github.com/nagisa/rust_tracy_client", tag = "tracy-client-v0.18.0" }
 
 
 [workspace]

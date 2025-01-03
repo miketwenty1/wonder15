@@ -53,7 +53,8 @@ fn spawn_chunk(
             if total.0 % 1_000 == 0 {
                 info!("total: {:?}", total);
             }
-            let num = random.gen_range(0..=34);
+            //let num = random.gen_range(0..=34);
+            // let random_color = ;
             let tile_pos = TilePos { x, y };
             let grid_size = TilemapGridSize { x: 32.0, y: 32.0 };
             let map_type = TilemapType::Square;
@@ -63,41 +64,48 @@ fn spawn_chunk(
                     TileBundle {
                         position: tile_pos,
                         tilemap_id: TilemapId(tilemap_entity),
-                        texture_index: TileTextureIndex(num),
+                        texture_index: TileTextureIndex(35),
+                        color: TileColor(Color::Srgba(get_random_color())),
                         ..Default::default()
                     },
                     Visibility::Visible,
                     YoTile,
                     Transform::from_translation(tile_center),
                 ))
-                .with_children(|parent| {
-                    let ulam_v = ulam::get_value_from_xy(
-                        (chunk_pos.x * CHUNK_SIZE.x as i32) + tile_pos.x as i32,
-                        (chunk_pos.y * CHUNK_SIZE.y as i32) + tile_pos.y as i32,
-                    );
-
-                    let font_size: f32 = 14.0 - ulam_v.to_string().len() as f32;
-                    parent.spawn((
-                        // Text2d::new(format!("{}", ulam_v)),
-                        // TextFont {
-                        //     font: asset_server.load("fonts/FiraSans-Bold.ttf"),
-                        //     font_size,
-                        //     font_smoothing: FontSmoothing::AntiAliased,
-                        // },
-                        // text_visi.0,
-                        // TileText,
-                        // TextColor(Color::WHITE),
-                        // TextLayout::new_with_justify(JustifyText::Center),
-                        // //Adding Aabb to attempt to cull Text2d that isn't on screen (works with sprites as parents, but not sure about TileBundles),
-                        // Aabb {
-                        //     center: Vec3A::ZERO,
-                        //     half_extents: Vec3A::ZERO,
-                        // },
-                    ));
-                })
+                .with_children(|parent| {})
                 .id();
             tile_storage.set(&tile_pos, tile_entity);
             tile_entities.push(tile_entity);
+
+            let ulam_v = ulam::get_value_from_xy(
+                (chunk_pos.x * CHUNK_SIZE.x as i32) + (tile_pos.x as i32 * TILE_SIZE.x as i32),
+                (chunk_pos.y * CHUNK_SIZE.y as i32) + (tile_pos.y as i32 * TILE_SIZE.y as i32),
+            );
+
+            let transform = Transform::from_translation(Vec3::new(
+                chunk_pos.x as f32 * CHUNK_SIZE.x as f32 * (TILE_SIZE.x),
+                chunk_pos.y as f32 * CHUNK_SIZE.y as f32 * (TILE_SIZE.y),
+                5.0,
+            ));
+            let font_size: f32 = 14.0 - ulam_v.to_string().len() as f32;
+            commands.spawn((
+                Text2d::new(format!("{}", ulam_v)),
+                TextFont {
+                    font: asset_server.load("fonts/FiraSans-Bold.ttf"),
+                    font_size,
+                    font_smoothing: FontSmoothing::AntiAliased,
+                },
+                text_visi.0,
+                TileText,
+                TextColor(Color::WHITE),
+                TextLayout::new_with_justify(JustifyText::Center),
+                transform,
+                //Adding Aabb to attempt to cull Text2d that isn't on screen (works with sprites as parents, but not sure about TileBundles),
+                Aabb {
+                    center: Vec3A::ZERO,
+                    half_extents: Vec3A::ZERO,
+                },
+            ));
         }
     }
 
@@ -215,6 +223,21 @@ fn despawn_outofrange_chunks(
 #[derive(Default, Debug, Resource)]
 struct ChunkManager {
     pub spawned_chunks: HashSet<IVec2>,
+}
+
+pub fn get_random_color() -> Srgba {
+    let mut rng = rand::thread_rng();
+    let r: f32 = rng.gen_range(0.0..1.0);
+    let g: f32 = rng.gen_range(0.0..1.0);
+    let b: f32 = rng.gen_range(0.0..1.0);
+
+    //info!("getting a random color: {}-{}-{}", r, g, b);
+    Srgba {
+        red: r,
+        green: g,
+        blue: b,
+        alpha: 1.0,
+    }
 }
 
 pub fn main() {
