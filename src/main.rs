@@ -30,7 +30,7 @@ pub struct DespawnRange(f32);
 pub struct TextVisi(Visibility);
 
 const TILE_SIZE: TilemapTileSize = TilemapTileSize { x: 32.0, y: 32.0 };
-const CHUNK_SIZE: UVec2 = UVec2 { x: 8, y: 8 };
+const CHUNK_SIZE: UVec2 = UVec2 { x: 16, y: 16 };
 const RENDER_CHUNK_SIZE: UVec2 = UVec2 {
     x: CHUNK_SIZE.x * 2,
     y: CHUNK_SIZE.y * 2,
@@ -45,14 +45,10 @@ fn spawn_chunk(
 ) {
     let tilemap_entity = commands.spawn_empty().id();
     let mut tile_storage = TileStorage::empty(CHUNK_SIZE.into());
+    let mut tile_entities = Vec::with_capacity(CHUNK_SIZE.x as usize * CHUNK_SIZE.y as usize);
     let mut random = rand::thread_rng();
     for x in 0..CHUNK_SIZE.x {
         for y in 0..CHUNK_SIZE.y {
-            let map_transform = Transform::from_translation(Vec3::new(
-                chunk_pos.x as f32 * CHUNK_SIZE.x as f32 * (TILE_SIZE.x),
-                chunk_pos.y as f32 * CHUNK_SIZE.y as f32 * (TILE_SIZE.y),
-                0.0,
-            ));
             total.0 += 1;
             if total.0 % 1_000 == 0 {
                 info!("total: {:?}", total);
@@ -62,8 +58,6 @@ fn spawn_chunk(
             let grid_size = TilemapGridSize { x: 32.0, y: 32.0 };
             let map_type = TilemapType::Square;
             let tile_center = tile_pos.center_in_world(&grid_size, &map_type).extend(1.0);
-            let transform = map_transform * Transform::from_translation(tile_center);
-
             let tile_entity = commands
                 .spawn((
                     TileBundle {
@@ -72,8 +66,9 @@ fn spawn_chunk(
                         texture_index: TileTextureIndex(num),
                         ..Default::default()
                     },
+                    Visibility::Visible,
                     YoTile,
-                    transform,
+                    Transform::from_translation(tile_center),
                 ))
                 .with_children(|parent| {
                     let ulam_v = ulam::get_value_from_xy(
@@ -83,25 +78,26 @@ fn spawn_chunk(
 
                     let font_size: f32 = 14.0 - ulam_v.to_string().len() as f32;
                     parent.spawn((
-                        Text2d::new(format!("{}", ulam_v)),
-                        TextFont {
-                            font: asset_server.load("fonts/FiraSans-Bold.ttf"),
-                            font_size,
-                            font_smoothing: FontSmoothing::AntiAliased,
-                        },
-                        text_visi.0,
-                        TileText,
-                        TextColor(Color::WHITE),
-                        TextLayout::new_with_justify(JustifyText::Center),
-                        //Adding Aabb to attempt to cull Text2d that isn't on screen (works with sprites as parents, but not sure about TileBundles),
-                        Aabb {
-                            center: Vec3A::ZERO,
-                            half_extents: Vec3A::ZERO,
-                        },
+                        // Text2d::new(format!("{}", ulam_v)),
+                        // TextFont {
+                        //     font: asset_server.load("fonts/FiraSans-Bold.ttf"),
+                        //     font_size,
+                        //     font_smoothing: FontSmoothing::AntiAliased,
+                        // },
+                        // text_visi.0,
+                        // TileText,
+                        // TextColor(Color::WHITE),
+                        // TextLayout::new_with_justify(JustifyText::Center),
+                        // //Adding Aabb to attempt to cull Text2d that isn't on screen (works with sprites as parents, but not sure about TileBundles),
+                        // Aabb {
+                        //     center: Vec3A::ZERO,
+                        //     half_extents: Vec3A::ZERO,
+                        // },
                     ));
                 })
                 .id();
             tile_storage.set(&tile_pos, tile_entity);
+            tile_entities.push(tile_entity);
         }
     }
 
@@ -112,23 +108,26 @@ fn spawn_chunk(
     ));
 
     let texture_handle: Handle<Image> = asset_server.load("spritesheet/ss-land-v12.png");
-    commands.entity(tilemap_entity).insert((
-        TilemapBundle {
-            grid_size: TilemapGridSize { x: 32.0, y: 32.0 },
-            size: CHUNK_SIZE.into(),
-            storage: tile_storage,
-            texture: TilemapTexture::Single(texture_handle),
-            tile_size: TILE_SIZE,
-            spacing: TilemapSpacing { x: 2.0, y: 2.0 },
-            transform,
-            render_settings: TilemapRenderSettings {
-                render_chunk_size: RENDER_CHUNK_SIZE,
+    commands
+        .entity(tilemap_entity)
+        .insert((
+            TilemapBundle {
+                grid_size: TilemapGridSize { x: 32.0, y: 32.0 },
+                size: CHUNK_SIZE.into(),
+                storage: tile_storage,
+                texture: TilemapTexture::Single(texture_handle),
+                tile_size: TILE_SIZE,
+                spacing: TilemapSpacing { x: 2.0, y: 2.0 },
+                transform,
+                render_settings: TilemapRenderSettings {
+                    render_chunk_size: RENDER_CHUNK_SIZE,
+                    ..Default::default()
+                },
                 ..Default::default()
             },
-            ..Default::default()
-        },
-        YoMap,
-    ));
+            YoMap,
+        ))
+        .add_children(&tile_entities);
 }
 
 fn startup(mut commands: Commands) {
@@ -196,27 +195,14 @@ fn despawn_outofrange_chunks(
     mut commands: Commands,
     camera_query: Query<&Transform, With<Camera>>,
     chunks_query_map: Query<(Entity, &Transform), With<YoMap>>,
-    chunks_query_tiles: Query<(Entity, &Transform), (Without<YoMap>, With<YoTile>)>,
     mut chunk_manager: ResMut<ChunkManager>,
     despawn_range: Res<DespawnRange>,
 ) {
     for camera_transform in camera_query.iter() {
-        // despawning tiles
-        for (entity, chunk_transform) in chunks_query_tiles.iter() {
-            let chunk_pos = chunk_transform.translation.xy();
-            let distance = camera_transform.translation.xy().distance(chunk_pos);
-            if distance > despawn_range.0 {
-                let x = (chunk_pos.x / (CHUNK_SIZE.x as f32 * TILE_SIZE.x)).floor() as i32;
-                let y = (chunk_pos.y / (CHUNK_SIZE.y as f32 * TILE_SIZE.y)).floor() as i32;
-                chunk_manager.spawned_chunks.remove(&IVec2::new(x, y));
-                commands.entity(entity).despawn_recursive();
-            }
-        }
-        // despawning map with * 2.0 range to avoid panics
         for (entity, chunk_transform) in chunks_query_map.iter() {
             let chunk_pos = chunk_transform.translation.xy();
             let distance = camera_transform.translation.xy().distance(chunk_pos);
-            if distance > despawn_range.0 * 2.0 {
+            if distance > despawn_range.0 {
                 let x = (chunk_pos.x / (CHUNK_SIZE.x as f32 * TILE_SIZE.x)).floor() as i32;
                 let y = (chunk_pos.y / (CHUNK_SIZE.y as f32 * TILE_SIZE.y)).floor() as i32;
                 chunk_manager.spawned_chunks.remove(&IVec2::new(x, y));
@@ -238,6 +224,7 @@ pub fn main() {
                 .set(WindowPlugin {
                     primary_window: Some(Window {
                         title: String::from("Performance chunking PoC"),
+                        present_mode: bevy::window::PresentMode::AutoNoVsync,
                         ..Default::default()
                     }),
                     ..default()
@@ -249,9 +236,10 @@ pub fn main() {
         .insert_resource(TotalTilesSpawned(0))
         .insert_resource(DespawnRange(CHUNK_SIZE.x as f32 * TILE_SIZE.x * 6.0))
         .insert_resource(TextVisi(Visibility::Visible))
-        .add_systems(Startup, (fit_canvas_to_parent, startup).chain())
+        .add_systems(Startup, (startup).chain())
         .add_systems(Update, helpers::camera::movement)
         .add_systems(Update, spawn_chunks_around_camera)
         .add_systems(Update, (despawn_outofrange_chunks, toggle_text))
         .run();
 }
+//fit_canvas_to_parent
