@@ -55,13 +55,19 @@ fn startup(mut commands: Commands) {
 
     let tilemap_entity = commands.spawn_empty().id();
     commands.insert_resource(MapHolder(tilemap_entity));
+    let map_size = TilemapSize { x: 10, y: 10 };
+    let mut tile_storage = TileStorage::empty(map_size);
+    commands.insert_resource(TileStorageHolder(tile_storage));
 }
 
 #[derive(Component)]
 struct PositionXY(TilePos);
 
-#[derive(Resource, Debug)]
+#[derive(Resource, Debug, Clone)]
 struct MapHolder(Entity);
+
+#[derive(Resource, Debug, Clone)]
+struct TileStorageHolder(TileStorage);
 
 #[derive(Component)]
 struct ComputeTransform(Task<CommandQueue>);
@@ -70,10 +76,12 @@ fn startup_tilemap(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut res_tilemap: ResMut<MapHolder>,
+    mut res_tilstorage: ResMut<TileStorageHolder>,
 ) {
     let texture_handle: Handle<Image> = asset_server.load("spritesheet/ss-land-v12.png");
     let map_size = TilemapSize { x: 10, y: 10 };
     let res_tilemap2 = res_tilemap.0;
+    let mut res_tilstorage2 = res_tilstorage.0.clone();
     // Create a tilemap entity a little early.
     // We want this entity early because we need to tell each tile which tilemap entity
     // it is associated with. This is done with the TilemapId component on each tile.
@@ -109,7 +117,7 @@ fn startup_tilemap(
                         })
                         .remove::<ComputeTransform>();
 
-                    //tile_storage.set(&tile_pos, tile_entity);
+                    res_tilstorage2.set(&tile_pos, entity);
                 });
 
                 command_queue
