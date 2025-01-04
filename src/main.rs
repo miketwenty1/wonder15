@@ -52,6 +52,9 @@ pub fn get_random_color() -> Srgba {
 
 fn startup(mut commands: Commands) {
     commands.spawn(Camera2d);
+
+    let tilemap_entity = commands.spawn_empty().id();
+    commands.insert_resource(MapHolder(tilemap_entity));
 }
 
 #[derive(Component)]
@@ -69,14 +72,14 @@ fn startup_tilemap(
     mut res_tilemap: ResMut<MapHolder>,
 ) {
     let texture_handle: Handle<Image> = asset_server.load("spritesheet/ss-land-v12.png");
-    let map_size = TilemapSize { x: 1000, y: 1000 };
+    let map_size = TilemapSize { x: 10, y: 10 };
+    let res_tilemap2 = res_tilemap.0;
     // Create a tilemap entity a little early.
     // We want this entity early because we need to tell each tile which tilemap entity
     // it is associated with. This is done with the TilemapId component on each tile.
     // Eventually, we will insert the `TilemapBundle` bundle on the entity, which
     // will contain various necessary components, such as `TileStorage`.
-    let tilemap_entity = commands.spawn_empty().id();
-    *res_tilemap = MapHolder(tilemap_entity);
+
     // To begin creating the map we will need a `TileStorage` component.
     // This component is a grid of tile entities and is used to help keep track of individual
     // tiles in the world. If you have multiple layers of tiles you would have a tilemap entity
@@ -99,7 +102,7 @@ fn startup_tilemap(
                         .entity_mut(entity)
                         .insert(TileBundle {
                             position: tile_pos,
-                            tilemap_id: TilemapId(tilemap_entity),
+                            tilemap_id: TilemapId(res_tilemap2),
                             texture_index: TileTextureIndex(35),
                             color: TileColor(Color::Srgba(get_random_color())),
                             ..Default::default()
@@ -128,9 +131,8 @@ fn handle_tasks(
             // append the returned command queue to have it execute later
             commands.append(&mut commands_queue);
 
-            if *count % 1000 == 0 {
-                info!("what is the count: {}", *count);
-            }
+            //if *count % 1000 == 0 {
+            info!("what is the count: {}", *count);
         }
     }
 }
@@ -191,7 +193,6 @@ pub fn game15() {
         )
         .add_systems(Update, (helpers::camera::movement, zoom_wheel_system))
         .add_systems(Update, swap_texture_or_hide)
-        .insert_resource(MapHolder(Entity::from_raw(456456)))
         .run();
 }
 
@@ -273,7 +274,7 @@ fn setup_animation(
         Transform::from_scale(Vec3 {
             x: 6.0,
             y: 6.0,
-            z: 80.0,
+            z: 6.0,
         }),
         animation_indices,
         AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating)),
