@@ -1,5 +1,5 @@
 use bevy::{
-    ecs::world::CommandQueue,
+    ecs::{system::SystemState, world::CommandQueue},
     input::mouse::MouseWheel,
     prelude::*,
     tasks::{block_on, futures_lite::future, AsyncComputeTaskPool, Task},
@@ -50,122 +50,96 @@ pub fn get_random_color() -> Srgba {
     }
 }
 
-fn startup(mut commands: Commands) {
+fn startup(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn(Camera2d);
 
+    let map_size = TilemapSize { x: 1000, y: 1000 };
+    let tile_storage = TileStorage::empty(map_size);
+
+    let tile_size = TilemapTileSize { x: 34.0, y: 34.0 };
+    let grid_size = tile_size.into();
+    let map_type = TilemapType::default();
+
     let tilemap_entity = commands.spawn_empty().id();
-    commands.insert_resource(MapHolder(tilemap_entity));
-    let map_size = TilemapSize { x: 10, y: 10 };
-    let mut tile_storage = TileStorage::empty(map_size);
-    commands.insert_resource(TileStorageHolder(tile_storage));
+    let texture_handle: Handle<Image> = asset_server.load("spritesheet/ss-land-v12.png");
+
+    commands.entity(tilemap_entity).insert(TilemapBundle {
+        grid_size: TilemapGridSize { x: 33.0, y: 33.0 },
+        map_type,
+        size: map_size,
+        storage: tile_storage,
+        texture: TilemapTexture::Single(texture_handle),
+        tile_size,
+        // spacing: TilemapSpacing { x: 0.0, y: 0.0 },
+        transform: get_tilemap_center_transform(&map_size, &grid_size, &map_type, 0.0),
+        ..Default::default()
+    });
 }
-
-#[derive(Component)]
-struct PositionXY(TilePos);
-
-#[derive(Resource, Debug, Clone)]
-struct MapHolder(Entity);
-
-#[derive(Resource, Debug, Clone)]
-struct TileStorageHolder(TileStorage);
 
 #[derive(Component)]
 struct ComputeTransform(Task<CommandQueue>);
 
-fn startup_tilemap(
-    mut commands: Commands,
-    asset_server: Res<AssetServer>,
-    mut res_tilemap: ResMut<MapHolder>,
-    mut res_tilstorage: ResMut<TileStorageHolder>,
-) {
-    let texture_handle: Handle<Image> = asset_server.load("spritesheet/ss-land-v12.png");
+fn startup_tilemap(mut commands: Commands, mut tile_storage_q: Query<Entity, With<TileStorage>>) {
     let map_size = TilemapSize { x: 10, y: 10 };
-    let res_tilemap2 = res_tilemap.0;
-    let mut res_tilstorage2 = res_tilstorage.0.clone();
-    // Create a tilemap entity a little early.
-    // We want this entity early because we need to tell each tile which tilemap entity
-    // it is associated with. This is done with the TilemapId component on each tile.
-    // Eventually, we will insert the `TilemapBundle` bundle on the entity, which
-    // will contain various necessary components, such as `TileStorage`.
+    for tilemap_ent in tile_storage_q.iter() {
+        let thread_pool = AsyncComputeTaskPool::get();
+        let mut random = thread_rng();
+        for x in 0..map_size.x - 1 {
+            for y in 0..map_size.y - 1 {
+                //let num = random.gen_range(0..=34);
+                let tile_pos = TilePos { x, y };
+                let entity = commands.spawn_empty().id();
+                let task = thread_pool.spawn(async move {
+                    let mut command_queue = CommandQueue::default();
 
-    // To begin creating the map we will need a `TileStorage` component.
-    // This component is a grid of tile entities and is used to help keep track of individual
-    // tiles in the world. If you have multiple layers of tiles you would have a tilemap entity
-    // per layer, each with their own `TileStorage` component.
+                    command_queue.push(move |world: &mut World| {
+                        let tile_ent = world
+                            .entity_mut(entity)
+                            .insert(TileBundle {
+                                position: tile_pos,
+                                tilemap_id: TilemapId(tilemap_ent),
+                                texture_index: TileTextureIndex(35),
+                                color: TileColor(Color::Srgba(get_random_color())),
+                                ..Default::default()
+                            })
+                            .remove::<ComputeTransform>()
+                            .id();
 
-    // Spawn the elements of the tilemap.
-    // Alternatively, you can use helpers::filling::fill_tilemap.
-    let thread_pool = AsyncComputeTaskPool::get();
-    let mut random = thread_rng();
-    for x in 0..map_size.x - 1 {
-        for y in 0..map_size.y - 1 {
-            //let num = random.gen_range(0..=34);
-            let tile_pos = TilePos { x, y };
-            let entity = commands.spawn_empty().id();
-            let task = thread_pool.spawn(async move {
-                let mut command_queue = CommandQueue::default();
+                        // let mut binding = {
+                        //     let mut system_state = SystemState::<Query<&TileStorage>>::new(world);
+                        //     let tile_storage = system_state.get_mut(world);
+                        //     tile_storage
+                        // };
+                        // let mut tile_storage = binding.single_mut().clone();
+                        //   tile_storage.set(&tile_pos, tile_ent);
+                        let mut binding = world.entity_mut(tilemap_ent);
+                        let mut tile_storage = binding
+                            .get_mut::<TileStorage>()
+                            .expect("trying to get mutable tile_storage");
+                        tile_storage.set(&tile_pos, tile_ent);
+                    });
 
-                command_queue.push(move |world: &mut World| {
-                    world
-                        .entity_mut(entity)
-                        .insert(TileBundle {
-                            position: tile_pos,
-                            tilemap_id: TilemapId(res_tilemap2),
-                            texture_index: TileTextureIndex(35),
-                            color: TileColor(Color::Srgba(get_random_color())),
-                            ..Default::default()
-                        })
-                        .remove::<ComputeTransform>();
-
-                    res_tilstorage2.set(&tile_pos, entity);
+                    command_queue
                 });
-
-                command_queue
-            });
-            commands.entity(entity).insert(ComputeTransform(task));
-            commands.entity(entity).insert(PositionXY(tile_pos));
-        }
-    }
-}
-fn handle_tasks(
-    mut commands: Commands,
-    mut transform_tasks: Query<(&mut ComputeTransform)>,
-    mut res_map: ResMut<MapHolder>,
-    mut count: Local<u32>,
-) {
-    for mut task in &mut transform_tasks {
-        if let Some(mut commands_queue) = block_on(future::poll_once(&mut task.0)) {
-            *count += 1;
-            // append the returned command queue to have it execute later
-            commands.append(&mut commands_queue);
-
-            //if *count % 1000 == 0 {
-            info!("what is the count: {}", *count);
-        }
-    }
-}
-fn swap_texture_or_hide(
-    asset_server: Res<AssetServer>,
-    keyboard_input: Res<ButtonInput<KeyCode>>,
-    mut query: Query<(&mut TilemapTexture, &mut Visibility)>,
-) {
-    if keyboard_input.just_pressed(KeyCode::Space) {
-        let texture_a = TilemapTexture::Single(asset_server.load("tiles.png"));
-        let texture_b = TilemapTexture::Single(asset_server.load("tiles2.png"));
-        for (mut tilemap_tex, _) in &mut query {
-            if *tilemap_tex == texture_a {
-                *tilemap_tex = texture_b.clone();
-            } else {
-                *tilemap_tex = texture_a.clone();
+                commands.entity(entity).insert(ComputeTransform(task));
             }
         }
     }
-    if keyboard_input.just_pressed(KeyCode::KeyH) {
-        for (_, mut visibility) in &mut query {
-            *visibility = match *visibility {
-                Visibility::Inherited | Visibility::Visible => Visibility::Hidden,
-                Visibility::Hidden => Visibility::Visible,
-            };
+}
+
+fn handle_tasks(
+    mut commands: Commands,
+    mut transform_tasks: Query<&mut ComputeTransform>,
+    //mut tile_storage_q: Query<&mut TileStorage>,
+    mut count: Local<u32>,
+) {
+    // let tile_storage = tile_storage_q.single_mut();
+    for mut task in &mut transform_tasks {
+        if let Some(mut commands_queue) = block_on(future::poll_once(&mut task.0)) {
+            *count += 1;
+            info!("what is the count: {}", *count);
+            // append the returned command queue to have it execute later
+            commands.append(&mut commands_queue);
         }
     }
 }
@@ -200,7 +174,6 @@ pub fn game15() {
             (startup_tilemap).run_if(run_once),
         )
         .add_systems(Update, (helpers::camera::movement, zoom_wheel_system))
-        .add_systems(Update, swap_texture_or_hide)
         .run();
 }
 
@@ -208,20 +181,11 @@ pub fn zoom_wheel_system(
     mut mouse_wheel_events: EventReader<MouseWheel>,
     time: Res<Time>,
     mut cam_query: Query<&mut OrthographicProjection, With<Camera>>,
-    // mut event_zoom: EventWriter<LdChange>,
-    // mut level_of_detail: ResMut<CurrentLd>,
 ) {
     for mouse_wheel in mouse_wheel_events.read() {
         let zoom_amount = 1.0 * time.delta_secs() * mouse_wheel.y;
         for mut ortho in cam_query.iter_mut() {
-            // let previous_ld = level_of_detail.0;
             ortho.scale -= zoom_amount;
-            // ortho.scale = ortho.scale.clamp(ZOOM_IN_MAX, ZOOM_OUT_MAX);
-            //let current_ld = LevelOfDetail::get_level(ortho.scale);
-            // if current_ld != previous_ld {
-            //     *level_of_detail = CurrentLd(current_ld);
-            //     event_zoom.send(LdChange(current_ld));
-            // }
         }
     }
 }
@@ -288,22 +252,3 @@ fn setup_animation(
         AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating)),
     ));
 }
-
-// let map_size = TilemapSize { x: 1000, y: 1000 };
-// let mut tile_storage = TileStorage::empty(map_size);
-
-// let tile_size = TilemapTileSize { x: 34.0, y: 34.0 };
-//     let grid_size = tile_size.into();
-//     let map_type = TilemapType::default();
-
-//     commands.entity(tilemap_entity).insert(TilemapBundle {
-//         grid_size: TilemapGridSize { x: 33.0, y: 33.0 },
-//         map_type,
-//         size: map_size,
-//         storage: tile_storage,
-//         texture: TilemapTexture::Single(texture_handle),
-//         tile_size,
-//         // spacing: TilemapSpacing { x: 0.0, y: 0.0 },
-//         transform: get_tilemap_center_transform(&map_size, &grid_size, &map_type, 0.0),
-//         ..Default::default()
-//     });
