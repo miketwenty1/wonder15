@@ -79,11 +79,11 @@ fn startup(mut commands: Commands, asset_server: Res<AssetServer>) {
 #[derive(Component)]
 struct ComputeTransform(Task<CommandQueue>);
 
-fn startup_tilemap(mut commands: Commands, mut tile_storage_q: Query<Entity, With<TileStorage>>) {
-    let map_size = TilemapSize { x: 10, y: 10 };
+fn startup_tilemap(mut commands: Commands, tile_storage_q: Query<Entity, With<TileStorage>>) {
+    let map_size = TilemapSize { x: 1000, y: 1000 };
     for tilemap_ent in tile_storage_q.iter() {
         let thread_pool = AsyncComputeTaskPool::get();
-        let mut random = thread_rng();
+        //let mut random = thread_rng();
         for x in 0..map_size.x - 1 {
             for y in 0..map_size.y - 1 {
                 //let num = random.gen_range(0..=34);
@@ -105,17 +105,15 @@ fn startup_tilemap(mut commands: Commands, mut tile_storage_q: Query<Entity, Wit
                             .remove::<ComputeTransform>()
                             .id();
 
-                        // let mut binding = {
-                        //     let mut system_state = SystemState::<Query<&TileStorage>>::new(world);
-                        //     let tile_storage = system_state.get_mut(world);
-                        //     tile_storage
-                        // };
-                        // let mut tile_storage = binding.single_mut().clone();
-                        //   tile_storage.set(&tile_pos, tile_ent);
-                        let mut binding = world.entity_mut(tilemap_ent);
-                        let mut tile_storage = binding
-                            .get_mut::<TileStorage>()
-                            .expect("trying to get mutable tile_storage");
+                        let mut system_state: SystemState<(Query<&mut TileStorage>,)> =
+                            SystemState::new(world);
+
+                        let mut tile_storage_q = system_state.get_mut(world);
+
+                        let mut tile_storage = tile_storage_q
+                            .0
+                            .get_single_mut()
+                            .expect("tile storage fail");
                         tile_storage.set(&tile_pos, tile_ent);
                     });
 
@@ -137,7 +135,7 @@ fn handle_tasks(
     for mut task in &mut transform_tasks {
         if let Some(mut commands_queue) = block_on(future::poll_once(&mut task.0)) {
             *count += 1;
-            info!("what is the count: {}", *count);
+            // info!("what is the count: {}", *count);
             // append the returned command queue to have it execute later
             commands.append(&mut commands_queue);
         }
