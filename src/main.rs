@@ -1,15 +1,19 @@
+use std::borrow::BorrowMut;
+
 use bevy::{
     ecs::{system::SystemState, world::CommandQueue},
     input::mouse::MouseWheel,
     prelude::*,
-    tasks::{block_on, futures_lite::future, AsyncComputeTaskPool, Task},
+    tasks::{AsyncComputeTaskPool, Task},
+    utils::{futures::now_or_never, tracing::Instrument},
 };
-use bevy_ecs_tilemap::prelude::*;
-use canvas::fit_canvas_to_parent;
-use rand::{thread_rng, Rng};
-use wasm_bindgen::prelude::wasm_bindgen;
 
-mod canvas;
+use bevy_ecs_tilemap::prelude::*;
+//use canvas::fit_canvas_to_parent;
+use rand::{thread_rng, Rng};
+//use wasm_bindgen::prelude::wasm_bindgen;
+
+//mod canvas;
 mod helpers;
 
 pub const TEXT_ZOOM_THRESHOLD: f32 = 2.5;
@@ -25,15 +29,15 @@ pub struct TileText;
 #[derive(Resource, Debug)]
 pub struct TotalTilesSpawned(u32);
 
-#[derive(Resource, Debug)]
-pub struct DespawnRange(f32);
+// #[derive(Resource, Debug)]
+// pub struct DespawnRange(f32);
 
-#[derive(Event, Debug)]
-pub enum TextVisibilityEvent {
-    KeyPressToggle,
-    ButtonToggle,
-    Zoom,
-}
+// #[derive(Event, Debug)]
+// pub enum TextVisibilityEvent {
+//     KeyPressToggle,
+//     ButtonToggle,
+//     Zoom,
+// }
 
 pub fn get_random_color() -> Srgba {
     let mut rng = rand::thread_rng();
@@ -114,7 +118,7 @@ fn startup_tilemap(mut commands: Commands, tile_storage_q: Query<Entity, With<Ti
                             .0
                             .get_single_mut()
                             .expect("tile storage fail");
-                        tile_storage.set(&tile_pos, tile_ent);
+                        // tile_storage.set(&tile_pos, tile_ent);
                     });
 
                     command_queue
@@ -133,11 +137,18 @@ fn handle_tasks(
 ) {
     // let tile_storage = tile_storage_q.single_mut();
     for mut task in &mut transform_tasks {
-        if let Some(mut commands_queue) = block_on(future::poll_once(&mut task.0)) {
-            *count += 1;
-            // info!("what is the count: {}", *count);
-            // append the returned command queue to have it execute later
-            commands.append(&mut commands_queue);
+        // if let Some(mut commands_queue) = block_on(future::poll_once(&mut task.0)) {
+        //     *count += 1;
+        //     // info!("what is the count: {}", *count);
+        //     // append the returned command queue to have it execute later
+        //     commands.append(&mut commands_queue);
+        // }
+        if task.0.is_finished() {
+            let commands_queue: Option<CommandQueue> = now_or_never(&mut task.0); // might need to take ownership of the Task inside the command instead?
+
+            if commands_queue.is_some() {
+                commands.append(&mut commands_queue.unwrap());
+            }
         }
     }
 }
@@ -149,10 +160,10 @@ pub enum InitState {
     LoadTiles,
 }
 
-pub fn main() {}
+// pub fn main() {}
 
-#[wasm_bindgen]
-pub fn game15() {
+// #[wasm_bindgen]
+pub fn main() {
     App::new()
         .add_plugins(DefaultPlugins.set(WindowPlugin{
             primary_window: Some(Window {
@@ -165,7 +176,7 @@ pub fn game15() {
         }).set(ImagePlugin::default_nearest()))
         .init_state::<InitState>()
         .add_plugins(TilemapPlugin)
-        .add_systems(Startup, (fit_canvas_to_parent, startup, setup_animation).chain())
+        .add_systems(Startup, ( startup, setup_animation).chain()) //fit_canvas_to_parent
         .add_systems(Update, (animate_sprite, handle_tasks))
         .add_systems(
             OnEnter(InitState::LoadTiles),
