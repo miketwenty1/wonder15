@@ -4,7 +4,7 @@ use bevy::{
     ecs::{system::SystemState, world::CommandQueue},
     input::mouse::MouseWheel,
     prelude::*,
-    tasks::{AsyncComputeTaskPool, Task},
+    tasks::{block_on, futures_lite::future, AsyncComputeTaskPool, Task},
     utils::{futures::now_or_never, tracing::Instrument},
 };
 
@@ -109,15 +109,15 @@ fn startup_tilemap(mut commands: Commands, tile_storage_q: Query<Entity, With<Ti
                             .remove::<ComputeTransform>()
                             .id();
 
-                        let mut system_state: SystemState<(Query<&mut TileStorage>,)> =
-                            SystemState::new(world);
+                        // let mut system_state: SystemState<(Query<&mut TileStorage>,)> =
+                        //     SystemState::new(world);
 
-                        let mut tile_storage_q = system_state.get_mut(world);
+                        // let mut tile_storage_q = system_state.get_mut(world);
 
-                        let mut tile_storage = tile_storage_q
-                            .0
-                            .get_single_mut()
-                            .expect("tile storage fail");
+                        // let mut tile_storage = tile_storage_q
+                        //     .0
+                        //     .get_single_mut()
+                        //     .expect("tile storage fail");
                         // tile_storage.set(&tile_pos, tile_ent);
                     });
 
@@ -133,23 +133,25 @@ fn handle_tasks(
     mut commands: Commands,
     mut transform_tasks: Query<&mut ComputeTransform>,
     //mut tile_storage_q: Query<&mut TileStorage>,
-    mut count: Local<u32>,
+    //mut count: Local<u32>,
 ) {
     // let tile_storage = tile_storage_q.single_mut();
     for mut task in &mut transform_tasks {
-        // if let Some(mut commands_queue) = block_on(future::poll_once(&mut task.0)) {
-        //     *count += 1;
-        //     // info!("what is the count: {}", *count);
-        //     // append the returned command queue to have it execute later
-        //     commands.append(&mut commands_queue);
-        // }
-        if task.0.is_finished() {
-            let commands_queue: Option<CommandQueue> = now_or_never(&mut task.0); // might need to take ownership of the Task inside the command instead?
-
-            if commands_queue.is_some() {
-                commands.append(&mut commands_queue.unwrap());
-            }
+        if let Some(mut commands_queue) = block_on(future::poll_once(&mut task.0)) {
+            //*count += 1;
+            // info!("what is the count: {}", *count);
+            // append the returned command queue to have it execute later
+            commands.append(&mut commands_queue);
         }
+
+        // non wasm
+        // if task.0.is_finished() {
+        //     let commands_queue: Option<CommandQueue> = now_or_never(&mut task.0); // might need to take ownership of the Task inside the command instead?
+
+        //     if commands_queue.is_some() {
+        //         commands.append(&mut commands_queue.unwrap());
+        //     }
+        // }
     }
 }
 
