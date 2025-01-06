@@ -25,6 +25,9 @@ pub struct TileText;
 #[derive(Resource, Debug)]
 pub struct TotalTilesSpawned(u32);
 
+#[derive(Resource)]
+struct BonusSpawnTimer(Timer);
+
 // #[derive(Resource, Debug)]
 // pub struct DespawnRange(f32);
 
@@ -81,35 +84,39 @@ fn startup_tilemap(
     tile_storage_q: Query<Entity, With<TileStorage>>,
     mut state: ResMut<NextState<InitState>>,
     mut total_tiles_res: ResMut<TotalTilesSpawned>,
-    mut y_axis: Local<u32>,
+    time: Res<Time>,
+    mut timer: ResMut<BonusSpawnTimer>,
 ) {
-    let chunk_size = TilemapSize { x: 1000, y: 2 };
-    *y_axis += chunk_size.y;
-    info!("y-axis: {}", *y_axis);
-    if *y_axis > 1000 {
+    if !timer.0.tick(time.delta()).finished() {
+        return;
+    }
+    let moff = 500; // 1000 / 2; // 1000 x 1000
+    let chunk_size = 1000;
+    let previous = total_tiles_res.0;
+    let new_destionation = previous + chunk_size;
+    if new_destionation > 1_000_000 {
         state.set(InitState::Off)
     } else {
         let mut veccy = Vec::new();
         for tilemap_ent in tile_storage_q.iter() {
             //let mut random = thread_rng();
-            for x in 0..chunk_size.x - 1 {
-                for y in *y_axis - 1..*y_axis {
-                    //let num = random.gen_range(0..=34);
-                    let tile_pos = TilePos { x, y };
-
-                    let tile = TileBundle {
-                        position: tile_pos,
-                        tilemap_id: TilemapId(tilemap_ent),
-                        texture_index: TileTextureIndex(35),
-                        color: TileColor(Color::Srgba(get_random_color())),
-                        ..Default::default()
-                    };
-                    veccy.push(tile);
-                    total_tiles_res.0 += 1;
-                    if total_tiles_res.0 % 100 == 0 {
-                        info!("total tiles = {}", total_tiles_res.0);
-                    }
-                }
+            for i in previous..new_destionation {
+                let (sx, sy) = ulam::get_xy_from_value(i);
+                let x = sx as u32;
+                let y = sy as u32;
+                let tile_pos = TilePos {
+                    x: x + moff,
+                    y: y + moff,
+                };
+                let tile = TileBundle {
+                    position: tile_pos,
+                    tilemap_id: TilemapId(tilemap_ent),
+                    texture_index: TileTextureIndex(35),
+                    color: TileColor(Color::Srgba(get_random_color())),
+                    ..Default::default()
+                };
+                veccy.push(tile);
+                total_tiles_res.0 += 1;
             }
         }
         commands.spawn_batch(veccy);
@@ -142,6 +149,10 @@ pub fn game15() {
         .add_systems(Startup, (fit_canvas_to_parent, startup, setup_animation).chain())
         .add_systems(Update, (animate_sprite))
         .insert_resource(TotalTilesSpawned(0))
+        .insert_resource(BonusSpawnTimer(Timer::from_seconds(
+            0.05,
+            TimerMode::Repeating,
+        )))
         .add_systems(
             Update,
             (startup_tilemap).run_if(in_state(InitState::LoadTiles)),
