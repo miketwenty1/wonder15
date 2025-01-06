@@ -25,15 +25,15 @@ pub struct TileText;
 #[derive(Resource, Debug)]
 pub struct TotalTilesSpawned(u32);
 
-#[derive(Resource, Debug)]
-pub struct DespawnRange(f32);
+// #[derive(Resource, Debug)]
+// pub struct DespawnRange(f32);
 
-#[derive(Event, Debug)]
-pub enum TextVisibilityEvent {
-    KeyPressToggle,
-    ButtonToggle,
-    Zoom,
-}
+// #[derive(Event, Debug)]
+// pub enum TextVisibilityEvent {
+//     KeyPressToggle,
+//     ButtonToggle,
+//     Zoom,
+// }
 
 pub fn get_random_color() -> Srgba {
     let mut rng = rand::thread_rng();
@@ -76,70 +76,28 @@ fn startup(mut commands: Commands, asset_server: Res<AssetServer>) {
     });
 }
 
-#[derive(Component)]
-struct ComputeTransform(Task<CommandQueue>);
-
 fn startup_tilemap(mut commands: Commands, tile_storage_q: Query<Entity, With<TileStorage>>) {
     let map_size = TilemapSize { x: 1000, y: 1000 };
+    let mut veccy = Vec::new();
     for tilemap_ent in tile_storage_q.iter() {
-        let thread_pool = AsyncComputeTaskPool::get();
         //let mut random = thread_rng();
         for x in 0..map_size.x - 1 {
             for y in 0..map_size.y - 1 {
                 //let num = random.gen_range(0..=34);
                 let tile_pos = TilePos { x, y };
-                let entity = commands.spawn_empty().id();
-                let task = thread_pool.spawn(async move {
-                    let mut command_queue = CommandQueue::default();
 
-                    command_queue.push(move |world: &mut World| {
-                        let tile_ent = world
-                            .entity_mut(entity)
-                            .insert(TileBundle {
-                                position: tile_pos,
-                                tilemap_id: TilemapId(tilemap_ent),
-                                texture_index: TileTextureIndex(35),
-                                color: TileColor(Color::Srgba(get_random_color())),
-                                ..Default::default()
-                            })
-                            .remove::<ComputeTransform>()
-                            .id();
-
-                        let mut system_state: SystemState<(Query<&mut TileStorage>,)> =
-                            SystemState::new(world);
-
-                        let mut tile_storage_q = system_state.get_mut(world);
-
-                        let mut tile_storage = tile_storage_q
-                            .0
-                            .get_single_mut()
-                            .expect("tile storage fail");
-                        tile_storage.set(&tile_pos, tile_ent);
-                    });
-
-                    command_queue
-                });
-                commands.entity(entity).insert(ComputeTransform(task));
+                let tile = TileBundle {
+                    position: tile_pos,
+                    tilemap_id: TilemapId(tilemap_ent),
+                    texture_index: TileTextureIndex(35),
+                    color: TileColor(Color::Srgba(get_random_color())),
+                    ..Default::default()
+                };
+                veccy.push(tile);
             }
         }
     }
-}
-
-fn handle_tasks(
-    mut commands: Commands,
-    mut transform_tasks: Query<&mut ComputeTransform>,
-    //mut tile_storage_q: Query<&mut TileStorage>,
-    mut count: Local<u32>,
-) {
-    // let tile_storage = tile_storage_q.single_mut();
-    for mut task in &mut transform_tasks {
-        if let Some(mut commands_queue) = block_on(future::poll_once(&mut task.0)) {
-            *count += 1;
-            // info!("what is the count: {}", *count);
-            // append the returned command queue to have it execute later
-            commands.append(&mut commands_queue);
-        }
-    }
+    commands.spawn_batch(veccy);
 }
 
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
@@ -166,7 +124,7 @@ pub fn game15() {
         .init_state::<InitState>()
         .add_plugins(TilemapPlugin)
         .add_systems(Startup, (fit_canvas_to_parent, startup, setup_animation).chain())
-        .add_systems(Update, (animate_sprite, handle_tasks))
+        .add_systems(Update, (animate_sprite))
         .add_systems(
             OnEnter(InitState::LoadTiles),
             (startup_tilemap).run_if(run_once),
