@@ -55,7 +55,7 @@ fn spawn_chunk(
             }
             let num = random.gen_range(0..=34);
             let tile_pos = TilePos { x, y };
-            let grid_size = TilemapGridSize { x: 32.0, y: 32.0 };
+            let grid_size = TilemapGridSize { x: 64.0, y: 64.0 };
             let map_type = TilemapType::Square;
             let tile_center = tile_pos.center_in_world(&grid_size, &map_type).extend(1.0);
             let tile_entity = commands
@@ -78,21 +78,21 @@ fn spawn_chunk(
 
                     let font_size: f32 = 14.0 - ulam_v.to_string().len() as f32;
                     parent.spawn((
-                        // Text2d::new(format!("{}", ulam_v)),
-                        // TextFont {
-                        //     font: asset_server.load("fonts/FiraSans-Bold.ttf"),
-                        //     font_size,
-                        //     font_smoothing: FontSmoothing::AntiAliased,
-                        // },
-                        // text_visi.0,
-                        // TileText,
-                        // TextColor(Color::WHITE),
-                        // TextLayout::new_with_justify(JustifyText::Center),
-                        // //Adding Aabb to attempt to cull Text2d that isn't on screen (works with sprites as parents, but not sure about TileBundles),
-                        // Aabb {
-                        //     center: Vec3A::ZERO,
-                        //     half_extents: Vec3A::ZERO,
-                        // },
+                        Text2d::new(format!("{}", ulam_v)),
+                        TextFont {
+                            font: asset_server.load("fonts/FiraSans-Bold.ttf"),
+                            font_size,
+                            font_smoothing: FontSmoothing::AntiAliased,
+                        },
+                        text_visi.0,
+                        TileText,
+                        TextColor(Color::WHITE),
+                        TextLayout::new_with_justify(JustifyText::Center),
+                        //Adding Aabb to attempt to cull Text2d that isn't on screen (works with sprites as parents, but not sure about TileBundles),
+                        Aabb {
+                            center: Vec3A::ZERO,
+                            half_extents: Vec3A::ZERO,
+                        },
                     ));
                 })
                 .id();
@@ -112,12 +112,12 @@ fn spawn_chunk(
         .entity(tilemap_entity)
         .insert((
             TilemapBundle {
-                grid_size: TilemapGridSize { x: 32.0, y: 32.0 },
+                grid_size: TilemapGridSize { x: 64.0, y: 64.0 },
                 size: CHUNK_SIZE.into(),
                 storage: tile_storage,
                 texture: TilemapTexture::Single(texture_handle),
                 tile_size: TILE_SIZE,
-                spacing: TilemapSpacing { x: 2.0, y: 2.0 },
+                spacing: TilemapSpacing { x: 4.0, y: 4.0 },
                 transform,
                 render_settings: TilemapRenderSettings {
                     render_chunk_size: RENDER_CHUNK_SIZE,
