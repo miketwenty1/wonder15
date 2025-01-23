@@ -7,7 +7,9 @@ use bevy_ecs_tilemap::{
     TilemapBundle,
 };
 
-use crate::{DespawnRange, CHUNK_SIZE, RENDER_CHUNK_SIZE, TILE_SIZE, TILE_SPACING};
+use crate::{
+    DespawnRange, SpriteSheetBuilding, CHUNK_SIZE, RENDER_CHUNK_SIZE, TILE_SIZE, TILE_SPACING,
+};
 
 #[derive(Default, Debug, Resource)]
 pub struct ChunkManager {
@@ -24,6 +26,8 @@ fn spawn_chunk(
     commands: &mut Commands,
     asset_server: &AssetServer,
     chunk_pos: IVec2,
+    layout: &Handle<TextureAtlasLayout>,
+    texture: &Handle<Image>,
     //total: &mut ResMut<TotalTilesSpawned>,
     // text_visi: &Res<TextVisi>,
 ) {
@@ -80,6 +84,23 @@ fn spawn_chunk(
                             half_extents: Vec3A::ZERO,
                         },
                     ));
+                    let translation = Vec3::new(31.0, 31.0, 3.0);
+                    let transform = Transform {
+                        translation,
+                        ..Default::default()
+                    };
+                    // parent.spawn((
+                    //     Sprite {
+                    //         color: Color::Srgba(Srgba::WHITE),
+                    //         texture_atlas: Some(TextureAtlas {
+                    //             layout: layout.clone(),
+                    //             index: 1,
+                    //         }),
+                    //         image: texture.clone(),
+                    //         ..default()
+                    //     },
+                    //     transform,
+                    // ));
                 })
                 .id();
             tile_storage.set(&tile_pos, tile_entity);
@@ -132,6 +153,7 @@ pub fn spawn_chunks_around_camera(
     asset_server: Res<AssetServer>,
     camera_query: Query<&Transform, With<Camera>>,
     mut chunk_manager: ResMut<ChunkManager>,
+    texture_atlas_handle_building: Res<SpriteSheetBuilding>,
 ) {
     for transform in camera_query.iter() {
         let camera_chunk_pos = camera_pos_to_chunk_pos(&transform.translation.xy());
@@ -139,7 +161,13 @@ pub fn spawn_chunks_around_camera(
             for x in (camera_chunk_pos.x - 2)..(camera_chunk_pos.x + 2) {
                 if !chunk_manager.spawned_chunks.contains(&IVec2::new(x, y)) {
                     chunk_manager.spawned_chunks.insert(IVec2::new(x, y));
-                    spawn_chunk(&mut commands, &asset_server, IVec2::new(x, y));
+                    spawn_chunk(
+                        &mut commands,
+                        &asset_server,
+                        IVec2::new(x, y),
+                        &texture_atlas_handle_building.layout,
+                        &texture_atlas_handle_building.texture,
+                    );
                 }
             }
         }

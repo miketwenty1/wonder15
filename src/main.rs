@@ -1,4 +1,9 @@
-use bevy::{asset::AssetMetaCheck, input::mouse::MouseWheel, prelude::*};
+use bevy::{
+    asset::AssetMetaCheck,
+    image::{ImageLoaderSettings, ImageSampler},
+    input::mouse::MouseWheel,
+    prelude::*,
+};
 use bevy_ecs_tilemap::prelude::*;
 use canvas::fit_canvas_to_parent;
 use rand::{thread_rng, Rng};
@@ -46,6 +51,12 @@ struct LandIndex(u32);
 #[derive(Component, Debug)]
 struct PlayerTileColor(TileColor);
 
+#[derive(Resource, Clone)]
+pub struct SpriteSheetBuilding {
+    pub layout: Handle<TextureAtlasLayout>,
+    pub texture: Handle<Image>,
+}
+
 // #[derive(Bundle)]
 // pub struct MyTileBundle {
 //     pub tile_bundle: TileBundle,
@@ -77,7 +88,11 @@ pub fn get_random_color() -> Srgba {
     }
 }
 
-fn startup(mut commands: Commands, asset_server: Res<AssetServer>) {
+fn startup(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    mut texture_atlases: ResMut<Assets<TextureAtlasLayout>>,
+) {
     commands.spawn(Camera2d);
 
     //let rounded_map_size = (MAX_BLOCK_HEIGHT as f32).sqrt().ceil() as u32;
@@ -116,6 +131,31 @@ fn startup(mut commands: Commands, asset_server: Res<AssetServer>) {
         spacing: TILE_SPACING,
         transform: transform_for_map,
         ..Default::default()
+    });
+
+    //    texture: &Handle<Image>,
+    //     layout: &Handle<TextureAtlasLayout>,
+
+    //     texture_atlas_handle_building: Res<SpriteSheetBuilding>,
+    let building_atlas = TextureAtlasLayout::from_grid(
+        bevy::prelude::UVec2::new(32, 32),
+        18,
+        1,
+        Some(bevy::prelude::UVec2::new(2, 2)),
+        Some(bevy::prelude::UVec2::new(1, 1)),
+    );
+    let building_texture_atlas = texture_atlases.add(building_atlas);
+
+    let building_texture = asset_server.load_with_settings(
+        "spritesheet/buildings1.png",
+        |settings: &mut ImageLoaderSettings| {
+            settings.sampler = ImageSampler::nearest();
+        },
+    );
+
+    commands.insert_resource(SpriteSheetBuilding {
+        layout: building_texture_atlas,
+        texture: building_texture,
     });
 }
 
