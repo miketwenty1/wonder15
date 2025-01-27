@@ -11,16 +11,8 @@ use crate::{
     DespawnRange, SpriteSheetBuilding, CHUNK_SIZE, RENDER_CHUNK_SIZE, TILE_SIZE, TILE_SPACING,
 };
 
-#[derive(Default, Debug, Resource)]
-pub struct ChunkManager {
-    pub spawned_chunks: HashSet<IVec2>,
-}
-
 #[derive(Component, Debug)]
 pub struct TileText;
-
-#[derive(Component, Debug)]
-pub struct ChunkMap;
 
 fn spawn_chunk(
     commands: &mut Commands,
