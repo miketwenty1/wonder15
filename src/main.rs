@@ -1,9 +1,5 @@
 use bevy::{asset::AssetMetaCheck, prelude::*};
-use scene::{
-    explorer::{map::setup::startup, GameExplorerPlugin},
-    init::GameInitPlugin,
-    ExplorerSubState, SceneState,
-};
+use scene::{explorer::ExplorerScenePlugin, init::InitScenePlugin, ExplorerSubState, SceneState};
 use wasm_bindgen::prelude::wasm_bindgen;
 
 mod helper;
@@ -32,7 +28,6 @@ pub fn game15() {
         )
         .init_state::<SceneState>()
         .add_sub_state::<ExplorerSubState>()
-        .add_plugins((GameInitPlugin, GameExplorerPlugin))
-        .add_systems(Startup, startup)
+        .add_plugins((InitScenePlugin, ExplorerScenePlugin))
         .run();
 }

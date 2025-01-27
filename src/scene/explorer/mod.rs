@@ -7,12 +7,12 @@ use super::{ExplorerSubState, SceneState};
 
 mod component;
 mod input;
-pub mod map;
+mod map;
 mod startup;
 
-pub struct GameExplorerPlugin;
+pub struct ExplorerScenePlugin;
 
-impl Plugin for GameExplorerPlugin {
+impl Plugin for ExplorerScenePlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(
             OnEnter(SceneState::Explorer),

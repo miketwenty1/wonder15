@@ -4,8 +4,8 @@ use resource::{AdditionalSetupTilesTimer, ChunkManager, DespawnRange, TotalTiles
 use setup::{startup, startup_tilemap};
 
 mod component;
-pub mod resource;
-pub mod setup;
+mod resource;
+mod setup;
 // mod text2d_chunking;
 
 use crate::scene::ExplorerSubState;
@@ -38,10 +38,10 @@ impl Plugin for ExplorerMapPlugin {
         .insert_resource(TotalTilesSpawned(0))
         .insert_resource(DespawnRange(CHUNK_SIZE.x as f32 * TILE_SIZE.x * 6.0))
         .init_state::<InitSpawnTileMap>()
-        // .add_systems(
-        //     OnEnter(InitSpawnTileMap::Running),
-        //     (startup).run_if(run_once),
-        // )
+        .add_systems(
+            OnEnter(InitSpawnTileMap::Running),
+            (startup).run_if(run_once),
+        )
         .add_systems(
             Update,
             (startup_tilemap).run_if(in_state(InitSpawnTileMap::Running)),
