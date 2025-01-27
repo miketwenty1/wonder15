@@ -25,10 +25,10 @@ use super::{
     InitSpawnTileMap,
 };
 
-const MAP_LENGTH: u32 = 5; //1000;
+const MAP_LENGTH: u32 = 1000;
 const TILE_SPACING: TilemapSpacing = TilemapSpacing { x: 2.0, y: 2.0 };
-const MAX_BLOCK_HEIGHT: u32 = 20; //1_000_000;
-const CHUNK_INIT_LOAD_SIZE: u32 = 5; //10_000;
+const MAX_BLOCK_HEIGHT: u32 = 1_000_000;
+const CHUNK_INIT_LOAD_SIZE: u32 = 10_000;
 
 // pub fn startup(
 //     mut commands: Commands,
