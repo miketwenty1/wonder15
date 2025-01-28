@@ -1,21 +1,23 @@
 use bevy::{prelude::*, utils::HashSet};
 
 #[derive(Resource, Deref, DerefMut)]
-pub struct AdditionalSetupTilesTimer(pub Timer);
+pub struct AdditionalSetupTilesTimerRes(pub Timer);
 
 #[derive(Resource, Clone)]
-pub struct SpriteSheetBuilding {
+pub struct SpriteSheetBuildingRes {
     pub layout: Handle<TextureAtlasLayout>,
     pub texture: Handle<Image>,
 }
 
 #[derive(Default, Debug, Resource)]
-pub struct ChunkManager {
+pub struct ChunkManagerRes {
     pub spawned_chunks: HashSet<IVec2>,
 }
 
 #[derive(Resource, Debug)]
-pub struct DespawnRange(pub f32);
+pub struct DespawnRangeRes(pub f32);
 
 #[derive(Resource, Debug)]
-pub struct TotalTilesSpawned(pub u32);
+pub struct TotalTilesSpawnedRes(pub u32);
+
+//pub TextVisibilityEventRes

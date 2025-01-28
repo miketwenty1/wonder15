@@ -2,47 +2,29 @@ use bevy::{input::ButtonInput, math::Vec3, prelude::*, render::camera::Camera};
 pub fn keyboard_movement(
     time: Res<Time>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
-    mut query: Query<(&mut Transform, &mut OrthographicProjection), With<Camera>>,
+    mut query: Query<(&mut Transform, &OrthographicProjection), With<Camera>>,
     // mut despawn_range: ResMut<DespawnRange>,
     // mut text_visi_event: EventWriter<TextVisibilityEvent>,
 ) {
-    for (mut transform, mut ortho) in query.iter_mut() {
+    for (mut transform, ortho) in query.iter_mut() {
         let mut direction = Vec3::ZERO;
 
-        if keyboard_input.pressed(KeyCode::KeyA) {
+        if keyboard_input.pressed(KeyCode::KeyA) || keyboard_input.pressed(KeyCode::ArrowLeft) {
             direction -= Vec3::new(1.0, 0.0, 0.0);
         }
 
-        if keyboard_input.pressed(KeyCode::KeyD) {
+        if keyboard_input.pressed(KeyCode::KeyD) || keyboard_input.pressed(KeyCode::ArrowRight) {
             direction += Vec3::new(1.0, 0.0, 0.0);
         }
 
-        if keyboard_input.pressed(KeyCode::KeyW) {
+        if keyboard_input.pressed(KeyCode::KeyW) || keyboard_input.pressed(KeyCode::ArrowUp) {
             direction += Vec3::new(0.0, 1.0, 0.0);
         }
 
-        if keyboard_input.pressed(KeyCode::KeyS) {
+        if keyboard_input.pressed(KeyCode::KeyS) || keyboard_input.pressed(KeyCode::ArrowDown) {
             direction -= Vec3::new(0.0, 1.0, 0.0);
         }
 
-        if keyboard_input.pressed(KeyCode::KeyZ) {
-            ortho.scale += 0.2;
-            //  text_visi_event.send(TextVisibilityEvent::Zoom);
-        }
-
-        if keyboard_input.pressed(KeyCode::KeyX) {
-            ortho.scale -= 0.2;
-            //  text_visi_event.send(TextVisibilityEvent::Zoom);
-        }
-
-        if ortho.scale < 0.15 {
-            ortho.scale = 0.15;
-        }
-
-        let z = transform.translation.z;
         transform.translation += time.delta_secs() * direction * 300. * ortho.scale;
-        // Important! We need to restore the Z values when moving the camera around.
-        // Bevy has a specific camera setup and this can mess with how our layers are shown.
-        transform.translation.z = z;
     }
 }

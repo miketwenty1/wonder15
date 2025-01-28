@@ -1,13 +1,18 @@
 use bevy::prelude::*;
+use event::{ExplorerEventPlugin, SwapTilesEvent};
 use input::ExplorerInputPlugin;
 use map::ExplorerMapPlugin;
+use resource::CurrentTilesRes;
 use startup::{animate_sprite, setup_animation};
 
 use super::{ExplorerSubState, SceneState};
 
 mod component;
+mod event;
+mod hard;
 mod input;
 mod map;
+mod resource;
 mod startup;
 
 pub struct ExplorerScenePlugin;
@@ -29,6 +34,7 @@ impl Plugin for ExplorerScenePlugin {
             Update,
             (animate_sprite).run_if(in_state(ExplorerSubState::Running)),
         )
-        .add_plugins((ExplorerInputPlugin, ExplorerMapPlugin));
+        .insert_resource(CurrentTilesRes(SwapTilesEvent::PlayerColor))
+        .add_plugins((ExplorerInputPlugin, ExplorerMapPlugin, ExplorerEventPlugin));
     }
 }

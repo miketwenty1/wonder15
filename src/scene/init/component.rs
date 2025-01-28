@@ -4,10 +4,10 @@ use bevy::{
 };
 
 #[derive(Component)]
-pub struct AnimationIndices {
+pub struct AnimationIndicesComp {
     pub first: usize,
     pub last: usize,
 }
 
 #[derive(Component, Deref, DerefMut)]
-pub struct AnimationTimer(pub Timer);
+pub struct AnimationTimerComp(pub Timer);

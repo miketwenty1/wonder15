@@ -1,9 +1,9 @@
-use super::component::{AnimationIndices, AnimationTimer};
+use super::component::{AnimationIndicesComp, AnimationTimerComp};
 use bevy::prelude::*;
 
 pub fn animate_sprite(
     time: Res<Time>,
-    mut query: Query<(&AnimationIndices, &mut AnimationTimer, &mut Sprite)>,
+    mut query: Query<(&AnimationIndicesComp, &mut AnimationTimerComp, &mut Sprite)>,
 ) {
     for (indices, mut timer, mut sprite) in &mut query {
         timer.tick(time.delta());
@@ -29,8 +29,7 @@ pub fn setup_animation(
     let layout = TextureAtlasLayout::from_grid(UVec2::splat(24), 7, 1, None, None);
     let texture_atlas_layout = texture_atlas_layouts.add(layout);
     // Use only the subset of sprites in the sheet that make up the run animation
-    let animation_indices = AnimationIndices { first: 1, last: 6 };
-    // commands.spawn(Camera2d);
+    let animation_indices = AnimationIndicesComp { first: 1, last: 6 };
     commands.spawn((
         Sprite {
             texture_atlas: Some(TextureAtlas {
@@ -47,6 +46,6 @@ pub fn setup_animation(
             z: 6.0,
         }),
         animation_indices,
-        AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating)),
+        AnimationTimerComp(Timer::from_seconds(0.1, TimerMode::Repeating)),
     ));
 }

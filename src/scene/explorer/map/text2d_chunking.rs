@@ -7,8 +7,10 @@ use bevy_ecs_tilemap::{
     TilemapBundle,
 };
 
-use crate::{
-    DespawnRange, SpriteSheetBuilding, CHUNK_SIZE, RENDER_CHUNK_SIZE, TILE_SIZE, TILE_SPACING,
+use super::{
+    component::ChunkMapComp,
+    resource::{ChunkManagerRes, DespawnRangeRes, SpriteSheetBuildingRes},
+    CHUNK_SIZE, RENDER_CHUNK_SIZE, TILE_SIZE, TILE_SPACING,
 };
 
 #[derive(Component, Debug)]
@@ -58,7 +60,7 @@ fn spawn_chunk(
                         (chunk_pos.y * CHUNK_SIZE.y as i32) + tile_pos.y as i32,
                     );
 
-                    let font_size: f32 = 14.0 - ulam_v.to_string().len() as f32;
+                    let font_size: f32 = 21.0 - ulam_v.to_string().len() as f32;
                     parent.spawn((
                         Text2d::new(format!("{}", ulam_v)),
                         TextFont {
@@ -81,18 +83,6 @@ fn spawn_chunk(
                         translation,
                         ..Default::default()
                     };
-                    // parent.spawn((
-                    //     Sprite {
-                    //         color: Color::Srgba(Srgba::WHITE),
-                    //         texture_atlas: Some(TextureAtlas {
-                    //             layout: layout.clone(),
-                    //             index: 1,
-                    //         }),
-                    //         image: texture.clone(),
-                    //         ..default()
-                    //     },
-                    //     transform,
-                    // ));
                 })
                 .id();
             tile_storage.set(&tile_pos, tile_entity);
@@ -128,7 +118,7 @@ fn spawn_chunk(
                 },
                 ..Default::default()
             },
-            ChunkMap,
+            ChunkMapComp,
         ))
         .add_children(&tile_entities);
 }
@@ -144,8 +134,8 @@ pub fn spawn_chunks_around_camera(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     camera_query: Query<&Transform, With<Camera>>,
-    mut chunk_manager: ResMut<ChunkManager>,
-    texture_atlas_handle_building: Res<SpriteSheetBuilding>,
+    mut chunk_manager: ResMut<ChunkManagerRes>,
+    texture_atlas_handle_building: Res<SpriteSheetBuildingRes>,
 ) {
     for transform in camera_query.iter() {
         let camera_chunk_pos = camera_pos_to_chunk_pos(&transform.translation.xy());
@@ -169,9 +159,9 @@ pub fn spawn_chunks_around_camera(
 pub fn despawn_outofrange_chunks(
     mut commands: Commands,
     camera_query: Query<&Transform, With<Camera>>,
-    chunks_query_map: Query<(Entity, &Transform), With<ChunkMap>>,
-    mut chunk_manager: ResMut<ChunkManager>,
-    despawn_range: Res<DespawnRange>,
+    chunks_query_map: Query<(Entity, &Transform), With<ChunkMapComp>>,
+    mut chunk_manager: ResMut<ChunkManagerRes>,
+    despawn_range: Res<DespawnRangeRes>,
 ) {
     for camera_transform in camera_query.iter() {
         for (entity, chunk_transform) in chunks_query_map.iter() {
