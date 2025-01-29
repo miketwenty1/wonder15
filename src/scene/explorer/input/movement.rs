@@ -24,7 +24,8 @@ pub fn keyboard_movement(
         if keyboard_input.pressed(KeyCode::KeyS) || keyboard_input.pressed(KeyCode::ArrowDown) {
             direction -= Vec3::new(0.0, 1.0, 0.0);
         }
-
+        let z = transform.translation.z;
         transform.translation += time.delta_secs() * direction * 300. * ortho.scale;
+        transform.translation.z = z;
     }
 }

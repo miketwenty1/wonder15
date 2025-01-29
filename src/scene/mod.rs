@@ -17,3 +17,12 @@ pub enum ExplorerSubState {
     Running,
     Paused,
 }
+
+#[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, SubStates)]
+#[source(ExplorerSubState = ExplorerSubState::Running)]
+pub enum ExplorerRunningSub2State {
+    #[default]
+    ZoomClose,
+    ZoomMedium,
+    ZoomFar,
+}

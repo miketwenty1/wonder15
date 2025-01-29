@@ -3,10 +3,7 @@ use bevy::{
     prelude::*,
 };
 use bevy_ecs_tilemap::{
-    map::{
-        TilemapGridSize, TilemapId, TilemapSize, TilemapSpacing, TilemapTexture, TilemapTileSize,
-        TilemapType,
-    },
+    map::{TilemapGridSize, TilemapId, TilemapSize, TilemapTexture, TilemapType},
     prelude::get_tilemap_center_transform,
     tiles::{TileBundle, TileColor, TilePos, TileStorage, TileTextureIndex},
     TilemapBundle,
@@ -14,13 +11,12 @@ use bevy_ecs_tilemap::{
 use rand::{thread_rng, Rng};
 
 use crate::scene::explorer::map::{
-    component::{LandIndexComp, PlayerTileColorComp, UlamComp},
+    component::{LandIndexComp, MainBaseTileMap, PlayerTileColorComp, UlamComp},
     resource::SpriteSheetBuildingRes,
     TILE_SIZE,
 };
 
 use super::{
-    component::ChunkMapComp,
     resource::{AdditionalSetupTilesTimerRes, TotalTilesSpawnedRes},
     state::InitSpawnTileMapState,
     TILE_SPACING,
@@ -46,7 +42,7 @@ pub fn startup(
 
     let map_type = TilemapType::default();
 
-    let tilemap_entity = commands.spawn_empty().id();
+    let tilemap_entity = commands.spawn_empty().insert(MainBaseTileMap).id();
     let texture_handle: Handle<Image> =
         asset_server.load("spritesheet/ss-land-v12-gimp-64-spaced.png");
 
@@ -84,7 +80,7 @@ pub fn startup(
     let building_texture_atlas = texture_atlases.add(building_atlas);
 
     let building_texture = asset_server.load_with_settings(
-        "spritesheet/buildings1.png",
+        "spritesheet/buildings1v2.png",
         |settings: &mut ImageLoaderSettings| {
             settings.sampler = ImageSampler::nearest();
         },
@@ -98,7 +94,7 @@ pub fn startup(
 
 pub fn startup_tilemap(
     mut commands: Commands,
-    mut tile_storage_q: Query<(Entity, &mut TileStorage), Without<ChunkMapComp>>,
+    mut tile_storage_q: Query<(Entity, &mut TileStorage), With<MainBaseTileMap>>,
     mut state: ResMut<NextState<InitSpawnTileMapState>>,
     mut total_tiles_res: ResMut<TotalTilesSpawnedRes>,
     time: Res<Time>,
@@ -110,7 +106,7 @@ pub fn startup_tilemap(
     let uoff = MAP_LENGTH / 2; // 1000 / 2; // 1000 x 1000
     let previous = total_tiles_res.0;
     let new_destionation = previous + CHUNK_INIT_LOAD_SIZE;
-    info!("previous: {}, destination: {}", previous, new_destionation);
+    //info!("previous: {}, destination: {}", previous, new_destionation);
     let mut random = thread_rng();
 
     for (tilemap_ent, mut tile_storage) in tile_storage_q.iter_mut() {

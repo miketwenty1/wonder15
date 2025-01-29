@@ -5,7 +5,8 @@ pub struct ExplorerEventPlugin;
 impl Plugin for ExplorerEventPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<TextVisibilityEvent>()
-            .add_event::<SwapTilesEvent>();
+            .add_event::<SwapTilesEvent>()
+            .add_event::<BuildingVisibilityEvent>();
     }
 }
 
@@ -13,7 +14,16 @@ impl Plugin for ExplorerEventPlugin {
 pub enum TextVisibilityEvent {
     KeyPressToggle,
     ButtonToggle,
-    Zoom,
+    ZoomOut,
+    ZoomIn,
+}
+
+#[derive(Event, Debug)]
+pub enum BuildingVisibilityEvent {
+    KeyPressToggle,
+    ButtonToggle,
+    ZoomOut,
+    ZoomIn,
 }
 
 #[derive(Event, Debug, Clone, PartialEq)]

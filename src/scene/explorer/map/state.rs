@@ -6,3 +6,17 @@ pub enum InitSpawnTileMapState {
     Running,
     Done,
 }
+
+#[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
+pub enum BuildingVisibilityState {
+    #[default]
+    On,
+    Off,
+}
+
+#[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
+pub enum TextVisibilityState {
+    #[default]
+    On,
+    Off,
+}

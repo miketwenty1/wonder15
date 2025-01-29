@@ -1,6 +1,4 @@
-use bevy::{
-    math::Vec3A, prelude::*, render::primitives::Aabb, text::FontSmoothing, utils::HashSet,
-};
+use bevy::{math::Vec3A, prelude::*, render::primitives::Aabb, text::FontSmoothing};
 use bevy_ecs_tilemap::{
     map::{TilemapGridSize, TilemapId, TilemapRenderSettings, TilemapType},
     tiles::{TileBundle, TilePos, TileStorage},
@@ -8,22 +6,18 @@ use bevy_ecs_tilemap::{
 };
 
 use super::{
-    component::ChunkMapComp,
-    resource::{ChunkManagerRes, DespawnRangeRes, SpriteSheetBuildingRes},
+    component::{ChunkTextMapComp, TileText},
+    resource::{ChunkTextManagerRes, DespawnTextRangeRes},
     CHUNK_SIZE, RENDER_CHUNK_SIZE, TILE_SIZE, TILE_SPACING,
 };
-
-#[derive(Component, Debug)]
-pub struct TileText;
 
 fn spawn_chunk(
     commands: &mut Commands,
     asset_server: &AssetServer,
     chunk_pos: IVec2,
-    layout: &Handle<TextureAtlasLayout>,
-    texture: &Handle<Image>,
-    //total: &mut ResMut<TotalTilesSpawned>,
-    // text_visi: &Res<TextVisi>,
+    // layout: &Handle<TextureAtlasLayout>,
+    // texture: &Handle<Image>,
+    //text_visi: &Res<TileTextVisibilityRes>,
 ) {
     let tilemap_entity = commands.spawn_empty().id();
     let mut tile_storage = TileStorage::empty(CHUNK_SIZE.into());
@@ -38,9 +32,14 @@ fn spawn_chunk(
             //let num = random.gen_range(0..=34);
             let tile_pos = TilePos { x, y };
             let map_type = TilemapType::Square;
-            let tile_center = tile_pos
+            let tile_center_noz = tile_pos
                 .center_in_world(&TILE_SIZE.into(), &map_type)
                 .extend(1.0);
+            let tile_center = Vec3 {
+                x: tile_center_noz.x,
+                y: tile_center_noz.y,
+                z: 2.0,
+            };
             let tile_entity = commands
                 .spawn((
                     TileBundle {
@@ -52,7 +51,6 @@ fn spawn_chunk(
                     // Visibility::Visible,
                     // YoTile,
                     Transform::from_translation(tile_center),
-                    TileText,
                 ))
                 .with_children(|parent| {
                     let ulam_v = ulam::get_value_from_xy(
@@ -68,8 +66,8 @@ fn spawn_chunk(
                             font_size,
                             font_smoothing: FontSmoothing::AntiAliased,
                         },
-                        // text_visi.0,
-                        //  TileText,
+                        //text_visi.visi_or_nawh(),
+                        TileText,
                         TextColor(Color::WHITE),
                         TextLayout::new_with_justify(JustifyText::Center),
                         //Adding Aabb to attempt to cull Text2d that isn't on screen (works with sprites as parents, but not sure about TileBundles),
@@ -78,11 +76,11 @@ fn spawn_chunk(
                             half_extents: Vec3A::ZERO,
                         },
                     ));
-                    let translation = Vec3::new(31.0, 31.0, 3.0);
-                    let transform = Transform {
-                        translation,
-                        ..Default::default()
-                    };
+                    // let translation = Vec3::new(31.0, 31.0, 3.0);
+                    // let transform = Transform {
+                    //     translation,
+                    //     ..Default::default()
+                    // };
                 })
                 .id();
             tile_storage.set(&tile_pos, tile_entity);
@@ -118,7 +116,7 @@ fn spawn_chunk(
                 },
                 ..Default::default()
             },
-            ChunkMapComp,
+            ChunkTextMapComp,
         ))
         .add_children(&tile_entities);
 }
@@ -130,12 +128,13 @@ fn camera_pos_to_chunk_pos(camera_pos: &Vec2) -> IVec2 {
     camera_pos / (chunk_size * tile_size)
 }
 
-pub fn spawn_chunks_around_camera(
+pub fn spawn_text_chunks_around_camera(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     camera_query: Query<&Transform, With<Camera>>,
-    mut chunk_manager: ResMut<ChunkManagerRes>,
-    texture_atlas_handle_building: Res<SpriteSheetBuildingRes>,
+    mut chunk_manager: ResMut<ChunkTextManagerRes>,
+    // texture_atlas_handle_building: Res<SpriteSheetBuildingRes>,
+    // text_visi: Res<TileTextVisibilityRes>,
 ) {
     for transform in camera_query.iter() {
         let camera_chunk_pos = camera_pos_to_chunk_pos(&transform.translation.xy());
@@ -147,8 +146,9 @@ pub fn spawn_chunks_around_camera(
                         &mut commands,
                         &asset_server,
                         IVec2::new(x, y),
-                        &texture_atlas_handle_building.layout,
-                        &texture_atlas_handle_building.texture,
+                        // &texture_atlas_handle_building.layout,
+                        // &texture_atlas_handle_building.texture,
+                        //  &text_visi,
                     );
                 }
             }
@@ -156,12 +156,23 @@ pub fn spawn_chunks_around_camera(
     }
 }
 
-pub fn despawn_outofrange_chunks(
+pub fn despawn_text_outofzoom_chunks(
+    mut commands: Commands,
+    chunks_query_map: Query<Entity, With<ChunkTextMapComp>>,
+    mut chunk_manager: ResMut<ChunkTextManagerRes>,
+) {
+    chunk_manager.spawned_chunks.clear();
+    for entity in chunks_query_map.iter() {
+        commands.entity(entity).despawn_recursive();
+    }
+}
+
+pub fn despawn_text_outofrange_chunks(
     mut commands: Commands,
     camera_query: Query<&Transform, With<Camera>>,
-    chunks_query_map: Query<(Entity, &Transform), With<ChunkMapComp>>,
-    mut chunk_manager: ResMut<ChunkManagerRes>,
-    despawn_range: Res<DespawnRangeRes>,
+    chunks_query_map: Query<(Entity, &Transform), With<ChunkTextMapComp>>,
+    mut chunk_manager: ResMut<ChunkTextManagerRes>,
+    despawn_range: Res<DespawnTextRangeRes>,
 ) {
     for camera_transform in camera_query.iter() {
         for (entity, chunk_transform) in chunks_query_map.iter() {
