@@ -4,26 +4,24 @@ pub struct ExplorerEventPlugin;
 
 impl Plugin for ExplorerEventPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<TextVisibilityEvent>()
+        app.add_event::<TextToggleEvent>()
             .add_event::<SwapTilesEvent>()
-            .add_event::<BuildingVisibilityEvent>();
+            .add_event::<BuildingToggleEvent>()
+            .add_event::<ZoomLevelEvent>();
     }
 }
 
 #[derive(Event, Debug)]
-pub enum TextVisibilityEvent {
+pub enum TextToggleEvent {
     KeyPressToggle,
     ButtonToggle,
-    ZoomOut,
-    ZoomIn,
+    Zoom,
 }
 
 #[derive(Event, Debug)]
-pub enum BuildingVisibilityEvent {
+pub enum BuildingToggleEvent {
     KeyPressToggle,
     ButtonToggle,
-    ZoomOut,
-    ZoomIn,
 }
 
 #[derive(Event, Debug, Clone, PartialEq)]
@@ -43,4 +41,11 @@ impl SwapTilesEvent {
             _ => SwapTilesEvent::PlayerColor,
         }
     }
+}
+
+#[derive(Event, Debug, PartialEq, Clone)]
+pub enum ZoomLevelEvent {
+    Close,
+    Medium,
+    Far,
 }

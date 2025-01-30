@@ -7,6 +7,7 @@ use zoom_mouse_wheel::zoom_wheel_system;
 
 mod hotkeys;
 mod movement;
+mod zoom_helper;
 mod zoom_keys;
 mod zoom_mouse_wheel;
 

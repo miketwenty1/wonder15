@@ -20,9 +20,9 @@ pub enum ExplorerSubState {
 
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, SubStates)]
 #[source(ExplorerSubState = ExplorerSubState::Running)]
-pub enum ExplorerRunningSub2State {
+pub enum ExplorerRunningZoomSub2State {
     #[default]
-    ZoomClose,
-    ZoomMedium,
-    ZoomFar,
+    Close,
+    Medium,
+    Far,
 }

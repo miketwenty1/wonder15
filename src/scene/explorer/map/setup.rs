@@ -12,14 +12,13 @@ use rand::{thread_rng, Rng};
 
 use crate::scene::explorer::map::{
     component::{LandIndexComp, MainBaseTileMap, PlayerTileColorComp, UlamComp},
+    hard::{TILE_SIZE, TILE_SPACING},
     resource::SpriteSheetBuildingRes,
-    TILE_SIZE,
 };
 
 use super::{
     resource::{AdditionalSetupTilesTimerRes, TotalTilesSpawnedRes},
     state::InitSpawnTileMapState,
-    TILE_SPACING,
 };
 
 const MAP_LENGTH: u32 = 1000;

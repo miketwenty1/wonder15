@@ -1,6 +1,6 @@
 use bevy::{asset::AssetMetaCheck, prelude::*};
 use scene::{
-    explorer::ExplorerScenePlugin, init::InitScenePlugin, ExplorerRunningSub2State,
+    explorer::ExplorerScenePlugin, init::InitScenePlugin, ExplorerRunningZoomSub2State,
     ExplorerSubState, SceneState,
 };
 use wasm_bindgen::prelude::wasm_bindgen;
@@ -31,7 +31,7 @@ pub fn game15() {
         )
         .init_state::<SceneState>()
         .add_sub_state::<ExplorerSubState>()
-        .add_sub_state::<ExplorerRunningSub2State>()
+        .add_sub_state::<ExplorerRunningZoomSub2State>()
         .add_plugins((InitScenePlugin, ExplorerScenePlugin))
         .run();
 }

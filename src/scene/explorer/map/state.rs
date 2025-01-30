@@ -8,14 +8,14 @@ pub enum InitSpawnTileMapState {
 }
 
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
-pub enum BuildingVisibilityState {
+pub enum BuildingToggleState {
     #[default]
     On,
     Off,
 }
 
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
-pub enum TextVisibilityState {
+pub enum TextToggleState {
     #[default]
     On,
     Off,

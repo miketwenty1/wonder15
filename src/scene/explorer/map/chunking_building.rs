@@ -7,8 +7,8 @@ use bevy_ecs_tilemap::{
 
 use super::{
     component::ChunkBuildingMapComp,
+    hard::{CHUNK_SIZE, RENDER_CHUNK_SIZE, TILE_SIZE, TILE_SPACING},
     resource::{ChunkBuildingManagerRes, DespawnBuildingRangeRes, SpriteSheetBuildingRes},
-    CHUNK_SIZE, RENDER_CHUNK_SIZE, TILE_SIZE, TILE_SPACING,
 };
 
 fn spawn_chunk(
@@ -177,12 +177,11 @@ pub fn spawn_building_chunks_around_camera(
     }
 }
 
-pub fn despawn_building_outofzoom_chunks(
+pub fn despawn_buildings(
     mut commands: Commands,
     chunks_query_map: Query<Entity, With<ChunkBuildingMapComp>>,
     mut chunk_manager: ResMut<ChunkBuildingManagerRes>,
 ) {
-    info!("despawn buildings");
     chunk_manager.spawned_chunks.clear();
     for entity in chunks_query_map.iter() {
         commands.entity(entity).despawn_recursive();

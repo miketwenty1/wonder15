@@ -1,39 +1,30 @@
 use bevy::prelude::*;
-use bevy_ecs_tilemap::map::{TilemapSpacing, TilemapTileSize};
 use chunking_building::{
-    despawn_building_outofrange_chunks, despawn_building_outofzoom_chunks,
-    spawn_building_chunks_around_camera,
+    despawn_building_outofrange_chunks, despawn_buildings, spawn_building_chunks_around_camera,
 };
 use chunking_text2d::{
-    despawn_text_outofrange_chunks, despawn_text_outofzoom_chunks, spawn_text_chunks_around_camera,
+    despawn_text, despawn_text_outofrange_chunks, spawn_text_chunks_around_camera,
 };
 use resource::MapResPlugin;
 use setup::{startup, startup_tilemap};
-use state::{BuildingVisibilityState, InitSpawnTileMapState, TextVisibilityState};
+use state::{BuildingToggleState, InitSpawnTileMapState, TextToggleState};
 use swap_tiles::swap_tile_index_reader;
-use visibility_building::building_visibility_reader;
-use visibility_text::text_visibility_reader;
+use toggle_building::building_toggle_reader;
+use toggle_text::text_toggle_reader;
+use zoom_fns::zoom_reader;
 
 mod chunking_building;
 mod chunking_text2d;
 mod component;
+mod hard;
 mod resource;
 mod setup;
 mod state;
 mod swap_tiles;
-mod visibility_building;
-mod visibility_text;
-
-use crate::scene::{ExplorerRunningSub2State, ExplorerSubState};
-
-pub const CHUNK_SIZE: UVec2 = UVec2 { x: 8, y: 8 };
-pub const RENDER_CHUNK_SIZE: UVec2 = UVec2 {
-    x: CHUNK_SIZE.x * 2,
-    y: CHUNK_SIZE.y * 2,
-};
-pub const TILE_SPACING: TilemapSpacing = TilemapSpacing { x: 2.0, y: 2.0 };
-const TILE_SIZE: TilemapTileSize = TilemapTileSize { x: 66.0, y: 66.0 };
-const BUILDING_SPRITE_SIZE: TilemapTileSize = TilemapTileSize { x: 34.0, y: 34.0 };
+mod toggle_building;
+mod toggle_text;
+mod zoom_fns;
+use crate::scene::{ExplorerRunningZoomSub2State, ExplorerSubState};
 
 pub struct ExplorerMapPlugin;
 
@@ -41,8 +32,8 @@ impl Plugin for ExplorerMapPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins(MapResPlugin)
             .init_state::<InitSpawnTileMapState>()
-            .init_state::<BuildingVisibilityState>()
-            .init_state::<TextVisibilityState>()
+            .init_state::<BuildingToggleState>()
+            .init_state::<TextToggleState>()
             .add_systems(
                 OnEnter(InitSpawnTileMapState::Running),
                 (startup).run_if(run_once),
@@ -55,8 +46,9 @@ impl Plugin for ExplorerMapPlugin {
                 Update,
                 (
                     swap_tile_index_reader,
-                    building_visibility_reader,
-                    text_visibility_reader,
+                    building_toggle_reader,
+                    text_toggle_reader,
+                    zoom_reader,
                 )
                     .run_if(in_state(ExplorerSubState::Running)),
             )
@@ -67,14 +59,12 @@ impl Plugin for ExplorerMapPlugin {
                     spawn_text_chunks_around_camera,
                 )
                     .run_if(
-                        in_state(ExplorerRunningSub2State::ZoomClose)
-                            .and(in_state(TextVisibilityState::On)),
+                        in_state(ExplorerRunningZoomSub2State::Close)
+                            .and(in_state(TextToggleState::On)),
                     ),
             )
-            .add_systems(
-                OnExit(ExplorerRunningSub2State::ZoomClose),
-                despawn_text_outofzoom_chunks,
-            )
+            .add_systems(OnExit(ExplorerRunningZoomSub2State::Close), despawn_text)
+            .add_systems(OnEnter(TextToggleState::Off), despawn_text)
             .add_systems(
                 Update,
                 (
@@ -82,13 +72,14 @@ impl Plugin for ExplorerMapPlugin {
                     spawn_building_chunks_around_camera,
                 )
                     .run_if(
-                        not(in_state(ExplorerRunningSub2State::ZoomFar))
-                            .and(in_state(BuildingVisibilityState::On)),
+                        not(in_state(ExplorerRunningZoomSub2State::Far))
+                            .and(in_state(BuildingToggleState::On)),
                     ),
             )
             .add_systems(
-                OnEnter(ExplorerRunningSub2State::ZoomFar),
-                despawn_building_outofzoom_chunks,
-            );
+                OnEnter(ExplorerRunningZoomSub2State::Far),
+                despawn_buildings,
+            )
+            .add_systems(OnEnter(BuildingToggleState::Off), despawn_buildings);
     }
 }

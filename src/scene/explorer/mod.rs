@@ -1,8 +1,8 @@
 use bevy::prelude::*;
-use event::{ExplorerEventPlugin, SwapTilesEvent};
+use event::{ExplorerEventPlugin, SwapTilesEvent, ZoomLevelEvent};
 use input::ExplorerInputPlugin;
 use map::ExplorerMapPlugin;
-use resource::CurrentTilesRes;
+use resource::{CurrentTilesRes, ZoomLevelRes};
 use startup::{animate_sprite, setup_animation};
 
 use super::{ExplorerSubState, SceneState};
@@ -35,6 +35,7 @@ impl Plugin for ExplorerScenePlugin {
             (animate_sprite).run_if(in_state(ExplorerSubState::Running)),
         )
         .insert_resource(CurrentTilesRes(SwapTilesEvent::PlayerColor))
+        .insert_resource(ZoomLevelRes(ZoomLevelEvent::Close))
         .add_plugins((ExplorerInputPlugin, ExplorerMapPlugin, ExplorerEventPlugin));
     }
 }

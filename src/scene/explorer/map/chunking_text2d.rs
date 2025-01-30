@@ -7,8 +7,8 @@ use bevy_ecs_tilemap::{
 
 use super::{
     component::{ChunkTextMapComp, TileText},
+    hard::{CHUNK_SIZE, RENDER_CHUNK_SIZE, TILE_SIZE, TILE_SPACING},
     resource::{ChunkTextManagerRes, DespawnTextRangeRes},
-    CHUNK_SIZE, RENDER_CHUNK_SIZE, TILE_SIZE, TILE_SPACING,
 };
 
 fn spawn_chunk(
@@ -156,7 +156,7 @@ pub fn spawn_text_chunks_around_camera(
     }
 }
 
-pub fn despawn_text_outofzoom_chunks(
+pub fn despawn_text(
     mut commands: Commands,
     chunks_query_map: Query<Entity, With<ChunkTextMapComp>>,
     mut chunk_manager: ResMut<ChunkTextManagerRes>,

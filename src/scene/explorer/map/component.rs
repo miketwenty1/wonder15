@@ -21,6 +21,3 @@ pub struct LandIndexComp(pub u32);
 
 #[derive(Component, Debug)]
 pub struct TileText;
-
-#[derive(Component, Debug)]
-pub struct ChunkTile;
