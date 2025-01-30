@@ -1,4 +1,4 @@
-use super::hard::{CHUNK_SIZE, TILE_SIZE};
+use super::hard::{BUILDING_DESPAWN_RANGE, CHUNK_SIZE, TEXT_DESPAWN_RANGE, TILE_SIZE};
 use bevy::{prelude::*, utils::HashSet};
 
 pub struct MapResPlugin;
@@ -12,17 +12,8 @@ impl Plugin for MapResPlugin {
         .insert_resource(ChunkTextManagerRes::default())
         .insert_resource(ChunkBuildingManagerRes::default())
         .insert_resource(TotalTilesSpawnedRes(0))
-        .insert_resource(DespawnTextRangeRes(CHUNK_SIZE.x as f32 * TILE_SIZE.x * 4.0))
-        .insert_resource(DespawnBuildingRangeRes(
-            CHUNK_SIZE.x as f32 * TILE_SIZE.x * 16.0,
-        )); // .insert_resource(TileTextVisibilityRes {
-            //     given_zoom: Visibility::Visible,
-            //     when_possible: Visibility::Visible,
-            // })
-            // .insert_resource(TileBuildingVisibilityRes {
-            //     given_zoom: Visibility::Visible,
-            //     when_possible: Visibility::Visible,
-            // });
+        .insert_resource(DespawnTextRangeRes(TEXT_DESPAWN_RANGE))
+        .insert_resource(DespawnBuildingRangeRes(BUILDING_DESPAWN_RANGE));
     }
 }
 

@@ -3,8 +3,6 @@ pub fn keyboard_movement(
     time: Res<Time>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut query: Query<(&mut Transform, &OrthographicProjection), With<Camera>>,
-    // mut despawn_range: ResMut<DespawnRange>,
-    // mut text_visi_event: EventWriter<TextToggleEvent>,
 ) {
     for (mut transform, ortho) in query.iter_mut() {
         let mut direction = Vec3::ZERO;
