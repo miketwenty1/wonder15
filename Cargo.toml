@@ -8,13 +8,17 @@ edition = "2021"
 # tracy-client = "0.18"
 # tracy-client-sys = "0.24"
 bevy = {version = "0.15"}
-wasm-bindgen = "0.2.100"
 ulam = "0.6"
 rand = "0.8"
+async-channel = "2.1"
 bevy_ecs_tilemap = "0.15.0"
 # thiserror = "2.0"
 # ldtk_rust = { version = "0.6" }
-serde_json = { version = "1.0.137" }
+serde-wasm-bindgen = "0.6"
+wasm-bindgen = "0.2.100"
+wasm-bindgen-futures = "0.4"
+serde_json = { version = "1.0.138" }
+serde = { version = "1.0.217", features = ["derive"] }
 web-sys = { version = "0.3", features = [
     "CssStyleDeclaration",
     "Document",
@@ -27,6 +31,8 @@ web-sys = { version = "0.3", features = [
     'CustomEventInit',
     #"UserActivation",
 ] }
+reqwest = { version = "0.12", features = ["json"] }
+chrono = { version = "0.4", features = ["serde"] }
 
 # [patch.crates-io]
 # tracy-client = { git = "https://github.com/nagisa/rust_tracy_client", tag = "tracy-client-v0.18.0" }

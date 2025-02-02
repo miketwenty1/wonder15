@@ -4,6 +4,8 @@ use camera::setup_camera;
 use canvas::fit_canvas_to_parent;
 use startup::{animate_sprite, setup_animation};
 
+use crate::helper::plugins::comms::CommsPlugin;
+
 use super::SceneState;
 
 mod camera;
@@ -30,6 +32,7 @@ impl Plugin for InitScenePlugin {
                     .chain()
                     .run_if(run_once),
             )
+            .add_plugins(CommsPlugin)
             .enable_state_scoped_entities::<SceneState>()
             .add_systems(Update, (animate_sprite).run_if(in_state(SceneState::Init)));
     }

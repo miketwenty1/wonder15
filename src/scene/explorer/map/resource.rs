@@ -1,4 +1,4 @@
-use super::hard::{BUILDING_DESPAWN_RANGE, CHUNK_SIZE, TEXT_DESPAWN_RANGE, TILE_SIZE};
+use super::hard::{BUILDING_DESPAWN_RANGE, TEXT_DESPAWN_RANGE};
 use bevy::{prelude::*, utils::HashSet};
 
 pub struct MapResPlugin;
