@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use super::resource::{
+use super::ecs::resource::{
     BlockMessagesStorageChannel, BlockchainMapChannel, BlockchainTileUpdateChannel,
     CheckInvoiceChannel, CheckpointChannel, GameMapChannel, GameTileUpdateChannel,
     RequestInvoiceChannel, UserBlockInventoryChannel,

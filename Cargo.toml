@@ -8,6 +8,7 @@ edition = "2021"
 # tracy-client = "0.18"
 # tracy-client-sys = "0.24"
 bevy = {version = "0.15"}
+
 ulam = "0.6"
 rand = "0.8"
 async-channel = "2.1"

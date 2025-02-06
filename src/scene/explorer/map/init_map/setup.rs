@@ -10,10 +10,13 @@ use bevy_ecs_tilemap::{
 };
 use rand::{thread_rng, Rng};
 
-use crate::scene::explorer::map::{
-    component::{LandIndexComp, MainBaseTileMap, PlayerTileColorComp, UlamComp},
-    hard::{TILE_SIZE, TILE_SPACING},
-    resource::SpriteSheetBuildingRes,
+use crate::{
+    resource::{BlockchainHeight, FullMapLength},
+    scene::explorer::map::{
+        component::{LandIndexComp, MainBaseTileMap, PlayerTileColorComp, UlamComp},
+        hard::{TILE_SIZE, TILE_SPACING},
+        resource::SpriteSheetBuildingRes,
+    },
 };
 
 use super::{
@@ -21,21 +24,48 @@ use super::{
     state::InitSpawnTileMapState,
 };
 
-const MAP_LENGTH: u32 = 1000;
+// const MAP_LENGTH: u32 = 1000;
 
 const MAX_BLOCK_HEIGHT: u32 = 1_000_000;
 const CHUNK_INIT_LOAD_SIZE: u32 = 10_000;
 
-pub fn startup(
+pub fn init_startup(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut texture_atlases: ResMut<Assets<TextureAtlasLayout>>,
 ) {
+    let building_atlas = TextureAtlasLayout::from_grid(
+        bevy::prelude::UVec2::new(32, 32),
+        18,
+        1,
+        Some(bevy::prelude::UVec2::new(2, 2)),
+        Some(bevy::prelude::UVec2::new(1, 1)),
+    );
+    let building_texture_atlas = texture_atlases.add(building_atlas);
+
+    let building_texture = asset_server.load_with_settings(
+        "spritesheet/buildings1v2.png",
+        |settings: &mut ImageLoaderSettings| {
+            settings.sampler = ImageSampler::nearest();
+        },
+    );
+
+    commands.insert_resource(SpriteSheetBuildingRes {
+        layout: building_texture_atlas,
+        texture: building_texture,
+    });
+}
+
+pub fn spawn_startup_fullmap(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    map_length: Res<FullMapLength>,
+) {
     //let rounded_map_size = (MAX_BLOCK_HEIGHT as f32).sqrt().ceil() as u32;
-    info!("spawning map size: {} by {}", MAP_LENGTH, MAP_LENGTH);
+    info!("spawning map size: {} by {}", map_length.0, map_length.0);
     let map_size = TilemapSize {
-        x: MAP_LENGTH + 2,
-        y: MAP_LENGTH + 2,
+        x: map_length.0,
+        y: map_length.0,
     };
     let tile_storage = TileStorage::empty(map_size);
 
@@ -68,27 +98,6 @@ pub fn startup(
         transform: transform_for_map,
         ..Default::default()
     });
-
-    let building_atlas = TextureAtlasLayout::from_grid(
-        bevy::prelude::UVec2::new(32, 32),
-        18,
-        1,
-        Some(bevy::prelude::UVec2::new(2, 2)),
-        Some(bevy::prelude::UVec2::new(1, 1)),
-    );
-    let building_texture_atlas = texture_atlases.add(building_atlas);
-
-    let building_texture = asset_server.load_with_settings(
-        "spritesheet/buildings1v2.png",
-        |settings: &mut ImageLoaderSettings| {
-            settings.sampler = ImageSampler::nearest();
-        },
-    );
-
-    commands.insert_resource(SpriteSheetBuildingRes {
-        layout: building_texture_atlas,
-        texture: building_texture,
-    });
 }
 
 pub fn startup_tilemap(
@@ -98,11 +107,12 @@ pub fn startup_tilemap(
     mut total_tiles_res: ResMut<TotalTilesSpawnedRes>,
     time: Res<Time>,
     mut timer: ResMut<AdditionalSetupTilesTimerRes>,
+    map_length: Res<FullMapLength>,
 ) {
     if !timer.0.tick(time.delta()).finished() {
         return;
     }
-    let uoff = MAP_LENGTH / 2; // 1000 / 2; // 1000 x 1000
+    let uoff = map_length.0 / 2; // 1000 / 2; // 1000 x 1000
     let previous = total_tiles_res.0;
     let new_destionation = previous + CHUNK_INIT_LOAD_SIZE;
     //info!("previous: {}, destination: {}", previous, new_destionation);

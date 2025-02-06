@@ -1,11 +1,16 @@
 use crate::scene::ExplorerSubState;
+use bevy::input::common_conditions;
 use bevy::prelude::*;
 use hotkeys::map_keyboard_hotkeys;
+use mouse_movement::mouse_movement_camera_system;
 use movement::keyboard_movement;
+use zoom_helper::changed_ortho;
 use zoom_keys::zoom_keyboard;
 use zoom_mouse_wheel::zoom_wheel_system;
 
+mod hard;
 mod hotkeys;
+mod mouse_movement;
 mod movement;
 mod zoom_helper;
 mod zoom_keys;
@@ -22,6 +27,8 @@ impl Plugin for ExplorerInputPlugin {
                 zoom_keyboard,
                 map_keyboard_hotkeys,
                 zoom_wheel_system,
+                changed_ortho,
+                mouse_movement_camera_system,
             )
                 .run_if(in_state(ExplorerSubState::Running)),
         );

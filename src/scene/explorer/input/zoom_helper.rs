@@ -1,25 +1,29 @@
 use bevy::prelude::*;
 
-use crate::scene::explorer::{
-    event::ZoomLevelEvent,
-    hard::{CLOSE_ZOOM_THRESHOLD, MEDIUM_ZOOM_THRESHOLD},
-    resource::ZoomLevelRes,
+use crate::scene::{
+    explorer::{
+        hard::{CLOSE_ZOOM_THRESHOLD, MEDIUM_ZOOM_THRESHOLD},
+        resource::ZoomLevelRes,
+    },
+    ExplorerRunningZoomSub2State,
 };
-pub fn zoom_event_writer(
-    post_ortho_scale: f32,
-    mut event: EventWriter<ZoomLevelEvent>,
+pub fn changed_ortho(
     mut zoom_res: ResMut<ZoomLevelRes>,
+    cam_query: Query<&OrthographicProjection, (With<Camera>, Changed<OrthographicProjection>)>,
+    mut zoom_state: ResMut<NextState<ExplorerRunningZoomSub2State>>,
 ) {
-    let post_zoom_level = if post_ortho_scale > MEDIUM_ZOOM_THRESHOLD {
-        ZoomLevelEvent::Far
-    } else if post_ortho_scale > CLOSE_ZOOM_THRESHOLD {
-        ZoomLevelEvent::Medium
-    } else {
-        ZoomLevelEvent::Close
-    };
+    for cam in cam_query.iter() {
+        let zoom_level = if cam.scale > MEDIUM_ZOOM_THRESHOLD {
+            ExplorerRunningZoomSub2State::Far
+        } else if cam.scale > CLOSE_ZOOM_THRESHOLD {
+            ExplorerRunningZoomSub2State::Medium
+        } else {
+            ExplorerRunningZoomSub2State::Close
+        };
 
-    if post_zoom_level != zoom_res.0 {
-        zoom_res.0 = post_zoom_level.clone();
-        event.send(post_zoom_level);
+        if zoom_level != zoom_res.0 {
+            zoom_res.0 = zoom_level;
+            zoom_state.set(zoom_level);
+        }
     }
 }

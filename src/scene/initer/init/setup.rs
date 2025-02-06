@@ -1,7 +1,12 @@
-use crate::scene::SceneState;
-
-use super::component::{AnimationIndicesComp, AnimationTimerComp};
 use bevy::prelude::*;
+
+use crate::{
+    ecs::{
+        resource::{BlockchainHeight, FullMapLength},
+        state::SceneState,
+    },
+    scene::initer::ecs::component::{AnimationIndicesComp, AnimationTimerComp},
+};
 
 pub fn animate_sprite(
     time: Res<Time>,
@@ -22,12 +27,15 @@ pub fn animate_sprite(
     }
 }
 
-pub fn setup_animation(
+pub fn setup_things(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
     mut scene_state: ResMut<NextState<SceneState>>,
+    current_blockheight: Res<BlockchainHeight>,
 ) {
+    let map_side_length = ((current_blockheight.0 as f64).sqrt().ceil()) as u32 + 2;
+    commands.insert_resource(FullMapLength(map_side_length));
     let texture = asset_server.load("spritesheet/gabe-idle-run.png");
     let layout = TextureAtlasLayout::from_grid(UVec2::splat(24), 7, 1, None, None);
     let texture_atlas_layout = texture_atlas_layouts.add(layout);
@@ -50,5 +58,6 @@ pub fn setup_animation(
         AnimationTimerComp(Timer::from_seconds(0.1, TimerMode::Repeating)),
         StateScoped(SceneState::Init),
     ));
+
     scene_state.set(SceneState::Explorer);
 }

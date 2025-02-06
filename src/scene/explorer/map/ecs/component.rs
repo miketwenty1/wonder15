@@ -5,6 +5,9 @@ use bevy_ecs_tilemap::tiles::TileColor;
 pub struct MainBaseTileMap;
 
 #[derive(Component, Debug)]
+pub struct ChunkTileMapComp;
+
+#[derive(Component, Debug)]
 pub struct ChunkTextMapComp;
 
 #[derive(Component, Debug)]

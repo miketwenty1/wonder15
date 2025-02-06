@@ -1,5 +1,7 @@
 use bevy::prelude::*;
 
+use crate::resource::TileData;
+
 pub struct ExplorerEventPlugin;
 
 impl Plugin for ExplorerEventPlugin {
@@ -7,7 +9,7 @@ impl Plugin for ExplorerEventPlugin {
         app.add_event::<TextToggleEvent>()
             .add_event::<SwapTilesEvent>()
             .add_event::<BuildingToggleEvent>()
-            .add_event::<ZoomLevelEvent>();
+            .add_event::<UpdateTileTextureEvent>();
     }
 }
 
@@ -43,9 +45,5 @@ impl SwapTilesEvent {
     }
 }
 
-#[derive(Event, Debug, PartialEq, Clone)]
-pub enum ZoomLevelEvent {
-    Close,
-    Medium,
-    Far,
-}
+#[derive(Event, Debug)]
+pub struct UpdateTileTextureEvent(pub Vec<TileData>);

@@ -1,14 +1,15 @@
 use bevy::{asset::AssetMetaCheck, prelude::*};
-use resource::{BlockchainHeight, GameHeight, GameStaticInputs, WinSize};
-use scene::{
-    explorer::ExplorerScenePlugin, init::InitScenePlugin, ExplorerRunningZoomSub2State,
-    ExplorerSubState, SceneState,
+use ecs::{
+    resource::{BlockchainHeight, GameHeight, GameStaticInputs, WinSize},
+    state::{FullMapState, SceneState},
 };
+use scene::initer::InitScenePlugin;
+
 use wasm_bindgen::prelude::wasm_bindgen;
 
+mod ecs;
 mod helper;
-mod resource;
-mod scene;
+pub mod scene;
 
 pub fn main() {}
 
@@ -23,11 +24,21 @@ pub fn game15(
     blockchain_filters: bool,
     viewport_width: u32,
     viewport_height: u32,
+    _screen_width: u32,
+    _screen_height: u32,
+    _device_pixel_ratio: f32,
+    full_map_mode: bool,
     using_iphone: bool,
 ) {
     let window = Window {
         title: "SatoshiSettlers".to_string(),
         ..default()
+    };
+    let full_map_state = if full_map_mode {
+        info!("full map mode on");
+        FullMapState::On
+    } else {
+        FullMapState::Off
     };
     App::new()
         .add_plugins(
@@ -48,6 +59,7 @@ pub fn game15(
             using_iphone,
             server_url,
             blockchain_filters,
+            full_map_mode,
         })
         .insert_resource(GameHeight(browser_height))
         .insert_resource(WinSize {
@@ -56,8 +68,7 @@ pub fn game15(
         })
         .insert_resource(BlockchainHeight(curent_height))
         .init_state::<SceneState>()
-        .add_sub_state::<ExplorerSubState>()
-        .add_sub_state::<ExplorerRunningZoomSub2State>()
-        .add_plugins((InitScenePlugin, ExplorerScenePlugin))
+        .add_plugins(InitScenePlugin)
+        .insert_state(full_map_state)
         .run();
 }

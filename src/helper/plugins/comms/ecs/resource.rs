@@ -1,8 +1,12 @@
 use async_channel::{Receiver, Sender};
-use bevy::ecs::system::Resource;
+use bevy::{
+    ecs::system::Resource,
+    time::{Timer, TimerMode},
+};
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
+use super::hard::API_POLLING_TIME;
 // #[derive(Resource, Clone)]
 // pub struct TileDataChannel {
 //     pub tx: Sender<String>,
@@ -77,4 +81,22 @@ pub struct BlockchainTileUpdateChannel {
 #[derive(Resource, Clone, Debug, Default, Serialize, Deserialize)]
 pub struct UpdateGameTimetamp {
     pub ts: DateTime<Utc>,
+}
+
+#[derive(Resource, Clone, Debug, Default, Serialize, Deserialize)]
+pub struct CheckpointTimetamp {
+    pub ts: DateTime<Utc>,
+}
+
+#[derive(Resource)]
+pub struct ApiPollingTimer {
+    pub timer: Timer,
+}
+
+impl Default for ApiPollingTimer {
+    fn default() -> ApiPollingTimer {
+        ApiPollingTimer {
+            timer: Timer::from_seconds(API_POLLING_TIME, TimerMode::Repeating),
+        }
+    }
 }

@@ -1,19 +1,12 @@
 use bevy::prelude::*;
-use event::{ExplorerEventPlugin, SwapTilesEvent, ZoomLevelEvent};
 use input::ExplorerInputPlugin;
 use map::ExplorerMapPlugin;
-use resource::{CurrentTilesRes, ZoomLevelRes};
-use startup::{animate_sprite, setup_animation};
 
-use super::{ExplorerSubState, SceneState};
+use crate::helper::plugins::comms::CommsPlugin;
 
-mod component;
-mod event;
-mod hard;
+mod ecs;
 mod input;
-mod map;
-mod resource;
-mod startup;
+pub mod map;
 
 pub struct ExplorerScenePlugin;
 
@@ -30,12 +23,19 @@ impl Plugin for ExplorerScenePlugin {
                 .chain()
                 .run_if(run_once),
         )
+        .add_sub_state::<ExplorerSubState>()
+        .add_sub_state::<ExplorerRunningZoomSub2State>()
         .add_systems(
             Update,
             (animate_sprite).run_if(in_state(ExplorerSubState::Running)),
         )
         .insert_resource(CurrentTilesRes(SwapTilesEvent::PlayerColor))
-        .insert_resource(ZoomLevelRes(ZoomLevelEvent::Close))
-        .add_plugins((ExplorerInputPlugin, ExplorerMapPlugin, ExplorerEventPlugin));
+        .insert_resource(ZoomLevelRes(ExplorerRunningZoomSub2State::Close))
+        .add_plugins((
+            ExplorerInputPlugin,
+            ExplorerMapPlugin,
+            ExplorerEventPlugin,
+            CommsPlugin,
+        ));
     }
 }

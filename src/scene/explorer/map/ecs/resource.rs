@@ -1,4 +1,4 @@
-use super::hard::{BUILDING_DESPAWN_RANGE, TEXT_DESPAWN_RANGE};
+use super::hard::{BUILDING_DESPAWN_RANGE, TEXT_DESPAWN_RANGE, TILE_DESPAWN_RANGE};
 use bevy::{prelude::*, utils::HashSet};
 
 pub struct MapResPlugin;
@@ -11,7 +11,9 @@ impl Plugin for MapResPlugin {
         )))
         .insert_resource(ChunkTextManagerRes::default())
         .insert_resource(ChunkBuildingManagerRes::default())
+        .insert_resource(ChunkTileManagerRes::default())
         .insert_resource(TotalTilesSpawnedRes(0))
+        .insert_resource(DespawnTileRangeRes(TILE_DESPAWN_RANGE))
         .insert_resource(DespawnTextRangeRes(TEXT_DESPAWN_RANGE))
         .insert_resource(DespawnBuildingRangeRes(BUILDING_DESPAWN_RANGE));
     }
@@ -27,6 +29,11 @@ pub struct SpriteSheetBuildingRes {
 }
 
 #[derive(Default, Debug, Resource)]
+pub struct ChunkTileManagerRes {
+    pub spawned_chunks: HashSet<IVec2>,
+}
+
+#[derive(Default, Debug, Resource)]
 pub struct ChunkTextManagerRes {
     pub spawned_chunks: HashSet<IVec2>,
 }
@@ -35,6 +42,9 @@ pub struct ChunkTextManagerRes {
 pub struct ChunkBuildingManagerRes {
     pub spawned_chunks: HashSet<IVec2>,
 }
+
+#[derive(Resource, Debug)]
+pub struct DespawnTileRangeRes(pub f32);
 
 #[derive(Resource, Debug)]
 pub struct DespawnTextRangeRes(pub f32);
