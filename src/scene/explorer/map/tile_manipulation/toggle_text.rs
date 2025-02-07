@@ -1,5 +1,4 @@
-use super::state::TextToggleState;
-use crate::scene::explorer::event::TextToggleEvent;
+use crate::scene::explorer::{ecs::event::TextToggleEvent, map::ecs::state::TextToggleState};
 use bevy::prelude::*;
 
 pub fn text_toggle_reader(

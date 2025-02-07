@@ -1,7 +1,10 @@
-use super::component::{LandIndexComp, PlayerTileColorComp};
-use crate::scene::explorer::{event::SwapTilesEvent, resource::CurrentTilesRes};
 use bevy::prelude::*;
 use bevy_ecs_tilemap::tiles::{TileColor, TileTextureIndex};
+
+use crate::scene::explorer::{
+    ecs::{event::SwapTilesEvent, resource::CurrentTilesRes},
+    map::ecs::component::{LandIndexComp, PlayerTileColorComp},
+};
 
 pub fn swap_tile_index_reader(
     mut event_r: EventReader<SwapTilesEvent>,

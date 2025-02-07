@@ -1,12 +1,11 @@
 use bevy::prelude::*;
 
-use crate::scene::{
-    explorer::{
-        hard::{CLOSE_ZOOM_THRESHOLD, MEDIUM_ZOOM_THRESHOLD},
-        resource::ZoomLevelRes,
-    },
-    ExplorerRunningZoomSub2State,
+use crate::scene::explorer::ecs::{
+    hard::{CLOSE_ZOOM_THRESHOLD, MEDIUM_ZOOM_THRESHOLD},
+    resource::ZoomLevelRes,
+    state::ExplorerRunningZoomSub2State,
 };
+
 pub fn changed_ortho(
     mut zoom_res: ResMut<ZoomLevelRes>,
     cam_query: Query<&OrthographicProjection, (With<Camera>, Changed<OrthographicProjection>)>,

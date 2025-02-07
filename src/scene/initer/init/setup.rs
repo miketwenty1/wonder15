@@ -32,6 +32,7 @@ pub fn setup_things(
     asset_server: Res<AssetServer>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
     mut scene_state: ResMut<NextState<SceneState>>,
+    //scene_state: Res<State<SceneState>>,
     current_blockheight: Res<BlockchainHeight>,
 ) {
     let map_side_length = ((current_blockheight.0 as f64).sqrt().ceil()) as u32 + 2;
@@ -59,5 +60,6 @@ pub fn setup_things(
         StateScoped(SceneState::Init),
     ));
 
+    info!("we are about to set to Explorer!");
     scene_state.set(SceneState::Explorer);
 }

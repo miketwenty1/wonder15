@@ -1,6 +1,6 @@
 use bevy::{input::ButtonInput, prelude::*, render::camera::Camera};
 
-use crate::scene::explorer::hard::{MAX_ZOOMIN_THRESHOLD, MAX_ZOOMOUT_THRESHOLD};
+use crate::scene::explorer::ecs::hard::{MAX_ZOOMIN_THRESHOLD, MAX_ZOOMOUT_THRESHOLD};
 
 pub fn zoom_keyboard(
     keyboard_input: Res<ButtonInput<KeyCode>>,

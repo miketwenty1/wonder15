@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::scene::explorer::{
+use crate::scene::explorer::ecs::{
     event::{BuildingToggleEvent, SwapTilesEvent, TextToggleEvent},
     hard::{
         CLOSE_ZOOM_THRESHOLD, MAX_ZOOMIN_THRESHOLD, MAX_ZOOMOUT_THRESHOLD, MEDIUM_ZOOM_THRESHOLD,

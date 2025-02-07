@@ -7,7 +7,7 @@ edition = "2021"
 # bevy = { version = "0.15", features = ["trace"]}
 # tracy-client = "0.18"
 # tracy-client-sys = "0.24"
-bevy = {version = "0.15"}
+bevy = {version = "0.15.2"}
 
 ulam = "0.6"
 rand = "0.8"

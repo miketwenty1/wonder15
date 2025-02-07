@@ -3,7 +3,7 @@ use ecs::{
     resource::{BlockchainHeight, GameHeight, GameStaticInputs, WinSize},
     state::{FullMapState, SceneState},
 };
-use scene::initer::InitScenePlugin;
+use scene::{explorer::ExplorerScenePlugin, initer::InitScenePlugin};
 
 use wasm_bindgen::prelude::wasm_bindgen;
 
@@ -68,7 +68,7 @@ pub fn game15(
         })
         .insert_resource(BlockchainHeight(curent_height))
         .init_state::<SceneState>()
-        .add_plugins(InitScenePlugin)
+        .add_plugins((InitScenePlugin, ExplorerScenePlugin))
         .insert_state(full_map_state)
         .run();
 }

@@ -22,12 +22,6 @@ impl Plugin for MapResPlugin {
 #[derive(Resource, Deref, DerefMut)]
 pub struct AdditionalSetupTilesTimerRes(pub Timer);
 
-#[derive(Resource, Clone)]
-pub struct SpriteSheetBuildingRes {
-    pub layout: Handle<TextureAtlasLayout>,
-    pub texture: Handle<Image>,
-}
-
 #[derive(Default, Debug, Resource)]
 pub struct ChunkTileManagerRes {
     pub spawned_chunks: HashSet<IVec2>,
@@ -54,39 +48,3 @@ pub struct DespawnBuildingRangeRes(pub f32);
 
 #[derive(Resource, Debug)]
 pub struct TotalTilesSpawnedRes(pub u32);
-
-// #[derive(Resource, Debug)]
-// pub struct TileTextVisibilityRes {
-//     pub given_zoom: Visibility,
-//     pub when_possible: Visibility,
-// }
-
-// #[derive(Resource, Debug)]
-// pub struct TileBuildingVisibilityRes {
-//     pub given_zoom: Visibility,
-//     pub when_possible: Visibility,
-// }
-
-// impl TileTextVisibilityRes {
-//     /// Returns the next variant in the iteration sequence.
-//     pub fn visi_or_nawh(&self) -> Visibility {
-//         if self.given_zoom == Visibility::Visible && self.when_possible == Visibility::Visible {
-//             Visibility::Visible
-//         } else {
-//             Visibility::Hidden
-//         }
-//     }
-// }
-
-// impl TileBuildingVisibilityRes {
-//     /// Returns the next variant in the iteration sequence.
-//     pub fn visi_or_nawh(&self) -> Visibility {
-//         if self.given_zoom == Visibility::Visible && self.when_possible == Visibility::Visible {
-//             Visibility::Visible
-//         } else {
-//             Visibility::Hidden
-//         }
-//     }
-// }
-
-//pub TextToggleEventRes

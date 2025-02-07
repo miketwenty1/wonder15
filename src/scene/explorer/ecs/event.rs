@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::resource::TileData;
+use crate::ecs::resource::TileData;
 
 pub struct ExplorerEventPlugin;
 

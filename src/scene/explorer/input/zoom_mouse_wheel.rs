@@ -1,6 +1,6 @@
 use bevy::{input::mouse::MouseWheel, prelude::*, time::Time};
 
-use crate::scene::explorer::hard::{MAX_ZOOMIN_THRESHOLD, MAX_ZOOMOUT_THRESHOLD};
+use crate::scene::explorer::ecs::hard::{MAX_ZOOMIN_THRESHOLD, MAX_ZOOMOUT_THRESHOLD};
 
 pub fn zoom_wheel_system(
     mut mouse_wheel_events: EventReader<MouseWheel>,

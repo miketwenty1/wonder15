@@ -5,12 +5,16 @@ use bevy_ecs_tilemap::{
     TilemapBundle,
 };
 
-use crate::resource::BlockchainHeight;
-
-use super::{
-    component::ChunkBuildingMapComp,
-    hard::{BUILDING_CHUNK_SIZE, BUILDING_RENDER_CHUNK_SIZE, BUILDING_Z, TILE_SIZE, TILE_SPACING},
-    resource::{ChunkBuildingManagerRes, DespawnBuildingRangeRes, SpriteSheetBuildingRes},
+use crate::{
+    ecs::resource::BlockchainHeight,
+    scene::explorer::{
+        ecs::{hard::BUILDING_Z, resource::SpriteSheetBuildingRes},
+        map::ecs::{
+            component::ChunkBuildingMapComp,
+            hard::{BUILDING_CHUNK_SIZE, BUILDING_RENDER_CHUNK_SIZE, TILE_SIZE, TILE_SPACING},
+            resource::{ChunkBuildingManagerRes, DespawnBuildingRangeRes},
+        },
+    },
 };
 
 fn spawn_chunk(
@@ -151,17 +155,6 @@ pub fn spawn_building_chunks_around_camera(
                 }
             }
         }
-    }
-}
-
-pub fn despawn_buildings(
-    mut commands: Commands,
-    chunks_query_map: Query<Entity, With<ChunkBuildingMapComp>>,
-    mut chunk_manager: ResMut<ChunkBuildingManagerRes>,
-) {
-    chunk_manager.spawned_chunks.clear();
-    for entity in chunks_query_map.iter() {
-        commands.entity(entity).despawn_recursive();
     }
 }
 

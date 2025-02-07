@@ -22,6 +22,4 @@ pub const TILE_DESPAWN_RANGE: f32 = TILE_CHUNK_SIZE.x as f32 * TILE_SIZE.x * 8.0
 pub const BUILDING_DESPAWN_RANGE: f32 = BUILDING_CHUNK_SIZE.x as f32 * TILE_SIZE.x * 8.0;
 pub const TEXT_DESPAWN_RANGE: f32 = TEXT_CHUNK_SIZE.x as f32 * TILE_SIZE.x * 4.0;
 
-pub const TILE_Z: f32 = 2.0;
-pub const BUILDING_Z: f32 = 3.0;
-pub const TEXT_Z: f32 = 4.0;
+pub const CHUNK_INIT_LOAD_SIZE: u32 = 10_000;

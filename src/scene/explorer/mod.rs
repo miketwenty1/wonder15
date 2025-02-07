@@ -1,41 +1,40 @@
+use animate::animate_sprite;
 use bevy::prelude::*;
+use ecs::{
+    event::{ExplorerEventPlugin, SwapTilesEvent},
+    resource::{CurrentTilesRes, ZoomLevelRes},
+    state::{ExplorerRunningZoomSub2State, ExplorerSubState},
+};
+use init::ExplorerInitPlugin;
 use input::ExplorerInputPlugin;
 use map::ExplorerMapPlugin;
 
-use crate::helper::plugins::comms::CommsPlugin;
+use crate::{ecs::state::SceneState, helper::plugins::comms::CommsPlugin};
 
+mod animate;
 mod ecs;
+mod init;
 mod input;
-pub mod map;
+mod map;
+mod ui;
 
 pub struct ExplorerScenePlugin;
 
 impl Plugin for ExplorerScenePlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(
-            OnEnter(SceneState::Explorer),
-            (
-                setup_animation
-                // init_hardcoded_res,
-                // setup_spritesheets,
-                // init_js_comms_channels,
+        app.add_sub_state::<ExplorerSubState>()
+            .add_sub_state::<ExplorerRunningZoomSub2State>()
+            .add_systems(
+                Update,
+                (animate_sprite).run_if(in_state(ExplorerSubState::Running)),
             )
-                .chain()
-                .run_if(run_once),
-        )
-        .add_sub_state::<ExplorerSubState>()
-        .add_sub_state::<ExplorerRunningZoomSub2State>()
-        .add_systems(
-            Update,
-            (animate_sprite).run_if(in_state(ExplorerSubState::Running)),
-        )
-        .insert_resource(CurrentTilesRes(SwapTilesEvent::PlayerColor))
-        .insert_resource(ZoomLevelRes(ExplorerRunningZoomSub2State::Close))
-        .add_plugins((
-            ExplorerInputPlugin,
-            ExplorerMapPlugin,
-            ExplorerEventPlugin,
-            CommsPlugin,
-        ));
+            .insert_resource(CurrentTilesRes(SwapTilesEvent::PlayerColor))
+            .insert_resource(ZoomLevelRes(ExplorerRunningZoomSub2State::Close))
+            .add_plugins((
+                ExplorerInputPlugin,
+                ExplorerMapPlugin,
+                ExplorerEventPlugin,
+                ExplorerInitPlugin,
+            ));
     }
 }

@@ -1,10 +1,15 @@
-use crate::resource::BlockchainHeight;
-
-use super::{
-    component::{ChunkTileMapComp, LandIndexComp, PlayerTileColorComp, UlamComp},
-    hard::{TILE_CHUNK_SIZE, TILE_RENDER_CHUNK_SIZE, TILE_SIZE, TILE_SPACING, TILE_Z},
-    resource::{ChunkTileManagerRes, DespawnTileRangeRes},
+use crate::{
+    ecs::resource::BlockchainHeight,
+    scene::explorer::{
+        ecs::hard::TILE_Z,
+        map::ecs::{
+            component::{ChunkTileMapComp, LandIndexComp, PlayerTileColorComp, UlamComp},
+            hard::{TILE_CHUNK_SIZE, TILE_RENDER_CHUNK_SIZE, TILE_SIZE, TILE_SPACING},
+            resource::{ChunkTileManagerRes, DespawnTileRangeRes},
+        },
+    },
 };
+
 use bevy::prelude::*;
 use bevy_ecs_tilemap::{
     map::{TilemapGridSize, TilemapId, TilemapRenderSettings, TilemapTexture, TilemapType},

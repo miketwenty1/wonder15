@@ -1,5 +1,6 @@
-use super::state::BuildingToggleState;
-use crate::scene::explorer::event::BuildingToggleEvent;
+use crate::scene::explorer::{
+    ecs::event::BuildingToggleEvent, map::ecs::state::BuildingToggleState,
+};
 use bevy::prelude::*;
 
 pub fn building_toggle_reader(
