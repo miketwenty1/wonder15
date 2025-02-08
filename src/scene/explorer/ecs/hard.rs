@@ -9,7 +9,7 @@ pub const ANIMATED_SPRITE_Z: f32 = 4.5;
 pub const MAX_ZOOM: f32 = 70.0;
 pub const MIN_ZOOM: f32 = 0.40;
 pub const CLOSE_ZOOM_THRESHOLD: f32 = 1.25;
-pub const MEDIUM_ZOOM_THRESHOLD: f32 = 3.5;
+pub const MEDIUM_ZOOM_THRESHOLD: f32 = 3.0;
 
 pub const SLIM_MAX_ZOOM: f32 = 5.0;
 pub const SLIM_CLOSE_ZOOM_THRESHOLD: f32 = 1.0;
@@ -20,7 +20,7 @@ pub const TEXT_RENDER_CHUNK_SIZE: UVec2 = UVec2 {
     x: TEXT_CHUNK_SIZE.x * 2,
     y: TEXT_CHUNK_SIZE.y * 2,
 };
-pub const BUILDING_CHUNK_SIZE: UVec2 = UVec2 { x: 50, y: 40 };
+pub const BUILDING_CHUNK_SIZE: UVec2 = UVec2 { x: 32, y: 32 };
 pub const BUILDING_RENDER_CHUNK_SIZE: UVec2 = UVec2 {
     x: BUILDING_CHUNK_SIZE.x * 2,
     y: BUILDING_CHUNK_SIZE.y * 2,
@@ -45,7 +45,7 @@ pub const SLIM_TILE_RENDER_CHUNK_SIZE: UVec2 = UVec2 {
     x: SLIM_TILE_CHUNK_SIZE.x * 2,
     y: SLIM_TILE_CHUNK_SIZE.y * 2,
 };
-pub const TILE_DESPAWN_RANGE_MULTIPLIER: f32 = 2.0;
-pub const BUILDING_DESPAWN_RANGE_MULTIPLIER: f32 = 2.0;
-pub const TEXT_DESPAWN_RANGE_MULTIPLIER: f32 = 2.0;
+pub const TILE_DESPAWN_RANGE_MULTIPLIER: f32 = 4.0;
+pub const BUILDING_DESPAWN_RANGE_MULTIPLIER: f32 = 4.0;
+pub const TEXT_DESPAWN_RANGE_MULTIPLIER: f32 = 4.0;
 pub const TILE_SIZE: TilemapTileSize = TilemapTileSize { x: 66.0, y: 66.0 };

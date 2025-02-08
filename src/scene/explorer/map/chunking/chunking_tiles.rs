@@ -159,6 +159,7 @@ pub fn despawn_tile_outofrange_chunks(
             let chunk_pos = chunk_transform.translation.xy();
             let distance = camera_transform.translation.xy().distance(chunk_pos);
             if distance > despawn_range.0 {
+                info!("despawning tiles");
                 let x = (chunk_pos.x / (chunks.tile.x as f32 * TILE_SIZE.x)).floor() as i32;
                 let y = (chunk_pos.y / (chunks.tile.y as f32 * TILE_SIZE.y)).floor() as i32;
                 chunk_manager.spawned_chunks.remove(&IVec2::new(x, y));
