@@ -44,8 +44,10 @@ impl Plugin for ExplorerMapChunkingPlugin {
                 spawn_building_chunks_around_camera,
             )
                 .run_if(
-                    not(in_state(ExplorerRunningZoomSub2State::Far))
-                        .and(in_state(BuildingToggleState::On)),
+                    not(in_state(ExplorerSubState::Running)).and(
+                        in_state(BuildingToggleState::On)
+                            .and(in_state(ExplorerRunningZoomSub2State::Far)),
+                    ),
                 ),
         )
         .add_systems(

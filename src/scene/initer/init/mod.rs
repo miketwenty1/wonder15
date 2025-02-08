@@ -1,6 +1,5 @@
 use crate::ecs::{resource::WorldOwnedTileMap, state::SceneState};
 use bevy::{prelude::*, utils::HashMap};
-use bevy_ecs_tilemap::TilemapPlugin;
 use camera::setup_camera;
 use canvas::fit_canvas_to_parent;
 use setup::{animate_sprite, setup_things};

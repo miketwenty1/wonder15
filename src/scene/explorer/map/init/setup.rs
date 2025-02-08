@@ -1,7 +1,4 @@
-use bevy::{
-    image::{ImageLoaderSettings, ImageSampler},
-    prelude::*,
-};
+use bevy::prelude::*;
 use bevy_ecs_tilemap::{
     map::{TilemapGridSize, TilemapSize, TilemapTexture, TilemapType},
     prelude::get_tilemap_center_transform,
@@ -12,11 +9,8 @@ use bevy_ecs_tilemap::{
 use crate::{
     ecs::resource::FullMapLength,
     scene::explorer::{
-        ecs::state::ExplorerSubState,
-        map::ecs::{
-            component::MainBaseTileMap,
-            hard::{TILE_SIZE, TILE_SPACING},
-        },
+        ecs::hard::TILE_SIZE,
+        map::ecs::{component::MainBaseTileMap, hard::TILE_SPACING},
     },
 };
 

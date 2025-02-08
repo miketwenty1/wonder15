@@ -7,7 +7,7 @@ pub fn mouse_movement_camera_system(
     mut mouse_motion_events: EventReader<MouseMotion>,
     mouse: Res<ButtonInput<MouseButton>>,
     mut q_camera: Query<(&mut Transform, &OrthographicProjection), With<Camera>>,
-    time: Res<Time>,
+    //time: Res<Time>,
     // mut clear_last_selected: EventWriter<ClearLastSelectedTile>,
 ) {
     for event in mouse_motion_events.read() {

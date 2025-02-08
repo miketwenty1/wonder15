@@ -2,9 +2,7 @@ use bevy::prelude::*;
 
 use crate::scene::explorer::ecs::{
     event::{BuildingToggleEvent, SwapTilesEvent, TextToggleEvent},
-    hard::{
-        CLOSE_ZOOM_THRESHOLD, MAX_ZOOMIN_THRESHOLD, MAX_ZOOMOUT_THRESHOLD, MEDIUM_ZOOM_THRESHOLD,
-    },
+    resource::ZoomLevelNumsRes,
 };
 
 pub fn map_keyboard_hotkeys(
@@ -15,6 +13,7 @@ pub fn map_keyboard_hotkeys(
     mut cam: Query<&mut OrthographicProjection, With<Camera>>,
     // zoom_level_e: EventWriter<ZoomLevelEvent>,
     // zoom_res: ResMut<ZoomLevelRes>,
+    zooms: Res<ZoomLevelNumsRes>,
 ) {
     if keyboard_input.just_pressed(KeyCode::Space) {
         swap_tile.send(SwapTilesEvent::Iter);
@@ -28,19 +27,19 @@ pub fn map_keyboard_hotkeys(
     // digits 1-4
     if keyboard_input.just_pressed(KeyCode::Digit1) {
         let mut c = cam.get_single_mut().unwrap();
-        c.scale = MAX_ZOOMIN_THRESHOLD;
+        c.scale = zooms.min_zoom;
         // zoom_event_writer(MAX_ZOOMIN_THRESHOLD, zoom_level_e, zoom_res);
     } else if keyboard_input.just_pressed(KeyCode::Digit2) {
         let mut c = cam.get_single_mut().unwrap();
-        c.scale = CLOSE_ZOOM_THRESHOLD;
+        c.scale = zooms.close_threshold;
         // zoom_event_writer(CLOSE_ZOOM_THRESHOLD, zoom_level_e, zoom_res);
     } else if keyboard_input.just_pressed(KeyCode::Digit3) {
         let mut c = cam.get_single_mut().unwrap();
-        c.scale = MEDIUM_ZOOM_THRESHOLD;
+        c.scale = zooms.medium_threshold;
         //  zoom_event_writer(MEDIUM_ZOOM_THRESHOLD, zoom_level_e, zoom_res);
     } else if keyboard_input.just_pressed(KeyCode::Digit4) {
         let mut c = cam.get_single_mut().unwrap();
-        c.scale = MAX_ZOOMOUT_THRESHOLD;
+        c.scale = zooms.max_zoom;
         // zoom_event_writer(MAX_ZOOMOUT_THRESHOLD, zoom_level_e, zoom_res);
     }
 }

@@ -5,9 +5,21 @@ use bevy::{
 
 use crate::scene::explorer::ecs::{
     component::{AnimationIndicesComp, AnimationTimerComp},
-    hard::ANIMATED_SPRITE_Z,
-    resource::SpriteSheetBuildingRes,
+    hard::{
+        ANIMATED_SPRITE_Z, BUILDING_CHUNK_SIZE, BUILDING_DESPAWN_RANGE_MULTIPLIER,
+        SLIM_BUILDING_CHUNK_SIZE, SLIM_CLOSE_ZOOM_THRESHOLD, SLIM_MAX_ZOOM,
+        SLIM_MEDIUM_ZOOM_THRESHOLD, SLIM_TEXT_CHUNK_SIZE, SLIM_TILE_CHUNK_SIZE, TEXT_CHUNK_SIZE,
+        TEXT_DESPAWN_RANGE_MULTIPLIER, TILE_CHUNK_SIZE, TILE_DESPAWN_RANGE_MULTIPLIER, TILE_SIZE,
+    },
+    resource::{
+        ChunkTypeNumsRes, DespawnBuildingRangeRes, DespawnTextRangeRes, DespawnTileRangeRes,
+        SpriteSheetBuildingRes, ZoomLevelNumsRes,
+    },
     state::{ExplorerSubState, InitSpawnTileMapState},
+};
+use crate::{
+    ecs::state::FullMapState,
+    scene::explorer::ecs::hard::{CLOSE_ZOOM_THRESHOLD, MAX_ZOOM, MEDIUM_ZOOM_THRESHOLD, MIN_ZOOM},
 };
 
 pub fn setup_animation(
@@ -47,6 +59,7 @@ pub fn init_startup(
     mut texture_atlases: ResMut<Assets<TextureAtlasLayout>>,
     mut init_map_state: ResMut<NextState<InitSpawnTileMapState>>,
     mut explorer_sub_state: ResMut<NextState<ExplorerSubState>>,
+    full_map_state: Res<State<FullMapState>>,
 ) {
     let building_atlas = TextureAtlasLayout::from_grid(
         bevy::prelude::UVec2::new(32, 32),
@@ -68,6 +81,50 @@ pub fn init_startup(
         layout: building_texture_atlas,
         texture: building_texture,
     });
+
+    if *full_map_state == FullMapState::On {
+        commands.insert_resource(ZoomLevelNumsRes {
+            max_zoom: MAX_ZOOM,
+            min_zoom: MIN_ZOOM,
+            close_threshold: CLOSE_ZOOM_THRESHOLD,
+            medium_threshold: MEDIUM_ZOOM_THRESHOLD,
+        });
+        commands.insert_resource(ChunkTypeNumsRes {
+            building: BUILDING_CHUNK_SIZE,
+            tile: TILE_CHUNK_SIZE,
+            text: TEXT_CHUNK_SIZE,
+        });
+        // commands.insert_resource(DespawnTileRangeRes(
+        //     TILE_CHUNK_SIZE.x as f32 * TILE_SIZE.x * TILE_DESPAWN_RANGE_MULTIPLIER,
+        // ));
+        commands.insert_resource(DespawnTextRangeRes(
+            TEXT_CHUNK_SIZE.x as f32 * TILE_SIZE.x * TEXT_DESPAWN_RANGE_MULTIPLIER,
+        ));
+        commands.insert_resource(DespawnBuildingRangeRes(
+            BUILDING_CHUNK_SIZE.x as f32 * TILE_SIZE.x * BUILDING_DESPAWN_RANGE_MULTIPLIER,
+        ));
+    } else {
+        commands.insert_resource(ZoomLevelNumsRes {
+            max_zoom: SLIM_MAX_ZOOM,
+            min_zoom: MIN_ZOOM,
+            close_threshold: SLIM_CLOSE_ZOOM_THRESHOLD,
+            medium_threshold: SLIM_MEDIUM_ZOOM_THRESHOLD,
+        });
+        commands.insert_resource(ChunkTypeNumsRes {
+            building: SLIM_BUILDING_CHUNK_SIZE,
+            tile: SLIM_TILE_CHUNK_SIZE,
+            text: SLIM_TEXT_CHUNK_SIZE,
+        });
+        commands.insert_resource(DespawnTileRangeRes(
+            SLIM_TILE_CHUNK_SIZE.x as f32 * TILE_SIZE.x * TILE_DESPAWN_RANGE_MULTIPLIER,
+        ));
+        commands.insert_resource(DespawnTextRangeRes(
+            SLIM_TEXT_CHUNK_SIZE.x as f32 * TILE_SIZE.x * TEXT_DESPAWN_RANGE_MULTIPLIER,
+        ));
+        commands.insert_resource(DespawnBuildingRangeRes(
+            SLIM_BUILDING_CHUNK_SIZE.x as f32 * TILE_SIZE.x * BUILDING_DESPAWN_RANGE_MULTIPLIER,
+        ));
+    }
 
     init_map_state.set(InitSpawnTileMapState::Running);
     explorer_sub_state.set(ExplorerSubState::Running);

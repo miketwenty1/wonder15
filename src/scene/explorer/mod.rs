@@ -2,14 +2,12 @@ use animate::animate_sprite;
 use bevy::prelude::*;
 use ecs::{
     event::{ExplorerEventPlugin, SwapTilesEvent},
-    resource::{CurrentTilesRes, ZoomLevelRes},
+    resource::{CurrentTilesRes, CurrentZoomLevelRes},
     state::{ExplorerRunningZoomSub2State, ExplorerSubState},
 };
 use init::ExplorerInitPlugin;
 use input::ExplorerInputPlugin;
 use map::ExplorerMapPlugin;
-
-use crate::{ecs::state::SceneState, helper::plugins::comms::CommsPlugin};
 
 mod animate;
 mod ecs;
@@ -29,7 +27,7 @@ impl Plugin for ExplorerScenePlugin {
                 (animate_sprite).run_if(in_state(ExplorerSubState::Running)),
             )
             .insert_resource(CurrentTilesRes(SwapTilesEvent::PlayerColor))
-            .insert_resource(ZoomLevelRes(ExplorerRunningZoomSub2State::Close))
+            .insert_resource(CurrentZoomLevelRes(ExplorerRunningZoomSub2State::Close))
             .add_plugins((
                 ExplorerInputPlugin,
                 ExplorerMapPlugin,

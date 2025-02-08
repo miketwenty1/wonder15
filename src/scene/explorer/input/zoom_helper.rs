@@ -1,20 +1,20 @@
 use bevy::prelude::*;
 
 use crate::scene::explorer::ecs::{
-    hard::{CLOSE_ZOOM_THRESHOLD, MEDIUM_ZOOM_THRESHOLD},
-    resource::ZoomLevelRes,
+    resource::{CurrentZoomLevelRes, ZoomLevelNumsRes},
     state::ExplorerRunningZoomSub2State,
 };
 
 pub fn changed_ortho(
-    mut zoom_res: ResMut<ZoomLevelRes>,
+    mut zoom_res: ResMut<CurrentZoomLevelRes>,
     cam_query: Query<&OrthographicProjection, (With<Camera>, Changed<OrthographicProjection>)>,
     mut zoom_state: ResMut<NextState<ExplorerRunningZoomSub2State>>,
+    zooms: Res<ZoomLevelNumsRes>,
 ) {
     for cam in cam_query.iter() {
-        let zoom_level = if cam.scale > MEDIUM_ZOOM_THRESHOLD {
+        let zoom_level = if cam.scale > zooms.medium_threshold {
             ExplorerRunningZoomSub2State::Far
-        } else if cam.scale > CLOSE_ZOOM_THRESHOLD {
+        } else if cam.scale > zooms.close_threshold {
             ExplorerRunningZoomSub2State::Medium
         } else {
             ExplorerRunningZoomSub2State::Close
