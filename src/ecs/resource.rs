@@ -29,19 +29,29 @@ pub struct WorldOwnedTileMap {
     pub map: HashMap<u32, TileData>,
 }
 
-#[derive(Resource, Clone, PartialEq, Debug, Serialize, Deserialize)]
+#[derive(Resource, Clone, PartialEq, Serialize, Deserialize)]
+pub struct WorldBlockchainTileMap {
+    pub map: HashMap<u32, TileBlockchainData>,
+}
+
+#[derive(Resource, Clone, PartialEq, Debug, Serialize, Deserialize, Default)]
 pub struct TileData {
-    pub ln_address: String,
-    pub username: String,
+    pub ln_address: Option<String>,
+    pub username: Option<String>,
     pub color: Color,
-    pub message: String,
+    pub message: Option<String>,
     pub value: u32,
     pub cost: u32,
     pub height: u32,
-    pub land_index: usize,
-    pub event_date: DateTime<Utc>,
+    pub land_index: u32,
+    pub event_date: Option<DateTime<Utc>>,
     pub resource: TileResource,
-    pub block_hash: String,
+    pub block_hash: [u8; 32],
+}
+
+#[derive(Resource, Clone, PartialEq, Debug, Serialize, Deserialize)]
+pub struct TileBlockchainData {
+    pub height: u32,
     pub block_time: i64,
     pub block_bits: i64,
     pub block_n_tx: i32,

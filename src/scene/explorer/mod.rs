@@ -10,7 +10,7 @@ use input::ExplorerInputPlugin;
 use map::ExplorerMapPlugin;
 
 mod animate;
-mod ecs;
+pub mod ecs;
 mod init;
 mod input;
 mod map;

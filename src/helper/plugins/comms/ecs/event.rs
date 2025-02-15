@@ -1,6 +1,6 @@
 use bevy::ecs::event::Event;
 
-use super::structy::RequestTileType;
+use super::structy::GetTileType;
 
 #[derive(Event, Debug)]
-pub struct RequestTileUpdates(pub RequestTileType);
+pub struct GetTileUpdates(pub GetTileType);

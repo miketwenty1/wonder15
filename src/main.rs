@@ -7,7 +7,7 @@ use scene::{explorer::ExplorerScenePlugin, initer::InitScenePlugin};
 
 use wasm_bindgen::prelude::wasm_bindgen;
 
-mod ecs;
+pub mod ecs;
 mod helper;
 pub mod scene;
 

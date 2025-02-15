@@ -18,3 +18,23 @@ pub struct GameBlockData {
     pub username: String,
     pub refund_ln_addr: String,
 }
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct GameBlockMapData {
+    pub height: i32,
+    pub color: String,
+    pub amount: i32,
+    pub block_hash: String,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct GameBlockMapDataHeightFromDB {
+    pub blocks: Vec<GameBlockMapData>,
+    pub height_checkpoint: Option<u32>,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct GameBlockMapDataTSFromDB {
+    pub blocks: Vec<GameBlockMapData>,
+    pub ts_checkpoint: DateTime<Utc>,
+}

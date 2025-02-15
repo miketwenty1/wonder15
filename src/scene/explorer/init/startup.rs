@@ -3,23 +3,28 @@ use bevy::{
     prelude::*,
 };
 
-use crate::scene::explorer::ecs::{
-    component::{AnimationIndicesComp, AnimationTimerComp},
-    hard::{
-        ANIMATED_SPRITE_Z, BUILDING_CHUNK_SIZE, BUILDING_DESPAWN_RANGE_MULTIPLIER,
-        SLIM_BUILDING_CHUNK_SIZE, SLIM_CLOSE_ZOOM_THRESHOLD, SLIM_MAX_ZOOM,
-        SLIM_MEDIUM_ZOOM_THRESHOLD, SLIM_TEXT_CHUNK_SIZE, SLIM_TILE_CHUNK_SIZE, TEXT_CHUNK_SIZE,
-        TEXT_DESPAWN_RANGE_MULTIPLIER, TILE_CHUNK_SIZE, TILE_DESPAWN_RANGE_MULTIPLIER, TILE_SIZE,
-    },
-    resource::{
-        ChunkTypeNumsRes, DespawnBuildingRangeRes, DespawnTextRangeRes, DespawnTileRangeRes,
-        SpriteSheetBuildingRes, ZoomLevelNumsRes,
-    },
-    state::{ExplorerSubState, InitSpawnTileMapState},
-};
 use crate::{
     ecs::state::FullMapState,
+    helper::plugins::comms::ecs::structy::GetTileType,
     scene::explorer::ecs::hard::{CLOSE_ZOOM_THRESHOLD, MAX_ZOOM, MEDIUM_ZOOM_THRESHOLD, MIN_ZOOM},
+};
+use crate::{
+    helper::plugins::comms::ecs::event::GetTileUpdates,
+    scene::explorer::ecs::{
+        component::{AnimationIndicesComp, AnimationTimerComp},
+        hard::{
+            ANIMATED_SPRITE_Z, BUILDING_CHUNK_SIZE, BUILDING_DESPAWN_RANGE_MULTIPLIER,
+            SLIM_BUILDING_CHUNK_SIZE, SLIM_CLOSE_ZOOM_THRESHOLD, SLIM_MAX_ZOOM,
+            SLIM_MEDIUM_ZOOM_THRESHOLD, SLIM_TEXT_CHUNK_SIZE, SLIM_TILE_CHUNK_SIZE,
+            TEXT_CHUNK_SIZE, TEXT_DESPAWN_RANGE_MULTIPLIER, TILE_CHUNK_SIZE,
+            TILE_DESPAWN_RANGE_MULTIPLIER, TILE_SIZE,
+        },
+        resource::{
+            ChunkTypeNumsRes, DespawnBuildingRangeRes, DespawnTextRangeRes, DespawnTileRangeRes,
+            SpriteSheetBuildingRes, ZoomLevelNumsRes,
+        },
+        state::{ExplorerSubState, InitSpawnTileMapState},
+    },
 };
 
 pub fn setup_animation(
@@ -44,8 +49,8 @@ pub fn setup_animation(
             ..default()
         },
         Transform::from_translation(Vec3 {
-            x: 20.0,
-            y: 20.0,
+            x: 0.0,
+            y: 0.0,
             z: ANIMATED_SPRITE_Z,
         }),
         animation_indices,
@@ -60,6 +65,7 @@ pub fn init_startup(
     mut init_map_state: ResMut<NextState<InitSpawnTileMapState>>,
     mut explorer_sub_state: ResMut<NextState<ExplorerSubState>>,
     full_map_state: Res<State<FullMapState>>,
+    mut get_tiles: EventWriter<GetTileUpdates>,
 ) {
     let building_atlas = TextureAtlasLayout::from_grid(
         bevy::prelude::UVec2::new(32, 32),
@@ -128,4 +134,6 @@ pub fn init_startup(
 
     init_map_state.set(InitSpawnTileMapState::Running);
     explorer_sub_state.set(ExplorerSubState::Running);
+    // if data already is loaded from local then TS otherwise Height.
+    get_tiles.send(GetTileUpdates(GetTileType::Height));
 }

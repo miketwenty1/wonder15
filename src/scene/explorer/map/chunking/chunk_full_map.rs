@@ -6,7 +6,7 @@ use bevy_ecs_tilemap::{
 use rand::{thread_rng, Rng};
 
 use crate::{
-    ecs::resource::{BlockchainHeight, FullMapLength},
+    ecs::resource::{BlockchainHeight, FullMapLength, WorldOwnedTileMap},
     scene::explorer::{
         ecs::state::InitSpawnTileMapState,
         map::ecs::{
@@ -27,6 +27,7 @@ pub fn startup_fullmap(
     mut timer: ResMut<AdditionalSetupTilesTimerRes>,
     map_length: Res<FullMapLength>,
     current_block_height: Res<BlockchainHeight>,
+    world_map: Res<WorldOwnedTileMap>,
 ) {
     if !timer.0.tick(time.delta()).finished() {
         return;
@@ -43,8 +44,12 @@ pub fn startup_fullmap(
                 state.set(InitSpawnTileMapState::Done);
                 return;
             }
-            let land_index = random.gen_range(0..=34) as u32; // land tile texture index
+            let tile_from_owned_map = world_map.map.get(&i);
 
+            let land_index = match tile_from_owned_map {
+                Some(s) => s.land_index,
+                None => 35,
+            };
             let (sx, sy) = ulam::get_xy_from_value(i);
             let tile_pos = TilePos {
                 x: (sx + uoff as i32) as u32,

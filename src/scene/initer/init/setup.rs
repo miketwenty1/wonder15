@@ -3,8 +3,9 @@ use bevy::prelude::*;
 use crate::{
     ecs::{
         resource::{BlockchainHeight, FullMapLength},
-        state::SceneState,
+        state::{ExplorerCommsSubState, SceneState},
     },
+    helper::plugins::comms::ecs::{event::GetTileUpdates, structy::GetTileType},
     scene::initer::ecs::component::{AnimationIndicesComp, AnimationTimerComp},
 };
 
@@ -34,6 +35,7 @@ pub fn setup_things(
     mut scene_state: ResMut<NextState<SceneState>>,
     //scene_state: Res<State<SceneState>>,
     current_blockheight: Res<BlockchainHeight>,
+    mut comm_map_state: ResMut<NextState<ExplorerCommsSubState>>,
 ) {
     let map_side_length = ((current_blockheight.0 as f64).sqrt().ceil()) as u32 + 2;
     commands.insert_resource(FullMapLength(map_side_length));
@@ -62,4 +64,6 @@ pub fn setup_things(
 
     info!("we are about to set to Explorer!");
     scene_state.set(SceneState::Explorer);
+    // need to set to Ts if cache was found
+    //comm_map_state.set(ExplorerCommsSubState::Height);
 }

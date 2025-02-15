@@ -9,7 +9,7 @@ impl Plugin for ExplorerEventPlugin {
         app.add_event::<TextToggleEvent>()
             .add_event::<SwapTilesEvent>()
             .add_event::<BuildingToggleEvent>()
-            .add_event::<UpdateTileTextureEvent>();
+            .add_event::<UpdateWorldMapTilesEvent>();
     }
 }
 
@@ -46,4 +46,4 @@ impl SwapTilesEvent {
 }
 
 #[derive(Event, Debug)]
-pub struct UpdateTileTextureEvent(pub Vec<TileData>);
+pub struct UpdateWorldMapTilesEvent(pub Vec<TileData>);

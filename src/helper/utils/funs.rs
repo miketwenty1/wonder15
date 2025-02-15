@@ -33,7 +33,7 @@ pub fn to_millisecond_precision(dt: DateTime<Utc>) -> DateTime<Utc> {
 
 pub fn get_resource_for_tile(block_hash: &str) -> TileResource {
     // Ensure the block_hash is at least 2 characters long
-    if block_hash.len() < 2 {
+    if block_hash.len() != 64 {
         return TileResource::Unknown;
     }
 

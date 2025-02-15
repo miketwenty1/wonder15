@@ -1,5 +1,5 @@
 #[derive(Clone, Debug)]
-pub enum RequestTileType {
+pub enum GetTileType {
     Height,
     Ts,
 }

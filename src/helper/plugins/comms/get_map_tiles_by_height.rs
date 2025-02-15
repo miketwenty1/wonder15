@@ -1,27 +1,27 @@
-use super::{
-    event::RequestTileUpdates,
-    resource::{CheckpointTimetamp, GameTileUpdateChannel, UpdateGameTimetamp},
-    structy::RequestTileType,
-    timer::ApiPollingTimer,
-};
 use crate::{
+    ecs::resource::{BlockchainHeight, GameHeight, GameStaticInputs, TileData, WorldOwnedTileMap},
     helper::{
-        server_struct::GameBlockData,
+        server_struct::{GameBlockData, GameBlockMapData, GameBlockMapDataHeightFromDB},
         utils::funs::{get_land_index, get_resource_for_tile, to_millisecond_precision},
     },
-    resource::{BlockchainHeight, GameHeight, GameStaticInputs, TileData, WorldOwnedTileMap},
-    scene::explorer::map::event::UpdateTileTextureEvent,
+    scene::explorer::ecs::event::UpdateWorldMapTilesEvent,
 };
 use bevy::prelude::*;
 use chrono::Duration;
 use wasm_bindgen_futures::spawn_local;
 
-pub fn api_get_server_tiles(
+use super::ecs::{
+    event::GetTileUpdates,
+    resource::{ApiPollingTimer, CheckpointTimetamp, GameTileUpdateChannel, UpdateGameTimetamp},
+    structy::GetTileType,
+};
+
+pub fn api_get_map_tiles_by_height(
     channel: Res<GameTileUpdateChannel>,
     api_server: Res<GameStaticInputs>,
     gametime: Res<UpdateGameTimetamp>,
     game_height: Res<GameHeight>,
-    mut event: EventReader<RequestTileUpdates>,
+    mut event: EventReader<GetTileUpdates>,
 ) {
     for e in event.read() {
         //info!("send api request for tiles");
@@ -32,7 +32,7 @@ pub fn api_get_server_tiles(
         let cc = channel.tx.clone();
         let server = api_server.server_url.to_owned();
         match e.0 {
-            RequestTileType::Height => {
+            GetTileType::Height => {
                 info!("get height tiles sending {}", game_height);
                 spawn_local(async move {
                     let api_response_text = reqwest::get(format!(
@@ -54,7 +54,7 @@ pub fn api_get_server_tiles(
                     }
                 });
             }
-            RequestTileType::Ts => {
+            GetTileType::Ts => {
                 spawn_local(async move {
                     let api_response_r =
                         reqwest::get(format!("{}/comms/blockdelta_ts/{}", server, ts_str)).await;
@@ -89,23 +89,24 @@ pub fn api_get_server_tiles(
 }
 
 #[allow(clippy::too_many_arguments)]
-pub fn api_receive_server_tiles(
+pub fn api_receive_server_tiles_by_height(
     channel: ResMut<GameTileUpdateChannel>,
-    api_timer: Res<ApiPollingTimer>,
-    tile_map: Res<WorldOwnedTileMap>,
-    mut update_tile_event: EventWriter<UpdateTileTextureEvent>,
-    mut gametime: ResMut<UpdateGameTimetamp>,
-    mut checkpoint_time: ResMut<CheckpointTimetamp>,
-    mut game_height: ResMut<GameHeight>,
-    blockchain_height: Res<BlockchainHeight>,
-    mut get_more_tiles: EventWriter<RequestTileUpdates>,
+    //api_timer: Res<ApiPollingTimer>,
+    //tile_map: Res<WorldOwnedTileMap>,
+    mut update_tile_event: EventWriter<UpdateWorldMapTilesEvent>,
+    //mut gametime: ResMut<UpdateGameTimetamp>,
+    // mut checkpoint_time: ResMut<CheckpointTimetamp>,
+    // mut game_height: ResMut<GameHeight>,
+    //  blockchain_height: Res<BlockchainHeight>,
+    mut get_more_tiles: EventWriter<GetTileUpdates>,
     //mut toast: EventWriter<ToastEvent>,
     //mut despawn_inventory: EventWriter<DespawnInventoryHeights>,
     //mut spawn_inventory: EventWriter<AddInventoryRow>,
     //inventory: Res<UserInventoryBlocks>,
     //mut browser_event: EventWriter<WriteBrowserStorage>,
 ) {
-    if api_timer.timer.finished() && !channel.rx.is_empty() {
+    if !channel.rx.is_empty() {
+        //api_timer.timer.finished() &&
         info!("api receive tiles");
         //info!("checking for tiles response");
         let api_res = channel.rx.try_recv();
@@ -122,66 +123,23 @@ pub fn api_receive_server_tiles(
                 // if a tile comes in and the previous owner is the user.. (AND the new owner isn't the user) add to vec.
 
                 //info!("api_receive_server_tiles: {}", r);
-                let r_block_result = serde_json::from_str::<GameBlockData>(&og_r);
+                let r_block_result = serde_json::from_str::<GameBlockMapDataHeightFromDB>(&og_r);
 
                 match r_block_result {
                     Ok(server_block_data) => {
-                        // match server_block_data.clone() {
-                        //     GameBlockDataFromDBMod {
-                        //         ts_checkpoint: Some(t),
-                        //         height_checkpoint: None,
-                        //         blocks: _,
-                        //     } => {
-                        //             checkpoint_time.ts = gametime.ts;
-                        //             //browser_event.send(WriteBrowserStorage);
-                        //             info!("!!!updating game ts to {}", t);
-                        //         }
-                        //     }
-                        //     GameBlockDataFromDBMod {
-                        //         ts_checkpoint: None,
-                        //         height_checkpoint: Some(h),
-                        //         blocks: _,
-                        //     } => {
-                        //         info!("received height checkpoint {}", h);
-
-                        //         if game_height.0 == h {
-                        //             //info!("==");
-                        //         } else {
-                        //             request_more_height = true;
-                        //             //info!("request more height");
-                        //         }
-                        //         game_height.0 = h;
-                        //     }
-                        //     _ => println!("Invalid state or both are None"),
-                        // }
-
-                        let height_request = server_block_data.height_checkpoint.is_some();
-                        let ts_request = server_block_data.ts_checkpoint.is_some();
-
                         for block_data in server_block_data.blocks {
                             //let mut new_insert_update = false;
-                            let resource = get_resource_for_tile(&block_data.hash);
+                            let resource = get_resource_for_tile(&block_data.block_hash);
                             let land_index =
                                 get_land_index(block_data.height as u32, &resource, None);
                             let new_td = TileData {
-                                ln_address: block_data.refund_ln_addr,
-                                username: block_data.username,
                                 color: Srgba::hex(block_data.color).unwrap().into(),
-                                message: block_data.message,
                                 value: block_data.amount as u32,
                                 cost: (block_data.amount * 2) as u32,
                                 height: block_data.height as u32,
-                                land_index,
-                                event_date: block_data.event_date,
+                                land_index: land_index as u32,
                                 resource,
-                                block_hash: block_data.hash,
-                                block_time: block_data.time,
-                                block_bits: block_data.bits,
-                                block_n_tx: block_data.n_tx,
-                                block_size: block_data.size,
-                                block_fee: block_data.fee,
-                                block_weight: block_data.weight,
-                                block_ver: block_data.ver,
+                                ..default()
                             };
 
                             // check if this tile is already in the worldmap as it's coming in.
@@ -260,29 +218,12 @@ pub fn api_receive_server_tiles(
                         // // // inventory update code
 
                         if !new_tile_vec.is_empty() {
-                            //info!("api_receive_server_tiles send event UpdateTileTextureEvent, vec size: {}", new_tile_vec.len());
-                            update_tile_event.send(UpdateTileTextureEvent(new_tile_vec));
-                            if height_request {
-                                get_more_tiles.send(RequestTileUpdates(RequestTileType::Height));
-                            } else if ts_request {
-                                get_more_tiles.send(RequestTileUpdates(RequestTileType::Ts));
-                            } else {
-                                info!("this is a request type bug, please report");
-                            }
+                            update_tile_event.send(UpdateWorldMapTilesEvent(new_tile_vec));
+                            get_more_tiles.send(GetTileUpdates(GetTileType::Height));
                         }
-
-                        // } else {
-                        //     api_state.set(CommsApiBlockLoadState::Off);
-                        //     // if it's been 15 minutes past last gametime then let's update the browser local storage.
-                        //     // this prevents you from needing to update browser cache on every single tile update.
-                        //     if gametime.ts - Duration::minutes(15) > checkpoint_time.ts {
-                        //         info!("what is the gametime ts?: {}", gametime.ts);
-                        //         browser_event.send(WriteBrowserStorage);
-                        //     }
-                        // }
                     }
                     Err(e) => {
-                        info!("");
+                        info!("error matching on r_block_result: {}", e);
                         // if og_r.to_string().contains("logout") {
                         //     logout_user("receive server tiles 1");
                         // } else if !e.to_string().contains("EOF")

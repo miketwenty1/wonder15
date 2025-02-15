@@ -7,11 +7,13 @@ use ecs::{
 };
 use init::ExplorerMapInitPlugin;
 use tile_manipulation::ExplorerMapTileManipulationPlugin;
+use world_map::ExplorerMapWorldMapPlugin;
 
 mod chunking;
 mod ecs;
 mod init;
 mod tile_manipulation;
+mod world_map;
 
 pub struct ExplorerMapPlugin;
 
@@ -22,6 +24,7 @@ impl Plugin for ExplorerMapPlugin {
             ExplorerMapChunkingPlugin,
             ExplorerMapInitPlugin,
             ExplorerMapTileManipulationPlugin,
+            ExplorerMapWorldMapPlugin,
         ))
         .init_state::<InitSpawnTileMapState>()
         .init_state::<BuildingToggleState>()
