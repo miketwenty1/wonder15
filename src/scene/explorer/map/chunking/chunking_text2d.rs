@@ -61,7 +61,7 @@ fn spawn_chunk(
                         Transform::from_translation(tile_center),
                     ))
                     .with_children(|parent| {
-                        let font_size: f32 = 21.0 - ulam_v.to_string().len() as f32;
+                        let font_size: f32 = 26.0 - ulam_v.to_string().len() as f32;
                         parent.spawn((
                             Text2d::new(format!("{}", ulam_v)),
                             TextFont {
@@ -93,8 +93,6 @@ fn spawn_chunk(
         2.0,
     ));
 
-    // let texture_handle: Handle<Image> =
-    //     asset_server.load("spritesheet/ss-land-v12-gimp-64-spaced.png");
     commands
         .entity(tilemap_entity)
         .insert((

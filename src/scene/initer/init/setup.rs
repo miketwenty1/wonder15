@@ -65,5 +65,5 @@ pub fn setup_things(
     info!("we are about to set to Explorer!");
     scene_state.set(SceneState::Explorer);
     // need to set to Ts if cache was found
-    //comm_map_state.set(ExplorerCommsSubState::Height);
+    comm_map_state.set(ExplorerCommsSubState::Height);
 }

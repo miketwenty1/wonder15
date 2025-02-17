@@ -32,7 +32,7 @@ pub fn spawn_startup_fullmap(
 
     let tilemap_entity = commands.spawn_empty().insert(MainBaseTileMap).id();
     let texture_handle: Handle<Image> =
-        asset_server.load("spritesheet/ss-land-v12-gimp-64-spaced.png");
+        asset_server.load("spritesheet/ss-land-v12-gimp-96-spaced.png");
 
     let center = get_tilemap_center_transform(&map_size, &TILE_SIZE.into(), &map_type, 0.0);
     // need to do an offset so it lines up with the chunking logic overlay sprites and tiles. Right now it's off by half the distance of a tile in both x/y directions

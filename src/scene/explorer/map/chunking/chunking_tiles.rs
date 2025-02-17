@@ -86,7 +86,7 @@ fn spawn_chunk(
     ));
 
     let texture_handle: Handle<Image> =
-        asset_server.load("spritesheet/ss-land-v12-gimp-64-spaced.png");
+        asset_server.load("spritesheet/ss-land-v12-gimp-96-spaced.png");
     commands
         .entity(tilemap_entity)
         .insert((

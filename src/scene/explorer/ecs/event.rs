@@ -45,5 +45,5 @@ impl SwapTilesEvent {
     }
 }
 
-#[derive(Event, Debug)]
+#[derive(Event, Debug, Clone)]
 pub struct UpdateWorldMapTilesEvent(pub Vec<TileData>);

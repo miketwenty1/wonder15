@@ -5,7 +5,7 @@ use ecs::{
     event::GetTileUpdates,
     resource::{ApiPollingTimer, UpdateGameTimetamp},
 };
-use get_map_tiles_by_height::{api_get_map_tiles_by_height, api_receive_server_tiles_by_height};
+use get_map_tiles_by_height::{api_get_map_tiles, api_receive_server_tiles_by_height};
 use timer::tick_api_receive_timer;
 
 use crate::ecs::state::ExplorerCommsSubState;
@@ -25,10 +25,7 @@ impl Plugin for CommsPlugin {
             .add_systems(Update, (tick_api_receive_timer,))
             .add_systems(
                 Update,
-                (
-                    api_get_map_tiles_by_height,
-                    api_receive_server_tiles_by_height,
-                )
+                (api_get_map_tiles, api_receive_server_tiles_by_height)
                     .run_if(in_state(ExplorerCommsSubState::Height)),
             )
             .insert_resource(UpdateGameTimetamp {

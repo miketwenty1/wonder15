@@ -1,4 +1,4 @@
-use bevy::{color::Srgba, log::info, utils::hashbrown};
+use bevy::{color::Srgba, log::info, utils::HashMap};
 use chrono::{DateTime, Duration, Utc};
 use rand::Rng;
 
@@ -31,17 +31,18 @@ pub fn to_millisecond_precision(dt: DateTime<Utc>) -> DateTime<Utc> {
     dt - Duration::microseconds(micros_to_subtract as i64)
 }
 
-pub fn get_resource_for_tile(block_hash: &str) -> TileResource {
-    // Ensure the block_hash is at least 2 characters long
-    if block_hash.len() != 64 {
+pub fn get_resource_for_tile(block_hash: &[u8]) -> TileResource {
+    if block_hash.len() != 32 {
+        info!("hlen is {}", block_hash.len());
         return TileResource::Unknown;
     }
-
+    let last_two_num = block_hash.last().unwrap();
     // Get the last two characters
-    let last_two_chars = &block_hash[block_hash.len() - 2..];
+    //let last_two_chars = &block_hash[block_hash.len() - 2..];
 
     // Convert the last two characters to a number
-    let last_two_num = u8::from_str_radix(last_two_chars, 16).unwrap_or(255);
+    //let last_two_num = u8::from_str_radix(last_two_chars, 16).unwrap_or(255);
+
     // info!("last 2 nums of hash {:?}", last_two_num);
     // Match the number to the corresponding TileResource using ranges
     match last_two_num {
@@ -54,16 +55,28 @@ pub fn get_resource_for_tile(block_hash: &str) -> TileResource {
     }
 }
 
-pub fn get_land_index(
-    height: u32,
-    resource: &TileResource,
-    tile_map: Option<&hashbrown::HashMap<u32, TileData>>,
-) -> usize {
-    match tile_map {
-        Some(s) => {
-            info!("defaulting to 22 for get_land_index");
-            22
-        }
-        None => resource.spritesheet_index_value(),
+// pub fn get_land_index(
+//     height: u32,
+//     resource: &TileResource,
+//     tile_map: Option<&hashbrown::HashMap<u32, TileData>>,
+// ) -> usize {
+//     match tile_map {
+//         Some(s) => {
+//             info!("defaulting to 22 for get_land_index");
+//             22
+//         }
+//         None => resource.spritesheet_index_value(),
+//     }
+// }
+
+pub fn vec_tile_updates_to_hashmap(vec: Vec<TileData>) -> HashMap<u32, TileData> {
+    vec.into_iter().map(|s| (s.height, s)).collect()
+}
+
+pub fn hex_str_to_32_bytes(s: &str) -> [u8; 32] {
+    let mut out = [0u8; 32];
+    for i in 0..32 {
+        out[i] = u8::from_str_radix(&s[2 * i..2 * i + 2], 16).unwrap();
     }
+    out
 }

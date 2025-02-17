@@ -1,9 +1,9 @@
 use bevy::prelude::*;
-use tile_update::read_tile_update_event;
+use tile_world_hashmap::read_tile_update_event;
 
 use crate::ecs::state::SceneState;
 
-mod tile_update;
+mod tile_world_hashmap;
 
 pub struct ExplorerMapWorldMapPlugin;
 

@@ -2,7 +2,7 @@ use crate::{
     ecs::resource::{BlockchainHeight, GameHeight, GameStaticInputs, TileData, WorldOwnedTileMap},
     helper::{
         server_struct::{GameBlockData, GameBlockMapData, GameBlockMapDataHeightFromDB},
-        utils::funs::{get_land_index, get_resource_for_tile, to_millisecond_precision},
+        utils::funs::{get_resource_for_tile, hex_str_to_32_bytes, to_millisecond_precision},
     },
     scene::explorer::ecs::event::UpdateWorldMapTilesEvent,
 };
@@ -16,7 +16,7 @@ use super::ecs::{
     structy::GetTileType,
 };
 
-pub fn api_get_map_tiles_by_height(
+pub fn api_get_map_tiles(
     channel: Res<GameTileUpdateChannel>,
     api_server: Res<GameStaticInputs>,
     gametime: Res<UpdateGameTimetamp>,
@@ -104,6 +104,7 @@ pub fn api_receive_server_tiles_by_height(
     //mut spawn_inventory: EventWriter<AddInventoryRow>,
     //inventory: Res<UserInventoryBlocks>,
     //mut browser_event: EventWriter<WriteBrowserStorage>,
+    mut game_height: ResMut<GameHeight>,
 ) {
     if !channel.rx.is_empty() {
         //api_timer.timer.finished() &&
@@ -123,15 +124,27 @@ pub fn api_receive_server_tiles_by_height(
                 // if a tile comes in and the previous owner is the user.. (AND the new owner isn't the user) add to vec.
 
                 //info!("api_receive_server_tiles: {}", r);
-                let r_block_result = serde_json::from_str::<GameBlockMapDataHeightFromDB>(&og_r);
+                let r_block_result: Result<GameBlockMapDataHeightFromDB, serde_json::Error> =
+                    serde_json::from_str::<GameBlockMapDataHeightFromDB>(&og_r);
 
                 match r_block_result {
                     Ok(server_block_data) => {
+                        let server_height = match server_block_data.height_checkpoint {
+                            Some(s) => s,
+                            None => {
+                                info!("hit none from server");
+                                return;
+                            }
+                        };
+                        game_height.0 = server_height;
+                        info!("receive height checkpoint of {}", game_height.0);
                         for block_data in server_block_data.blocks {
                             //let mut new_insert_update = false;
-                            let resource = get_resource_for_tile(&block_data.block_hash);
-                            let land_index =
-                                get_land_index(block_data.height as u32, &resource, None);
+                            let block_hash_as_bytes = hex_str_to_32_bytes(&block_data.block_hash);
+                            let resource = get_resource_for_tile(&block_hash_as_bytes);
+
+                            let land_index = resource.spritesheet_index_value();
+                            info!("land_index for {} is {}", block_data.height, land_index);
                             let new_td = TileData {
                                 color: Srgba::hex(block_data.color).unwrap().into(),
                                 value: block_data.amount as u32,
@@ -219,6 +232,7 @@ pub fn api_receive_server_tiles_by_height(
 
                         if !new_tile_vec.is_empty() {
                             update_tile_event.send(UpdateWorldMapTilesEvent(new_tile_vec));
+                            info!("sending UpdateWorldMapTilesEvent");
                             get_more_tiles.send(GetTileUpdates(GetTileType::Height));
                         }
                     }

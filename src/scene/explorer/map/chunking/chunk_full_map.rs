@@ -3,7 +3,6 @@ use bevy_ecs_tilemap::{
     map::TilemapId,
     tiles::{TileBundle, TileColor, TilePos, TileStorage, TileTextureIndex},
 };
-use rand::{thread_rng, Rng};
 
 use crate::{
     ecs::resource::{BlockchainHeight, FullMapLength, WorldOwnedTileMap},
@@ -36,7 +35,6 @@ pub fn startup_fullmap(
     let previous = total_tiles_res.0;
     let new_destionation = previous + CHUNK_INIT_LOAD_SIZE;
     //info!("previous: {}, destination: {}", previous, new_destionation);
-    let mut random = thread_rng();
 
     for (tilemap_ent, mut tile_storage) in tile_storage_q.iter_mut() {
         for i in previous..new_destionation {
@@ -46,9 +44,9 @@ pub fn startup_fullmap(
             }
             let tile_from_owned_map = world_map.map.get(&i);
 
-            let land_index = match tile_from_owned_map {
-                Some(s) => s.land_index,
-                None => 35,
+            let (land_index, player_color) = match tile_from_owned_map {
+                Some(s) => (s.land_index, s.color),
+                None => (22, Color::Srgba(Color::BLACK.into())),
             };
             let (sx, sy) = ulam::get_xy_from_value(i);
             let tile_pos = TilePos {

@@ -1,4 +1,4 @@
-use bevy::prelude::Component;
+use bevy::prelude::{Component, Deref};
 use bevy_ecs_tilemap::tiles::TileColor;
 
 #[derive(Component, Debug)]

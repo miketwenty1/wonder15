@@ -62,7 +62,7 @@ fn spawn_chunk(
                         Transform::from_translation(tile_center),
                     ))
                     .with_children(|parent| {
-                        let translation = Vec3::new(31.0, 31.0, 3.0);
+                        let translation = Vec3::new(TILE_SIZE.x / 2.0, TILE_SIZE.y / 2.0, 3.0);
                         let transform = Transform {
                             translation,
                             ..Default::default()
@@ -94,9 +94,6 @@ fn spawn_chunk(
         chunk_pos.y as f32 * chunks.building.y as f32 * (TILE_SIZE.y),
         3.0,
     ));
-
-    // let texture_handle: Handle<Image> =
-    //     asset_server.load("spritesheet/ss-land-v12-gimp-64-spaced.png");
 
     commands
         .entity(tilemap_entity)

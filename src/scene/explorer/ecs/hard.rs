@@ -6,7 +6,7 @@ pub const BUILDING_Z: f32 = 3.0;
 pub const TEXT_Z: f32 = 4.0;
 pub const ANIMATED_SPRITE_Z: f32 = 4.5;
 
-pub const MAX_ZOOM: f32 = 70.0;
+pub const MAX_ZOOM: f32 = 94.0;
 pub const MIN_ZOOM: f32 = 0.40;
 pub const CLOSE_ZOOM_THRESHOLD: f32 = 1.25;
 pub const MEDIUM_ZOOM_THRESHOLD: f32 = 3.0;
@@ -48,4 +48,4 @@ pub const SLIM_TILE_RENDER_CHUNK_SIZE: UVec2 = UVec2 {
 pub const TILE_DESPAWN_RANGE_MULTIPLIER: f32 = 4.0;
 pub const BUILDING_DESPAWN_RANGE_MULTIPLIER: f32 = 4.0;
 pub const TEXT_DESPAWN_RANGE_MULTIPLIER: f32 = 4.0;
-pub const TILE_SIZE: TilemapTileSize = TilemapTileSize { x: 66.0, y: 66.0 };
+pub const TILE_SIZE: TilemapTileSize = TilemapTileSize { x: 98.0, y: 98.0 };
