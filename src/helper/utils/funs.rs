@@ -1,8 +1,12 @@
-use bevy::{color::Srgba, log::info, utils::HashMap};
+use bevy::{prelude::*, utils::HashMap};
+
 use chrono::{DateTime, Duration, Utc};
 use rand::Rng;
 
-use crate::ecs::resource::{TileData, TileResource};
+use crate::ecs::{
+    hard::LIGHTEST_TEXT,
+    resource::{TileData, TileResource},
+};
 
 pub fn get_random_color() -> Srgba {
     let mut rng = rand::thread_rng();
@@ -79,4 +83,15 @@ pub fn hex_str_to_32_bytes(s: &str) -> [u8; 32] {
         out[i] = u8::from_str_radix(&s[2 * i..2 * i + 2], 16).unwrap();
     }
     out
+}
+
+pub fn get_text_color_per_tile_color(c: &Color) -> Color {
+    if c.to_srgba().red > LIGHTEST_TEXT.red
+        && c.to_srgba().green > LIGHTEST_TEXT.green
+        && c.to_srgba().blue > LIGHTEST_TEXT.blue
+    {
+        Color::Srgba(Srgba::BLACK)
+    } else {
+        Color::Srgba(Srgba::WHITE)
+    }
 }

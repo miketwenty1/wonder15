@@ -1,19 +1,21 @@
 use bevy::{math::Vec3A, prelude::*, render::primitives::Aabb, text::FontSmoothing};
 use bevy_ecs_tilemap::{
     map::{TilemapGridSize, TilemapId, TilemapRenderSettings, TilemapType},
-    tiles::{TileBundle, TilePos, TileStorage},
+    tiles::{TileBundle, TileColor, TilePos, TileStorage},
     TilemapBundle,
 };
 
 use crate::{
-    ecs::resource::BlockchainHeight,
+    ecs::resource::{BlockchainHeight, WorldOwnedTileMap},
+    helper::utils::funs::get_text_color_per_tile_color,
     scene::explorer::{
         ecs::{
+            event::SwapTilesEvent,
             hard::{TEXT_Z, TILE_SIZE},
-            resource::{ChunkTypeNumsRes, DespawnTextRangeRes},
+            resource::{ChunkTypeNumsRes, CurrentTilesRes, DespawnTextRangeRes},
         },
         map::ecs::{
-            component::{ChunkTextMapComp, TileText},
+            component::{AssociatedTileColor, ChunkTextMapComp, PlayerTileColorComp, TileText},
             hard::TILE_SPACING,
             resource::ChunkTextManagerRes,
         },
@@ -26,6 +28,8 @@ fn spawn_chunk(
     chunk_pos: IVec2,
     current_blockheight: u32,
     chunks: &Res<ChunkTypeNumsRes>,
+    world_map: &Res<WorldOwnedTileMap>,
+    current_tiles: &Res<CurrentTilesRes>,
 ) {
     let tilemap_entity = commands.spawn_empty().id();
     let mut tile_storage = TileStorage::empty(chunks.text.into());
@@ -47,6 +51,15 @@ fn spawn_chunk(
                     x: tile_center_noz.x,
                     y: tile_center_noz.y,
                     z: TEXT_Z,
+                };
+                let (text_color, player_tile_color) = match world_map.map.get(&ulam_v) {
+                    Some(s) => match current_tiles.0 {
+                        SwapTilesEvent::PlayerColor => {
+                            (get_text_color_per_tile_color(&s.color), s.color)
+                        }
+                        _ => (Color::WHITE, s.color),
+                    },
+                    None => (Color::WHITE, Color::BLACK),
                 };
                 let tile_entity = commands
                     .spawn((
@@ -71,7 +84,8 @@ fn spawn_chunk(
                             },
                             //text_visi.visi_or_nawh(),
                             TileText,
-                            TextColor(Color::WHITE),
+                            TextColor(text_color),
+                            AssociatedTileColor(player_tile_color),
                             TextLayout::new_with_justify(JustifyText::Center),
                             //Adding Aabb to attempt to cull Text2d that isn't on screen (works with sprites as parents, but not sure about TileBundles),
                             Aabb {
@@ -125,6 +139,7 @@ fn camera_pos_to_chunk_pos(camera_pos: &Vec2, chunks: &Res<ChunkTypeNumsRes>) ->
     camera_pos / (chunk_size * tile_size)
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn spawn_text_chunk_around_camera(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
@@ -132,6 +147,8 @@ pub fn spawn_text_chunk_around_camera(
     mut chunk_manager: ResMut<ChunkTextManagerRes>,
     current_block_height: Res<BlockchainHeight>,
     chunks: Res<ChunkTypeNumsRes>,
+    world_map: Res<WorldOwnedTileMap>,
+    current_tiles: Res<CurrentTilesRes>,
 ) {
     for transform in camera_query.iter() {
         let camera_chunk_pos = camera_pos_to_chunk_pos(&transform.translation.xy(), &chunks);
@@ -145,6 +162,8 @@ pub fn spawn_text_chunk_around_camera(
                         IVec2::new(x, y),
                         current_block_height.0,
                         &chunks,
+                        &world_map,
+                        &current_tiles,
                     )
                 }
             }

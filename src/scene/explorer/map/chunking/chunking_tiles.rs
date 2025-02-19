@@ -1,5 +1,5 @@
 use crate::{
-    ecs::resource::BlockchainHeight,
+    ecs::resource::{BlockchainHeight, WorldOwnedTileMap},
     scene::explorer::{
         ecs::{
             hard::{TILE_SIZE, TILE_Z},
@@ -19,7 +19,6 @@ use bevy_ecs_tilemap::{
     tiles::{TileBundle, TileColor, TilePos, TileStorage, TileTextureIndex},
     TilemapBundle,
 };
-use rand::{thread_rng, Rng};
 
 fn spawn_chunk(
     commands: &mut Commands,
@@ -27,11 +26,12 @@ fn spawn_chunk(
     chunk_pos: IVec2,
     current_blockheight: u32,
     chunks: &Res<ChunkTypeNumsRes>,
+    world_map: &Res<WorldOwnedTileMap>,
 ) {
     let tilemap_entity = commands.spawn_empty().id();
     let mut tile_storage = TileStorage::empty(chunks.tile.into());
     let mut tile_entities = Vec::with_capacity(chunks.tile.x as usize * chunks.tile.y as usize);
-    let mut random = thread_rng();
+
     //let mut random = rand::thread_rng();
     for x in 0..chunks.tile.x {
         for y in 0..chunks.tile.y {
@@ -50,13 +50,11 @@ fn spawn_chunk(
                     y: tile_center_noz.y,
                     z: TILE_Z,
                 };
-
-                let random_color = if ulam_v == 0 {
-                    TileColor(Color::Srgba(Color::WHITE.into()))
-                } else {
-                    TileColor(Color::Srgba(Color::BLACK.into()))
+                let tile_from_owned_map = world_map.map.get(&ulam_v);
+                let (land_index, player_color) = match tile_from_owned_map {
+                    Some(s) => (s.land_index, s.color),
+                    None => (22, Color::Srgba(Color::BLACK.into())),
                 };
-                let land_index = random.gen_range(0..=34) as u32;
 
                 let tile_entity = commands
                     .spawn((
@@ -64,11 +62,11 @@ fn spawn_chunk(
                             position: tile_pos,
                             tilemap_id: TilemapId(tilemap_entity),
                             texture_index: TileTextureIndex(35),
-                            color: random_color,
+                            color: TileColor(player_color),
                             ..Default::default()
                         },
                         UlamComp(ulam_v),
-                        PlayerTileColorComp(random_color),
+                        PlayerTileColorComp(TileColor(player_color)),
                         LandIndexComp(land_index),
                         Transform::from_translation(tile_center),
                     ))
@@ -126,6 +124,7 @@ pub fn spawn_tile_chunks_around_camera(
     asset_server: Res<AssetServer>,
     current_block_height: Res<BlockchainHeight>,
     chunks: Res<ChunkTypeNumsRes>,
+    world_map: Res<WorldOwnedTileMap>,
 ) {
     for transform in camera_query.iter() {
         let camera_chunk_pos = camera_pos_to_chunk_pos(&transform.translation.xy(), &chunks);
@@ -139,6 +138,7 @@ pub fn spawn_tile_chunks_around_camera(
                         IVec2::new(x, y),
                         current_block_height.0,
                         &chunks,
+                        &world_map,
                     );
                 }
             }

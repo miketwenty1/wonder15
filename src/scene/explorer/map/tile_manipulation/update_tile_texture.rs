@@ -37,7 +37,6 @@ pub fn read_tile_update_event_color(
                 land_index_store.0 = s.land_index;
                 tile_color_store.0 = TileColor(s.color);
 
-                info!("current_tiles.0 is {:?}", current_tiles.0);
                 match current_tiles.0 {
                     SwapTilesEvent::PlayerColor => {
                         *tile_color = TileColor(s.color);

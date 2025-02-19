@@ -44,7 +44,7 @@ pub fn startup_fullmap(
             }
             let tile_from_owned_map = world_map.map.get(&i);
 
-            let (land_index, player_color) = match tile_from_owned_map {
+            let (land_index, player_tile_color) = match tile_from_owned_map {
                 Some(s) => (s.land_index, s.color),
                 None => (22, Color::Srgba(Color::BLACK.into())),
             };
@@ -52,11 +52,6 @@ pub fn startup_fullmap(
             let tile_pos = TilePos {
                 x: (sx + uoff as i32) as u32,
                 y: (sy + uoff as i32) as u32,
-            };
-            let random_color = if i == 0 {
-                TileColor(Color::Srgba(Color::WHITE.into()))
-            } else {
-                TileColor(Color::Srgba(Color::BLACK.into()))
             };
 
             //let transform = Transform::from_xyz(0., 0., 0.);
@@ -66,11 +61,11 @@ pub fn startup_fullmap(
                         position: tile_pos,
                         tilemap_id: TilemapId(tilemap_ent),
                         texture_index: TileTextureIndex(35),
-                        color: random_color,
+                        color: TileColor(player_tile_color),
                         ..Default::default()
                     },
                     UlamComp(i),
-                    PlayerTileColorComp(random_color),
+                    PlayerTileColorComp(TileColor(player_tile_color)),
                     LandIndexComp(land_index),
                     // transform,
                 ))

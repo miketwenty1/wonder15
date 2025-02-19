@@ -144,7 +144,6 @@ pub fn api_receive_server_tiles_by_height(
                             let resource = get_resource_for_tile(&block_hash_as_bytes);
 
                             let land_index = resource.spritesheet_index_value();
-                            info!("land_index for {} is {}", block_data.height, land_index);
                             let new_td = TileData {
                                 color: Srgba::hex(block_data.color).unwrap().into(),
                                 value: block_data.amount as u32,
