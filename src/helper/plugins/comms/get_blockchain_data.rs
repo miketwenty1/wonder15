@@ -1,85 +1,58 @@
 use crate::{
-    ecs::resource::{GameHeight, GameStaticInputs, TileData},
+    ecs::resource::{
+        BlockchainDataHeight, GameHeight, GameStaticInputs, TileBlockchainData, TileData,
+    },
     helper::{
-        server_struct::GameBlockMapDataHeightFromDB,
+        server_struct::{BlockchainDataHeightFromDB, GameBlockMapDataHeightFromDB},
         utils::funs::{get_resource_for_tile, hex_str_to_32_bytes},
     },
-    scene::explorer::ecs::event::UpdateWorldMapTilesEvent,
+    scene::explorer::ecs::event::{UpdateWorldBlockchainDataEvent, UpdateWorldMapTilesEvent},
 };
 use bevy::prelude::*;
 use wasm_bindgen_futures::spawn_local;
 
 use super::ecs::{
-    event::GetTileUpdates,
-    resource::{GameTileUpdateChannel, UpdateGameTimetamp},
+    event::{GetBlockchainUpdates, GetTileUpdates},
+    resource::BlockchainTileUpdateChannel,
     structy::GetTileType,
 };
 
-pub fn api_get_map_tiles(
-    channel: Res<GameTileUpdateChannel>,
+pub fn api_get_blockchain_data(
+    channel: Res<BlockchainTileUpdateChannel>,
     api_server: Res<GameStaticInputs>,
-    gametime: Res<UpdateGameTimetamp>,
-    game_height: Res<GameHeight>,
-    mut event: EventReader<GetTileUpdates>,
+    // gametime: Res<UpdateGameTimetamp>,
+    // game_height: Res<GameHeight>,
+    mut event: EventReader<GetBlockchainUpdates>,
+    blockchain_data_height: Res<BlockchainDataHeight>,
 ) {
     for e in event.read() {
         //info!("send api request for tiles");
-        let ts_str = gametime.ts.to_string();
-        let game_height = game_height.0;
+        let request_height = e.0;
         //for event in player_move_event_reader.read() {
         //let pool = IoTaskPool::get();
         let cc = channel.tx.clone();
         let server = api_server.server_url.to_owned();
-        match e.0 {
-            GetTileType::Height => {
-                info!("get height tiles sending {}", game_height);
-                spawn_local(async move {
-                    let api_response_text = reqwest::get(format!(
-                        "{}/comms/blockdelta_height/{}",
-                        server, game_height
-                    ))
-                    .await;
-                    match api_response_text {
-                        Ok(o) => {
-                            let inner = o.text().await;
-                            match inner {
-                                Ok(o_inner) => {
-                                    cc.try_send(o_inner);
-                                }
-                                Err(e) => info!("inner error blockdelta_height {}", e),
-                            }
-                        }
-                        Err(e) => info!("error for blockdelta_height {}", e),
-                    }
-                });
-            }
-            GetTileType::Ts => {
-                spawn_local(async move {
-                    let api_response_r =
-                        reqwest::get(format!("{}/comms/blockdelta_ts/{}", server, ts_str)).await;
 
-                    match api_response_r {
-                        Ok(o) => {
-                            let api_response_text_r = o.text().await;
-
-                            match api_response_text_r {
-                                Ok(o) => {
-                                    cc.try_send(o);
-                                }
-                                Err(e) => {
-                                    info!("error for request tile ts {:#?}", e);
-                                    cc.try_send(e.to_string());
-                                }
-                            }
+        info!("get blockchain data starting at height {}", request_height);
+        spawn_local(async move {
+            let api_response_text = reqwest::get(format!(
+                "{}/comms/blockchain_data_by_height/{}",
+                server, request_height
+            ))
+            .await;
+            match api_response_text {
+                Ok(o) => {
+                    let inner = o.text().await;
+                    match inner {
+                        Ok(o_inner) => {
+                            cc.try_send(o_inner);
                         }
-                        Err(e) => {
-                            info!("error for request tile ts {:#?}", e);
-                            cc.try_send(e.to_string());
-                        }
+                        Err(e) => info!("inner error blockchain data {}", e),
                     }
-                });
+                }
+                Err(e) => info!("error for blockchain data {}", e),
             }
-        }
+        });
 
         //gametime.ts = Utc::now();
 
@@ -88,26 +61,26 @@ pub fn api_get_map_tiles(
 }
 
 #[allow(clippy::too_many_arguments)]
-pub fn api_receive_game_server_tiles_by_height(
-    channel: ResMut<GameTileUpdateChannel>,
+pub fn api_receive_blockchain_server_tiles_by_height(
+    channel: ResMut<BlockchainTileUpdateChannel>,
     //api_timer: Res<ApiPollingTimer>,
     //tile_map: Res<WorldOwnedTileMap>,
-    mut update_tile_event: EventWriter<UpdateWorldMapTilesEvent>,
+    mut update_tile_event: EventWriter<UpdateWorldBlockchainDataEvent>,
     //mut gametime: ResMut<UpdateGameTimetamp>,
     // mut checkpoint_time: ResMut<CheckpointTimetamp>,
     // mut game_height: ResMut<GameHeight>,
     //  blockchain_height: Res<BlockchainHeight>,
-    mut get_more_tiles: EventWriter<GetTileUpdates>,
+    mut get_more_tiles: EventWriter<GetBlockchainUpdates>,
     //mut toast: EventWriter<ToastEvent>,
     //mut despawn_inventory: EventWriter<DespawnInventoryHeights>,
     //mut spawn_inventory: EventWriter<AddInventoryRow>,
     //inventory: Res<UserInventoryBlocks>,
     //mut browser_event: EventWriter<WriteBrowserStorage>,
-    mut game_height: ResMut<GameHeight>,
+    mut blockchain_data_height: ResMut<BlockchainDataHeight>,
 ) {
     if !channel.rx.is_empty() {
         //api_timer.timer.finished() &&
-        info!("api receive tiles");
+        info!("api receive blockchain data");
         //info!("checking for tiles response");
         let api_res = channel.rx.try_recv();
         //let mut send_update = false;
@@ -123,28 +96,30 @@ pub fn api_receive_game_server_tiles_by_height(
                 // if a tile comes in and the previous owner is the user.. (AND the new owner isn't the user) add to vec.
 
                 //info!("api_receive_server_tiles: {}", r);
-                let r_block_result: Result<GameBlockMapDataHeightFromDB, serde_json::Error> =
-                    serde_json::from_str::<GameBlockMapDataHeightFromDB>(&og_r);
+                let r_block_result: Result<BlockchainDataHeightFromDB, serde_json::Error> =
+                    serde_json::from_str::<BlockchainDataHeightFromDB>(&og_r);
 
                 match r_block_result {
                     Ok(server_block_data) => {
                         let server_height = server_block_data.height_checkpoint;
-                        game_height.0 = server_height;
-                        info!("receive height checkpoint of {}", game_height.0);
+                        blockchain_data_height.0 = server_height;
+                        info!(
+                            "receive blockchain data checkpoint of {}",
+                            blockchain_data_height.0
+                        );
                         for block_data in server_block_data.blocks {
                             //let mut new_insert_update = false;
-                            let block_hash_as_bytes = hex_str_to_32_bytes(&block_data.block_hash);
-                            let resource = get_resource_for_tile(&block_hash_as_bytes);
 
-                            let land_index = resource.spritesheet_index_value();
-                            let new_td = TileData {
-                                color: Srgba::hex(block_data.color).unwrap().into(),
-                                value: block_data.amount as u32,
-                                cost: (block_data.amount * 2) as u32,
-                                height: block_data.height as u32,
-                                land_index: land_index as u32,
-                                resource,
-                                ..default()
+                            let new_td = TileBlockchainData {
+                                height: block_data.h as u32,
+                                block_hash: hex_str_to_32_bytes(&block_data.x),
+                                block_time: block_data.t,
+                                block_bits: block_data.b,
+                                block_n_tx: block_data.n,
+                                block_size: block_data.s,
+                                block_fee: block_data.f,
+                                block_weight: block_data.w,
+                                block_ver: block_data.v,
                             };
 
                             // check if this tile is already in the worldmap as it's coming in.
@@ -223,13 +198,13 @@ pub fn api_receive_game_server_tiles_by_height(
                         // // // inventory update code
 
                         if !new_tile_vec.is_empty() {
-                            update_tile_event.send(UpdateWorldMapTilesEvent(new_tile_vec));
-                            info!("sending UpdateWorldMapTilesEvent");
-                            get_more_tiles.send(GetTileUpdates(GetTileType::Height));
+                            update_tile_event.send(UpdateWorldBlockchainDataEvent(new_tile_vec));
+                            info!("sending UpdateBlockchainWorldMapTilesEvent");
+                            get_more_tiles.send(GetBlockchainUpdates(blockchain_data_height.0));
                         }
                     }
                     Err(e) => {
-                        info!("error matching on r_block_result: {}", e);
+                        info!("error matching on blockchain data r_block_result: {}", e);
                         // if og_r.to_string().contains("logout") {
                         //     logout_user("receive server tiles 1");
                         // } else if !e.to_string().contains("EOF")
@@ -253,7 +228,7 @@ pub fn api_receive_game_server_tiles_by_height(
                 //og_r
             }
             Err(e) => {
-                info!("receiving tiles: {}", e);
+                info!("receiving blockchain data tiles: {}", e);
                 // if !e.to_string().contains("EOF") && !e.to_string().contains("empty channel") {
                 //     toast.send(ToastEvent {
                 //         ttype: ToastType::Bad,

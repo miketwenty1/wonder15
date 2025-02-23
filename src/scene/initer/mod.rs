@@ -7,7 +7,7 @@ use crate::{
     helper::plugins::comms::CommsPlugin,
 };
 
-mod ecs;
+pub mod ecs;
 mod init;
 
 pub struct InitScenePlugin;

@@ -10,7 +10,9 @@ use crate::{
         ecs::state::InitSpawnTileMapState,
         map::ecs::{
             component::{LandIndexComp, MainBaseTileMap, PlayerTileColorComp, UlamComp},
-            hard::CHUNK_INIT_LOAD_SIZE,
+            hard::{
+                CHUNK_INIT_LOAD_SIZE, DEFAULT_UNSET_TILE_INDEX, TEXTURE_INDEX_FOR_PLAYER_COLOR,
+            },
             resource::{AdditionalSetupTilesTimerRes, TotalTilesSpawnedRes},
         },
     },
@@ -46,7 +48,7 @@ pub fn startup_fullmap(
 
             let (land_index, player_tile_color) = match tile_from_owned_map {
                 Some(s) => (s.land_index, s.color),
-                None => (22, Color::Srgba(Color::BLACK.into())),
+                None => (DEFAULT_UNSET_TILE_INDEX, Color::Srgba(Color::BLACK.into())),
             };
             let (sx, sy) = ulam::get_xy_from_value(i);
             let tile_pos = TilePos {
@@ -60,7 +62,7 @@ pub fn startup_fullmap(
                     TileBundle {
                         position: tile_pos,
                         tilemap_id: TilemapId(tilemap_ent),
-                        texture_index: TileTextureIndex(35),
+                        texture_index: TileTextureIndex(TEXTURE_INDEX_FOR_PLAYER_COLOR),
                         color: TileColor(player_tile_color),
                         ..Default::default()
                     },

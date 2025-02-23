@@ -1,4 +1,7 @@
-use crate::ecs::{resource::WorldOwnedTileMap, state::SceneState};
+use crate::ecs::{
+    resource::{WorldBlockchainTileMap, WorldOwnedTileMap},
+    state::SceneState,
+};
 use bevy::{prelude::*, utils::HashMap};
 use camera::setup_camera;
 use canvas::fit_canvas_to_parent;
@@ -27,6 +30,9 @@ impl Plugin for IniterInitPlugin {
         )
         .add_systems(Update, (animate_sprite).run_if(in_state(SceneState::Init)))
         .insert_resource(WorldOwnedTileMap {
+            map: HashMap::new(),
+        })
+        .insert_resource(WorldBlockchainTileMap {
             map: HashMap::new(),
         });
     }

@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::ecs::resource::TileData;
+use crate::ecs::resource::{TileBlockchainData, TileData};
 
 pub struct ExplorerEventPlugin;
 
@@ -9,7 +9,8 @@ impl Plugin for ExplorerEventPlugin {
         app.add_event::<TextToggleEvent>()
             .add_event::<SwapTilesEvent>()
             .add_event::<BuildingToggleEvent>()
-            .add_event::<UpdateWorldMapTilesEvent>();
+            .add_event::<UpdateWorldMapTilesEvent>()
+            .add_event::<UpdateWorldBlockchainDataEvent>();
     }
 }
 
@@ -30,6 +31,15 @@ pub enum BuildingToggleEvent {
 pub enum SwapTilesEvent {
     PlayerColor,
     Land,
+    Fee,
+    BlockTime,
+    TxCount,
+    Byte,
+    Weight,
+    TargetDifficulty,
+    LeadingZeros,
+    ExcessWork,
+    Version,
     Iter,
 }
 
@@ -47,3 +57,6 @@ impl SwapTilesEvent {
 
 #[derive(Event, Debug, Clone)]
 pub struct UpdateWorldMapTilesEvent(pub Vec<TileData>);
+
+#[derive(Event, Debug, Clone)]
+pub struct UpdateWorldBlockchainDataEvent(pub Vec<TileBlockchainData>);

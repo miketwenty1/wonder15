@@ -1,8 +1,11 @@
 use bevy::prelude::*;
 
-use crate::scene::explorer::ecs::{
-    event::{BuildingToggleEvent, SwapTilesEvent, TextToggleEvent},
-    resource::ZoomLevelNumsRes,
+use crate::{
+    helper::plugins::comms::ecs::event::GetBlockchainUpdates,
+    scene::explorer::ecs::{
+        event::{BuildingToggleEvent, SwapTilesEvent, TextToggleEvent},
+        resource::ZoomLevelNumsRes,
+    },
 };
 
 pub fn map_keyboard_hotkeys(
@@ -14,6 +17,7 @@ pub fn map_keyboard_hotkeys(
     // zoom_level_e: EventWriter<ZoomLevelEvent>,
     // zoom_res: ResMut<ZoomLevelRes>,
     zooms: Res<ZoomLevelNumsRes>,
+    mut blockchain: EventWriter<GetBlockchainUpdates>,
 ) {
     if keyboard_input.just_pressed(KeyCode::Space) {
         swap_tile.send(SwapTilesEvent::Iter);
@@ -23,6 +27,9 @@ pub fn map_keyboard_hotkeys(
     }
     if keyboard_input.just_pressed(KeyCode::KeyB) {
         building_toggle.send(BuildingToggleEvent::KeyPressToggle);
+    }
+    if keyboard_input.just_pressed(KeyCode::KeyP) {
+        blockchain.send(GetBlockchainUpdates(0));
     }
     // digits 1-4
     if keyboard_input.just_pressed(KeyCode::Digit1) {

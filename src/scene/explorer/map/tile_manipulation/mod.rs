@@ -12,6 +12,7 @@ use update_tile_sprites::read_tile_update_event_sprites;
 use update_tile_text::read_tile_update_event_text;
 use update_tile_texture::read_tile_update_event_color;
 
+mod blockchain_color;
 mod despawn_floaters;
 mod swap_tiles;
 mod toggle_building;

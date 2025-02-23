@@ -1,6 +1,6 @@
 use bevy::{asset::AssetMetaCheck, prelude::*};
 use ecs::{
-    resource::{BlockchainHeight, GameHeight, GameStaticInputs, WinSize},
+    resource::{BlockchainDataHeight, BlockchainHeight, GameHeight, GameStaticInputs, WinSize},
     state::{FullMapState, SceneState},
 };
 use scene::{explorer::ExplorerScenePlugin, initer::InitScenePlugin};
@@ -62,6 +62,7 @@ pub fn game15(
             full_map_mode,
         })
         .insert_resource(GameHeight(browser_height))
+        .insert_resource(BlockchainDataHeight(0))
         .insert_resource(WinSize {
             width: viewport_width as f32,
             height: viewport_height as f32,

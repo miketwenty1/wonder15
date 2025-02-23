@@ -7,7 +7,7 @@ use crate::{
         },
         map::ecs::{
             component::{ChunkTileMapComp, LandIndexComp, PlayerTileColorComp, UlamComp},
-            hard::TILE_SPACING,
+            hard::{DEFAULT_UNSET_TILE_INDEX, TEXTURE_INDEX_FOR_PLAYER_COLOR, TILE_SPACING},
             resource::ChunkTileManagerRes,
         },
     },
@@ -53,7 +53,7 @@ fn spawn_chunk(
                 let tile_from_owned_map = world_map.map.get(&ulam_v);
                 let (land_index, player_color) = match tile_from_owned_map {
                     Some(s) => (s.land_index, s.color),
-                    None => (22, Color::Srgba(Color::BLACK.into())),
+                    None => (DEFAULT_UNSET_TILE_INDEX, Color::Srgba(Color::BLACK.into())),
                 };
 
                 let tile_entity = commands
@@ -61,7 +61,7 @@ fn spawn_chunk(
                         TileBundle {
                             position: tile_pos,
                             tilemap_id: TilemapId(tilemap_entity),
-                            texture_index: TileTextureIndex(35),
+                            texture_index: TileTextureIndex(TEXTURE_INDEX_FOR_PLAYER_COLOR),
                             color: TileColor(player_color),
                             ..Default::default()
                         },

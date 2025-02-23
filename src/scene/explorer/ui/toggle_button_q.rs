@@ -1,0 +1,158 @@
+use bevy::prelude::*;
+
+use crate::scene::{
+    explorer::ecs::{
+        component::{
+            BlockTimeToggleBtn, ByteToggleBtn, ExcessWorkToggleBtn, FeeToggleBtn,
+            LeadZerosToggleBtn, TgtDiffToggleBtn, TxCountToggleBtn, VersionToggleBtn,
+            WeightToggleBtn,
+        },
+        event::SwapTilesEvent,
+    },
+    initer::ecs::resource::UiColorPalette,
+};
+
+use super::{components::ToggleBlockchainBtn, ecs::state::ColorBlockchainKeySubState};
+
+#[allow(clippy::type_complexity)]
+pub fn general_btn(
+    mut interaction_query: Query<
+        (&Interaction, &mut BackgroundColor, &mut BorderColor),
+        (Changed<Interaction>, With<ToggleBlockchainBtn>),
+    >,
+    colors: Res<UiColorPalette>,
+) {
+    for (interaction, mut color, mut border_color) in &mut interaction_query {
+        match *interaction {
+            Interaction::Pressed => {
+                *color = colors.accent_color.into();
+                border_color.0 = colors.green_color;
+            }
+            Interaction::Hovered => {
+                *color = colors.lite_button_color.into();
+                border_color.0 = colors.node_color_lighter;
+            }
+            Interaction::None => {
+                *color = colors.button_color.into();
+                border_color.0 = colors.node_color;
+            }
+        }
+    }
+}
+
+pub fn fee_btn(
+    interaction_query: Query<&Interaction, (Changed<Interaction>, With<FeeToggleBtn>)>,
+    mut event: EventWriter<SwapTilesEvent>,
+    mut state: ResMut<NextState<ColorBlockchainKeySubState>>,
+) {
+    for interaction in &interaction_query {
+        if *interaction == Interaction::Pressed {
+            event.send(SwapTilesEvent::Fee);
+            state.set(ColorBlockchainKeySubState::Fee);
+        }
+    }
+}
+pub fn leadzeros_btn(
+    interaction_query: Query<&Interaction, (Changed<Interaction>, With<LeadZerosToggleBtn>)>,
+    mut event: EventWriter<SwapTilesEvent>,
+    mut state: ResMut<NextState<ColorBlockchainKeySubState>>,
+) {
+    for interaction in &interaction_query {
+        if *interaction == Interaction::Pressed {
+            event.send(SwapTilesEvent::LeadingZeros);
+            state.set(ColorBlockchainKeySubState::LeadingZeros);
+        }
+    }
+}
+pub fn tgtdiff_btn(
+    interaction_query: Query<&Interaction, (Changed<Interaction>, With<TgtDiffToggleBtn>)>,
+    mut event: EventWriter<SwapTilesEvent>,
+    mut state: ResMut<NextState<ColorBlockchainKeySubState>>,
+) {
+    for interaction in &interaction_query {
+        if *interaction == Interaction::Pressed {
+            event.send(SwapTilesEvent::TargetDifficulty);
+            state.set(ColorBlockchainKeySubState::TargetDifficulty);
+        }
+    }
+}
+pub fn weights_btn(
+    interaction_query: Query<&Interaction, (Changed<Interaction>, With<WeightToggleBtn>)>,
+    mut event: EventWriter<SwapTilesEvent>,
+    mut state: ResMut<NextState<ColorBlockchainKeySubState>>,
+) {
+    for interaction in &interaction_query {
+        if *interaction == Interaction::Pressed {
+            event.send(SwapTilesEvent::Weight);
+            state.set(ColorBlockchainKeySubState::Weight);
+        }
+    }
+}
+pub fn bytes_btn(
+    interaction_query: Query<&Interaction, (Changed<Interaction>, With<ByteToggleBtn>)>,
+    mut event: EventWriter<SwapTilesEvent>,
+    mut state: ResMut<NextState<ColorBlockchainKeySubState>>,
+) {
+    for interaction in &interaction_query {
+        if *interaction == Interaction::Pressed {
+            event.send(SwapTilesEvent::Byte);
+            state.set(ColorBlockchainKeySubState::Byte);
+        }
+    }
+}
+pub fn txcount_btn(
+    interaction_query: Query<&Interaction, (Changed<Interaction>, With<TxCountToggleBtn>)>,
+    mut event: EventWriter<SwapTilesEvent>,
+    mut state: ResMut<NextState<ColorBlockchainKeySubState>>,
+) {
+    for interaction in &interaction_query {
+        if *interaction == Interaction::Pressed {
+            event.send(SwapTilesEvent::TxCount);
+            state.set(ColorBlockchainKeySubState::TxCount);
+        }
+    }
+}
+pub fn blocktime_btn(
+    interaction_query: Query<&Interaction, (Changed<Interaction>, With<BlockTimeToggleBtn>)>,
+    mut event: EventWriter<SwapTilesEvent>,
+    mut state: ResMut<NextState<ColorBlockchainKeySubState>>,
+) {
+    for interaction in &interaction_query {
+        if *interaction == Interaction::Pressed {
+            event.send(SwapTilesEvent::BlockTime);
+            state.set(ColorBlockchainKeySubState::BlockTime);
+        }
+    }
+}
+pub fn excesswork_btn(
+    interaction_query: Query<&Interaction, (Changed<Interaction>, With<ExcessWorkToggleBtn>)>,
+    mut event: EventWriter<SwapTilesEvent>,
+    mut state: ResMut<NextState<ColorBlockchainKeySubState>>,
+) {
+    for interaction in &interaction_query {
+        if *interaction == Interaction::Pressed {
+            event.send(SwapTilesEvent::ExcessWork);
+            state.set(ColorBlockchainKeySubState::ExcessWork);
+        }
+    }
+}
+pub fn version_btn(
+    interaction_query: Query<&Interaction, (Changed<Interaction>, With<VersionToggleBtn>)>,
+    mut event: EventWriter<SwapTilesEvent>,
+    mut state: ResMut<NextState<ColorBlockchainKeySubState>>,
+) {
+    for interaction in &interaction_query {
+        if *interaction == Interaction::Pressed {
+            event.send(SwapTilesEvent::Version);
+            state.set(ColorBlockchainKeySubState::Version);
+        }
+    }
+}
+// ,
+// ,
+// ,
+// ,
+// ,
+// ,
+// excesswork_btn,
+// ,

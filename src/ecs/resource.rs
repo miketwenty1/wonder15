@@ -16,6 +16,9 @@ pub struct GameStaticInputs {
 pub struct BlockchainHeight(pub u32);
 
 #[derive(Resource, Clone, Debug, Default, Deserialize)]
+pub struct BlockchainDataHeight(pub u32);
+
+#[derive(Resource, Clone, Debug, Default, Deserialize)]
 pub struct WinSize {
     pub width: f32,
     pub height: f32,
@@ -28,7 +31,6 @@ pub struct GameHeight(pub u32);
 pub struct WorldOwnedTileMap {
     pub map: HashMap<u32, TileData>,
 }
-
 #[derive(Resource, Clone, PartialEq, Serialize, Deserialize)]
 pub struct WorldBlockchainTileMap {
     pub map: HashMap<u32, TileBlockchainData>,
@@ -52,6 +54,7 @@ pub struct TileData {
 #[derive(Resource, Clone, PartialEq, Debug, Serialize, Deserialize)]
 pub struct TileBlockchainData {
     pub height: u32,
+    pub block_hash: [u8; 32],
     pub block_time: i64,
     pub block_bits: i64,
     pub block_n_tx: i32,

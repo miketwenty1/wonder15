@@ -4,7 +4,7 @@ use crate::{
     ecs::resource::WorldOwnedTileMap, scene::explorer::ecs::event::UpdateWorldMapTilesEvent,
 };
 
-pub fn read_tile_update_event(
+pub fn read_game_world_update_event(
     mut event: EventReader<UpdateWorldMapTilesEvent>,
     mut world_map: ResMut<WorldOwnedTileMap>,
 ) {

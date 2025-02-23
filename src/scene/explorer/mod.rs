@@ -8,8 +8,10 @@ use ecs::{
 use init::ExplorerInitPlugin;
 use input::ExplorerInputPlugin;
 use map::ExplorerMapPlugin;
+use ui::ExplorerUiPlugin;
 
 mod animate;
+//mod blockchain_color;
 pub mod ecs;
 mod init;
 mod input;
@@ -33,6 +35,7 @@ impl Plugin for ExplorerScenePlugin {
                 ExplorerMapPlugin,
                 ExplorerEventPlugin,
                 ExplorerInitPlugin,
+                ExplorerUiPlugin,
             ));
     }
 }

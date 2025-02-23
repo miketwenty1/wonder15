@@ -85,6 +85,39 @@ pub fn hex_str_to_32_bytes(s: &str) -> [u8; 32] {
     out
 }
 
+pub fn leading_zeros_in_32(bytes: &[u8; 32]) -> usize {
+    let mut count = 0;
+    for &b in bytes {
+        if b == 0 {
+            count += 8;
+        } else {
+            count += b.leading_zeros() as usize;
+            break;
+        }
+    }
+    count
+}
+
+pub fn trailing_zeros_in_32(bytes: &[u8; 32]) -> usize {
+    let mut count = 0;
+    for &b in bytes.iter().rev() {
+        if b == 0 {
+            count += 8;
+        } else {
+            count += b.trailing_zeros() as usize;
+            break;
+        }
+    }
+    count
+}
+
+pub fn bits_to_target_hash(bits: i64) -> usize {
+    let exponent = ((bits >> 24) & 0xff) as u8;
+    let mantissa = (bits & 0x00ff_ffff) as u32;
+    let mantissa_shifted = (mantissa as u128) << (8 * (exponent.saturating_sub(3)));
+    mantissa_shifted.leading_zeros() as usize
+}
+
 pub fn get_text_color_per_tile_color(c: &Color) -> Color {
     if c.to_srgba().red > LIGHTEST_TEXT.red
         && c.to_srgba().green > LIGHTEST_TEXT.green

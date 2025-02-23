@@ -2,13 +2,16 @@ use bevy::prelude::*;
 use bevy_ecs_tilemap::tiles::{TileColor, TileTextureIndex};
 
 use crate::{
-    helper::utils::funs::vec_tile_updates_to_hashmap,
+    helper::utils::funs::{get_resource_for_tile, vec_tile_updates_to_hashmap},
     scene::explorer::{
         ecs::{
             event::{SwapTilesEvent, UpdateWorldMapTilesEvent},
             resource::CurrentTilesRes,
         },
-        map::ecs::component::{LandIndexComp, PlayerTileColorComp, UlamComp},
+        map::ecs::{
+            component::{LandIndexComp, PlayerTileColorComp, UlamComp},
+            hard::{DEFAULT_UNSET_TILE_INDEX, TEXTURE_INDEX_FOR_PLAYER_COLOR},
+        },
     },
 };
 
@@ -34,11 +37,12 @@ pub fn read_tile_update_event_color(
         ) in query.iter_mut()
         {
             if let Some(s) = mew_tiles_map.get(&height.0) {
-                land_index_store.0 = s.land_index;
                 tile_color_store.0 = TileColor(s.color);
+                land_index_store.0 = s.land_index;
 
                 match current_tiles.0 {
                     SwapTilesEvent::PlayerColor => {
+                        tile_texture_index.0 = TEXTURE_INDEX_FOR_PLAYER_COLOR;
                         *tile_color = TileColor(s.color);
                     }
                     _ => {
