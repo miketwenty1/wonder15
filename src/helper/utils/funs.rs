@@ -111,7 +111,7 @@ pub fn trailing_zeros_in_32(bytes: &[u8; 32]) -> usize {
     count
 }
 
-pub fn bits_to_target_hash(bits: i64) -> usize {
+pub fn bits_to_target_hash(bits: u32) -> usize {
     let exponent = ((bits >> 24) & 0xff) as u8;
     let mantissa = (bits & 0x00ff_ffff) as u32;
     let mantissa_shifted = (mantissa as u128) << (8 * (exponent.saturating_sub(3)));

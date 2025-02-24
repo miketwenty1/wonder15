@@ -1,4 +1,6 @@
 use bevy::{input::ButtonInput, math::Vec3, prelude::*, render::camera::Camera};
+
+use super::hard::MOVE_VELOCITY;
 pub fn keyboard_movement(
     time: Res<Time>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
@@ -22,8 +24,7 @@ pub fn keyboard_movement(
         if keyboard_input.pressed(KeyCode::KeyS) || keyboard_input.pressed(KeyCode::ArrowDown) {
             direction -= Vec3::new(0.0, 1.0, 0.0);
         }
-        let z = transform.translation.z;
-        transform.translation += time.delta_secs() * direction * 300. * ortho.scale;
-        transform.translation.z = z;
+        transform.translation +=
+            time.delta_secs() * direction * (MOVE_VELOCITY + 250.) * ortho.scale;
     }
 }

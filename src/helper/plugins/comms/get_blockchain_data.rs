@@ -113,13 +113,13 @@ pub fn api_receive_blockchain_server_tiles_by_height(
                             let new_td = TileBlockchainData {
                                 height: block_data.h as u32,
                                 block_hash: hex_str_to_32_bytes(&block_data.x),
-                                block_time: block_data.t,
-                                block_bits: block_data.b,
-                                block_n_tx: block_data.n,
-                                block_size: block_data.s,
-                                block_fee: block_data.f,
-                                block_weight: block_data.w,
-                                block_ver: block_data.v,
+                                block_time: block_data.t as u64,
+                                block_bits: block_data.b as u64,
+                                block_n_tx: block_data.n as u32,
+                                block_size: block_data.s as u32,
+                                block_fee: block_data.f as u64,
+                                block_weight: block_data.w as u64,
+                                block_ver: block_data.v as u32,
                             };
 
                             // check if this tile is already in the worldmap as it's coming in.

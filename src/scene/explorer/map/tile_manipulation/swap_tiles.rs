@@ -7,21 +7,24 @@ use crate::{
         bits_to_target_hash, get_text_color_per_tile_color, leading_zeros_in_32,
         trailing_zeros_in_32,
     },
-    scene::explorer::{
-        ecs::{event::SwapTilesEvent, resource::CurrentTilesRes},
-        map::{
-            ecs::{
-                component::{
-                    AssociatedTileColor, LandIndexComp, PlayerTileColorComp, TileText, UlamComp,
+    scene::{
+        explorer::{
+            ecs::{event::SwapTilesEvent, resource::CurrentTilesRes},
+            map::{
+                ecs::{
+                    component::{
+                        AssociatedTileColor, LandIndexComp, PlayerTileColorComp, TileText, UlamComp,
+                    },
+                    hard::TEXTURE_INDEX_FOR_PLAYER_COLOR,
                 },
-                hard::TEXTURE_INDEX_FOR_PLAYER_COLOR,
-            },
-            tile_manipulation::blockchain_color::{
-                get_bits_color, get_blocktime_color, get_byte_color, get_excesswork_color,
-                get_fee_color, get_leading_zeros_color, get_tx_count_color, get_version_color,
-                get_weight_color,
+                tile_manipulation::blockchain_color::{
+                    get_bits_color, get_blocktime_color, get_byte_color, get_excesswork_color,
+                    get_fee_color, get_leading_zeros_color, get_tx_count_color, get_version_color,
+                    get_weight_color,
+                },
             },
         },
+        initer::ecs::resource::{BlockchainKeyColorPalette, BlockchainKeyValues, KeyColorRange},
     },
 };
 
@@ -44,6 +47,7 @@ pub fn swap_tile_index_reader(
     mut q_text_color: Query<(&mut TextColor, &AssociatedTileColor), With<TileText>>,
     mut current_tiles: ResMut<CurrentTilesRes>,
     blockchain_tiles: Res<WorldBlockchainTileMap>,
+    blockchain_legend_colors: Res<BlockchainKeyValues>,
 ) {
     for e in event_r.read() {
         let swap_type = if e == &SwapTilesEvent::Iter {
@@ -77,10 +81,27 @@ pub fn swap_tile_index_reader(
             }
             SwapTilesEvent::Fee => {
                 info!("Fee");
+                let a = blockchain_legend_colors.fee.clone();
+
                 for (mut tile_index, _, mut tile_color, _, ulam) in query.iter_mut() {
                     if let Some(val) = blockchain_tiles.map.get(&ulam.0) {
-                        let c = get_fee_color(val.block_fee);
-                        tile_color.0 = c;
+                        //let c = get_fee_color(val.block_fee);
+                        //let c = a::color_for_ranges(); //color_for_ranges(&a, val.block_fee);
+                        let ee = match a.color_for_ranges(val.block_fee) {
+                            Some(s) => s,
+                            None => {
+                                info!("failed for val: {}", val.block_fee);
+                                Srgba {
+                                    red: 0.,
+                                    green: 1.,
+                                    blue: 0.,
+                                    alpha: 1.,
+                                }
+                            }
+                        };
+                        let aa = Color::Srgba(ee);
+                        //tile_color.0 = c;
+                        tile_color.0 = aa;
                     } else {
                         tile_color.0 = WEIRD_COLOR;
                     }
@@ -95,7 +116,7 @@ pub fn swap_tile_index_reader(
                         let current = val.block_time;
                         let prev_o = blockchain_tiles.map.get(&(ulam.0 - 1));
                         let previous = prev_o.map_or(0, |prev| prev.block_time);
-                        let c = get_blocktime_color(current - previous);
+                        let c = get_blocktime_color(current as i64 - previous as i64);
                         tile_color.0 = c;
                     } else {
                         tile_color.0 = WEIRD_COLOR;
@@ -134,8 +155,8 @@ pub fn swap_tile_index_reader(
                 info!("Weight");
                 for (mut tile_index, _, mut tile_color, _, ulam) in query.iter_mut() {
                     if let Some(val) = blockchain_tiles.map.get(&ulam.0) {
-                        let c = get_weight_color(val.block_weight);
-                        tile_color.0 = c;
+                        // let c = get_weight_color(val.block_weight);
+                        //  tile_color.0 = c;
                     } else {
                         tile_color.0 = WEIRD_COLOR;
                     }
@@ -147,8 +168,8 @@ pub fn swap_tile_index_reader(
                 info!("TargetDifficulty");
                 for (mut tile_index, _, mut tile_color, _, ulam) in query.iter_mut() {
                     if let Some(val) = blockchain_tiles.map.get(&ulam.0) {
-                        let c = get_bits_color(val.block_bits);
-                        tile_color.0 = c;
+                        //  let c = get_bits_color(val.block_bits);
+                        //  tile_color.0 = c;
                     } else {
                         tile_color.0 = WEIRD_COLOR;
                     }
@@ -177,10 +198,10 @@ pub fn swap_tile_index_reader(
                     if let Some(val) = blockchain_tiles.map.get(&ulam.0) {
                         let hash = val.block_hash;
                         let leading_zeros = leading_zeros_in_32(&hash);
-                        let target_hash = bits_to_target_hash(val.block_bits);
+                        //let target_hash = bits_to_target_hash(val.block_bits);
 
-                        let c = get_excesswork_color(leading_zeros - target_hash);
-                        tile_color.0 = c;
+                        // let c = get_excesswork_color(leading_zeros - target_hash);
+                        // tile_color.0 = c;
                     } else {
                         tile_color.0 = WEIRD_COLOR;
                     }

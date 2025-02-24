@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use blockchain_value_keys::spawn_legend;
+use blockchain_value_keys::spawn_fee_legend;
 
 use super::ecs::state::ColorBlockchainKeySubState;
 
@@ -13,7 +13,7 @@ impl Plugin for BlockchainKeyRangesPlugin {
             .enable_state_scoped_entities::<ColorBlockchainKeySubState>()
             .add_systems(
                 OnEnter(ColorBlockchainKeySubState::Fee),
-                (spawn_legend).run_if(in_state(ColorBlockchainKeySubState::Fee)),
+                (spawn_fee_legend).run_if(in_state(ColorBlockchainKeySubState::Fee)),
             );
     }
 }

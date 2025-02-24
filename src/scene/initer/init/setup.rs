@@ -1,3 +1,5 @@
+use std::u32;
+
 use bevy::{color::palettes::css::DARK_GREEN, prelude::*, utils::HashMap};
 
 use crate::{
@@ -7,7 +9,10 @@ use crate::{
     },
     scene::initer::ecs::{
         component::{AnimationIndicesComp, AnimationTimerComp},
-        resource::{BlockchainKeyColorPalette, BlockchainKeyValues, KeyColorRange, UiColorPalette},
+        resource::{
+            BlockchainKeyColorPalette, BlockchainKeyValues, KeyColorRange, KeyColorRangeVec,
+            UiColorPalette,
+        },
     },
 };
 
@@ -123,38 +128,45 @@ pub fn setup_things(
     let mut version_hm = Vec::new();
 
     fee_hm.insert(0, KeyColorRange::new(0, bp.black, 0, bp.black));
-    fee_hm.insert(1, KeyColorRange::new(1, bp.orange, 5_000_000, bp.red));
+    fee_hm.insert(
+        1,
+        KeyColorRange::new(1, bp.dark_orange, 5_000_000, bp.orange),
+    );
     fee_hm.insert(
         2,
-        KeyColorRange::new(5_000_001, bp.red, 20_000_000, bp.pink),
+        KeyColorRange::new(5_000_001, bp.orange, 20_000_000, bp.red),
     );
     fee_hm.insert(
         3,
-        KeyColorRange::new(20_000_001, bp.pink, 100_000_000, bp.purple),
+        KeyColorRange::new(20_000_001, bp.red, 100_000_000, bp.pink),
     );
     fee_hm.insert(
         4,
-        KeyColorRange::new(100_000_001, bp.purple, 500_000_000, bp.magenta),
+        KeyColorRange::new(100_000_001, bp.pink, 500_000_000, bp.dark_magenta),
     );
     fee_hm.insert(
         5,
-        KeyColorRange::new(500_000_001, bp.magenta, 3_000_000_000, bp.hot_pink),
+        KeyColorRange::new(500_000_001, bp.magenta, 10_000_000_000, bp.purple),
     );
     fee_hm.insert(
         6,
-        KeyColorRange::new(3_000_000_001, bp.magenta, 4_200_000_000, bp.white),
+        KeyColorRange::new(10_000_000_001, bp.white, u64::MAX, bp.white),
     );
 
     let blockchain_value_keys = BlockchainKeyValues {
-        fee: fee_hm,
-        block_time: block_time_hm,
-        tx_count: tx_count_hm,
-        byte: byte_hm,
-        weight: weight_hm,
-        tgt_diff: tgt_diff_hm,
-        leading_zeros: leading_zeros_hm,
-        excess_work: excess_work_hm,
-        version: version_hm,
+        fee: KeyColorRangeVec { vec: fee_hm },
+        block_time: KeyColorRangeVec { vec: block_time_hm },
+        tx_count: KeyColorRangeVec { vec: tx_count_hm },
+        byte: KeyColorRangeVec { vec: byte_hm },
+        weight: KeyColorRangeVec { vec: weight_hm },
+        tgt_diff: KeyColorRangeVec { vec: tgt_diff_hm },
+        leading_zeros: KeyColorRangeVec {
+            vec: leading_zeros_hm,
+        },
+        excess_work: KeyColorRangeVec {
+            vec: excess_work_hm,
+        },
+        version: KeyColorRangeVec { vec: version_hm },
     };
     commands.insert_resource(bp);
     commands.insert_resource(ui_color_palette);

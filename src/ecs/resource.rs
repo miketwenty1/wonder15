@@ -55,13 +55,13 @@ pub struct TileData {
 pub struct TileBlockchainData {
     pub height: u32,
     pub block_hash: [u8; 32],
-    pub block_time: i64,
-    pub block_bits: i64,
-    pub block_n_tx: i32,
-    pub block_size: i32,
-    pub block_fee: i64,
-    pub block_weight: i64,
-    pub block_ver: i32,
+    pub block_time: u64,
+    pub block_bits: u64,
+    pub block_n_tx: u32,
+    pub block_size: u32,
+    pub block_fee: u64,
+    pub block_weight: u64,
+    pub block_ver: u32,
 }
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]

@@ -1,1 +1,1 @@
-pub const MOUSE_MOVE_VELOCITY: f32 = 1.;
+pub const MOVE_VELOCITY: f32 = 100.;

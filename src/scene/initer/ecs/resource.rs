@@ -1,4 +1,4 @@
-use bevy::{prelude::*, utils::HashMap};
+use bevy::prelude::*;
 use serde::Deserialize;
 
 #[derive(Resource, Clone, Debug, Default, Deserialize)]
@@ -47,31 +47,48 @@ pub struct BlockchainKeyColorPalette {
 
 #[derive(Resource, Clone, Debug, Default, Deserialize)]
 pub struct BlockchainKeyValues {
-    pub fee: Vec<KeyColorRange>,
-    pub block_time: Vec<KeyColorRange>,
-    pub tx_count: Vec<KeyColorRange>,
-    pub byte: Vec<KeyColorRange>,
-    pub weight: Vec<KeyColorRange>,
-    pub tgt_diff: Vec<KeyColorRange>,
-    pub leading_zeros: Vec<KeyColorRange>,
-    pub excess_work: Vec<KeyColorRange>,
-    pub version: Vec<KeyColorRange>,
+    pub fee: KeyColorRangeVec,
+    pub block_time: KeyColorRangeVec,
+    pub tx_count: KeyColorRangeVec,
+    pub byte: KeyColorRangeVec,
+    pub weight: KeyColorRangeVec,
+    pub tgt_diff: KeyColorRangeVec,
+    pub leading_zeros: KeyColorRangeVec,
+    pub excess_work: KeyColorRangeVec,
+    pub version: KeyColorRangeVec,
 }
 
 #[derive(Resource, Clone, Debug, Default, Deserialize)]
 pub struct KeyColorRange {
-    pub start: (u32, Color),
-    pub end: (u32, Color),
+    pub start: (u64, Color),
+    pub end: (u64, Color),
 }
+
+#[derive(Resource, Clone, Debug, Default, Deserialize)]
+pub struct KeyColorRangeVec {
+    pub vec: Vec<KeyColorRange>,
+}
+
+impl KeyColorRangeVec {
+    pub fn color_for_ranges(&self, n: u64) -> Option<Srgba> {
+        for range in &self.vec {
+            if let Some(color) = range.color_for(n) {
+                return Some(color);
+            }
+        }
+        None
+    }
+}
+
 impl KeyColorRange {
-    pub fn new(start: u32, start_color: Color, end: u32, end_color: Color) -> Self {
+    pub fn new(start: u64, start_color: Color, end: u64, end_color: Color) -> Self {
         Self {
             start: (start, start_color),
             end: (end, end_color),
         }
     }
 
-    fn color_for(&self, n: u32) -> Option<Srgba> {
+    fn color_for(&self, n: u64) -> Option<Srgba> {
         // Compare n to self.start.0 / self.end.0 (the u32s)
         if n < self.start.0 || n > self.end.0 {
             return None;
@@ -101,13 +118,5 @@ impl KeyColorRange {
             blue: b,
             alpha: 1.0,
         })
-    }
-    pub fn color_for_ranges(ranges: &[KeyColorRange], n: u32) -> Option<Srgba> {
-        for range in ranges {
-            if let Some(color) = range.color_for(n) {
-                return Some(color);
-            }
-        }
-        None
     }
 }

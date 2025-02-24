@@ -151,7 +151,7 @@ pub fn get_blocktime_color(value: i64) -> Color {
     }
 }
 
-pub fn get_tx_count_color(value: i32) -> Color {
+pub fn get_tx_count_color(value: u32) -> Color {
     match value {
         // 1: Black
         1 => Color::Srgba(Srgba {
@@ -226,7 +226,7 @@ pub fn get_tx_count_color(value: i32) -> Color {
     }
 }
 
-pub fn get_byte_color(value: i32) -> Color {
+pub fn get_byte_color(value: u32) -> Color {
     match value {
         // 0 to 200: Black
         0..=200 => Color::Srgba(Srgba {
@@ -323,7 +323,7 @@ pub fn get_byte_color(value: i32) -> Color {
     }
 }
 
-pub fn get_weight_color(value: i64) -> Color {
+pub fn get_weight_color(value: u32) -> Color {
     match value {
         // 0 to 800: Black
         0..=800 => Color::Srgba(Srgba {
@@ -420,7 +420,7 @@ pub fn get_weight_color(value: i64) -> Color {
     }
 }
 
-pub fn get_bits_color(value: i64) -> Color {
+pub fn get_bits_color(value: u32) -> Color {
     // Create a hasher and hash the value
     let mut hasher = DefaultHasher::new();
     value.hash(&mut hasher);
@@ -657,7 +657,7 @@ pub fn get_excesswork_color(value: usize) -> Color {
     }
 }
 
-pub fn get_version_color(value: i32) -> Color {
+pub fn get_version_color(value: u32) -> Color {
     // Create a hasher and hash the value
     let mut hasher = DefaultHasher::new();
     value.hash(&mut hasher);
