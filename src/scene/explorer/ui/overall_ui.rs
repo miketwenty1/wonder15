@@ -12,14 +12,14 @@ pub fn ui_explorer(mut commands: Commands) {
             width: Val::Percent(100.0),
             height: Val::Percent(100.0),
             grid_template_columns: vec![
-                GridTrack::min_content(),
                 GridTrack::flex(1.0),
-                GridTrack::min_content(),
+                GridTrack::flex(1.0),
+                GridTrack::flex(1.0),
             ],
             grid_template_rows: vec![
-                GridTrack::min_content(),
                 GridTrack::flex(1.0),
-                GridTrack::min_content(),
+                GridTrack::flex(1.0),
+                GridTrack::flex(1.0),
             ],
             ..default()
         },
@@ -48,8 +48,8 @@ pub fn ui_explorer(mut commands: Commands) {
         builder.spawn((
             Node {
                 display: Display::Grid,
-                //height: Val::Percent(100.0),
-                //width: Val::Px(150.0),
+                justify_items: JustifyItems::Start,
+                justify_self: JustifySelf::Start,
                 ..default()
             },
             ExplorerUiNodeLeft,
@@ -61,10 +61,6 @@ pub fn ui_explorer(mut commands: Commands) {
         builder.spawn((
             Node {
                 display: Display::Grid,
-                //width: Val::Percent(100.0),
-                //height: Val::Percent(100.0),
-                //grid_column: GridPlacement::span(1),
-                //grid_row: GridPlacement::span(1),
                 ..default()
             },
             ExplorerUiNodeMiddle,

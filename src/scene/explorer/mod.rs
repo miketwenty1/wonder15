@@ -16,7 +16,7 @@ pub mod ecs;
 mod init;
 mod input;
 mod map;
-mod ui;
+pub mod ui;
 
 pub struct ExplorerScenePlugin;
 

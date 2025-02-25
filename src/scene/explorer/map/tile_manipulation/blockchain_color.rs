@@ -1,80 +1,80 @@
 use bevy::prelude::*;
 use std::hash::{DefaultHasher, Hash, Hasher};
 
-pub fn get_fee_color(value: i64) -> Color {
-    match value {
-        // 0: Black
-        0 => Color::Srgba(Srgba {
-            red: 0.0,
-            green: 0.0,
-            blue: 0.0,
-            alpha: 1.0,
-        }),
+// pub fn get_fee_color(value: i64) -> Color {
+//     match value {
+//         // 0: Black
+//         0 => Color::Srgba(Srgba {
+//             red: 0.0,
+//             green: 0.0,
+//             blue: 0.0,
+//             alpha: 1.0,
+//         }),
 
-        // 1..=5_000,000: Orange to Red
-        1..=5_000_000 => {
-            let intensity = value as f32 / 5_000_000.0;
-            Color::Srgba(Srgba {
-                red: 1.0,
-                green: 0.5 - intensity * 0.5,
-                blue: 0.0,
-                alpha: 1.0,
-            })
-        }
+//         // 1..=5_000,000: Orange to Red
+//         1..=5_000_000 => {
+//             let intensity = value as f32 / 5_000_000.0;
+//             Color::Srgba(Srgba {
+//                 red: 1.0,
+//                 green: 0.5 - intensity * 0.5,
+//                 blue: 0.0,
+//                 alpha: 1.0,
+//             })
+//         }
 
-        // 5_000_001..=20_000_000: Red to Pink
-        5_000_001..=20_000_000 => {
-            let intensity = (value - 5_000_001) as f32 / 15_000_000.0;
-            Color::Srgba(Srgba {
-                red: 1.0,
-                green: 0.0,
-                blue: intensity * 0.5,
-                alpha: 1.0,
-            })
-        }
+//         // 5_000_001..=20_000_000: Red to Pink
+//         5_000_001..=20_000_000 => {
+//             let intensity = (value - 5_000_001) as f32 / 15_000_000.0;
+//             Color::Srgba(Srgba {
+//                 red: 1.0,
+//                 green: 0.0,
+//                 blue: intensity * 0.5,
+//                 alpha: 1.0,
+//             })
+//         }
 
-        // 20_000_001..=100_000_000: Pink to Purpleish Blue
-        20_000_001..=100_000_000 => {
-            let intensity = (value - 20_000_001) as f32 / 80_000_000.0;
-            Color::Srgba(Srgba {
-                red: 1.0 - intensity * 0.5,
-                green: 0.0,
-                blue: 0.5 + intensity * 0.5,
-                alpha: 1.0,
-            })
-        }
+//         // 20_000_001..=100_000_000: Pink to Purpleish Blue
+//         20_000_001..=100_000_000 => {
+//             let intensity = (value - 20_000_001) as f32 / 80_000_000.0;
+//             Color::Srgba(Srgba {
+//                 red: 1.0 - intensity * 0.5,
+//                 green: 0.0,
+//                 blue: 0.5 + intensity * 0.5,
+//                 alpha: 1.0,
+//             })
+//         }
 
-        // 100_000_001..=500_000_000: Purple to Magenta
-        100_000_001..=500_000_000 => {
-            let intensity = (value - 100_000_001) as f32 / 400_000_000.0;
-            Color::Srgba(Srgba {
-                red: 0.5 + intensity * 0.5,
-                green: 0.0,
-                blue: 1.0 - intensity * 0.5,
-                alpha: 1.0,
-            })
-        }
+//         // 100_000_001..=500_000_000: Purple to Magenta
+//         100_000_001..=500_000_000 => {
+//             let intensity = (value - 100_000_001) as f32 / 400_000_000.0;
+//             Color::Srgba(Srgba {
+//                 red: 0.5 + intensity * 0.5,
+//                 green: 0.0,
+//                 blue: 1.0 - intensity * 0.5,
+//                 alpha: 1.0,
+//             })
+//         }
 
-        // 500_000_001..=3_000_000_000: Magenta to Hot Pink
-        500_000_001..=3_000_000_000 => {
-            let intensity = (value - 500_000_001) as f32 / 2_500_000_000.0;
-            Color::Srgba(Srgba {
-                red: 1.0,
-                green: 0.0 + intensity * 0.5,
-                blue: 1.0 - intensity * 0.5,
-                alpha: 1.0,
-            })
-        }
+//         // 500_000_001..=3_000_000_000: Magenta to Hot Pink
+//         500_000_001..=3_000_000_000 => {
+//             let intensity = (value - 500_000_001) as f32 / 2_500_000_000.0;
+//             Color::Srgba(Srgba {
+//                 red: 1.0,
+//                 green: 0.0 + intensity * 0.5,
+//                 blue: 1.0 - intensity * 0.5,
+//                 alpha: 1.0,
+//             })
+//         }
 
-        // 3_000_000_001+: White
-        _ => Color::Srgba(Srgba {
-            red: 1.0,
-            green: 1.0,
-            blue: 1.0,
-            alpha: 1.0,
-        }),
-    }
-}
+//         // 3_000_000_001+: White
+//         _ => Color::Srgba(Srgba {
+//             red: 1.0,
+//             green: 1.0,
+//             blue: 1.0,
+//             alpha: 1.0,
+//         }),
+//     }
+// }
 
 pub fn get_blocktime_color(value: i64) -> Color {
     match value {

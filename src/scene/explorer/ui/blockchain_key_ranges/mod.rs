@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use blockchain_value_keys::spawn_fee_legend;
+use blockchain_value_keys::spawn_legend_driver;
 
 use super::ecs::state::ColorBlockchainKeySubState;
 
@@ -13,7 +13,36 @@ impl Plugin for BlockchainKeyRangesPlugin {
             .enable_state_scoped_entities::<ColorBlockchainKeySubState>()
             .add_systems(
                 OnEnter(ColorBlockchainKeySubState::Fee),
-                (spawn_fee_legend).run_if(in_state(ColorBlockchainKeySubState::Fee)),
+                (spawn_legend_driver).run_if(in_state(ColorBlockchainKeySubState::Fee)),
+            )
+            .add_systems(
+                OnEnter(ColorBlockchainKeySubState::BlockTime),
+                (spawn_legend_driver).run_if(in_state(ColorBlockchainKeySubState::BlockTime)),
+            )
+            .add_systems(
+                OnEnter(ColorBlockchainKeySubState::TxCount),
+                (spawn_legend_driver).run_if(in_state(ColorBlockchainKeySubState::TxCount)),
+            )
+            .add_systems(
+                OnEnter(ColorBlockchainKeySubState::Weight),
+                (spawn_legend_driver).run_if(in_state(ColorBlockchainKeySubState::Weight)),
+            )
+            .add_systems(
+                OnEnter(ColorBlockchainKeySubState::TargetDifficulty),
+                (spawn_legend_driver)
+                    .run_if(in_state(ColorBlockchainKeySubState::TargetDifficulty)),
+            )
+            .add_systems(
+                OnEnter(ColorBlockchainKeySubState::LeadingZeros),
+                (spawn_legend_driver).run_if(in_state(ColorBlockchainKeySubState::LeadingZeros)),
+            )
+            .add_systems(
+                OnEnter(ColorBlockchainKeySubState::ExcessWork),
+                (spawn_legend_driver).run_if(in_state(ColorBlockchainKeySubState::ExcessWork)),
+            )
+            .add_systems(
+                OnEnter(ColorBlockchainKeySubState::Version),
+                (spawn_legend_driver).run_if(in_state(ColorBlockchainKeySubState::Version)),
             );
     }
 }

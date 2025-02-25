@@ -1,4 +1,4 @@
-use std::u32;
+use std::{i64, u32, u64};
 
 use bevy::{color::palettes::css::DARK_GREEN, prelude::*, utils::HashMap};
 
@@ -10,8 +10,8 @@ use crate::{
     scene::initer::ecs::{
         component::{AnimationIndicesComp, AnimationTimerComp},
         resource::{
-            BlockchainKeyColorPalette, BlockchainKeyValues, KeyColorRange, KeyColorRangeVec,
-            UiColorPalette,
+            BlockchainFilterKeys, BlockchainKeyColorPalette, FilterLegend, FormatType,
+            KeyColorRange, UiColorPalette,
         },
     },
 };
@@ -94,10 +94,13 @@ pub fn setup_things(
         dark_magenta: Srgba::hex("8B008B").unwrap().into(),
         yellow: Srgba::hex("FFFF00").unwrap().into(),
         dark_yellow: Srgba::hex("999900").unwrap().into(),
+        light_blue: Srgba::hex("ADD8E6").unwrap().into(),
         blue: Srgba::hex("0000FF").unwrap().into(),
         dark_blue: Srgba::hex("00008B").unwrap().into(),
+        darker_blue: Srgba::hex("080848").unwrap().into(),
         cyan: Srgba::hex("00FFFF").unwrap().into(),
         dark_cyan: Srgba::hex("008B8B").unwrap().into(),
+        light_green: Srgba::hex("90EE90").unwrap().into(),
         green: Srgba::hex("008000").unwrap().into(),
         dark_green: Srgba::hex("006400").unwrap().into(),
         green_color: Srgba::hex("00FF00").unwrap().into(),
@@ -107,6 +110,7 @@ pub fn setup_things(
         dark_orange: Srgba::hex("FF8C00").unwrap().into(),
         pink: Srgba::hex("FFC0CB").unwrap().into(),
         dark_pink: Srgba::hex("FF1493").unwrap().into(),
+        light_purple: Srgba::hex("CBC3E3").unwrap().into(),
         purple: Srgba::hex("A020F0").unwrap().into(),
         dark_purple: Srgba::hex("301934").unwrap().into(),
 
@@ -114,7 +118,9 @@ pub fn setup_things(
         teal: Srgba::hex("008080").unwrap().into(),
         lavender: Srgba::hex("E6E6FA").unwrap().into(),
         navy: Srgba::hex("000080").unwrap().into(),
+        light_brown: Srgba::hex("A36F40").unwrap().into(),
         brown: Srgba::hex("A52A2A").unwrap().into(),
+        llmagenta: Srgba::hex("FEC3EE").unwrap().into(),
     };
 
     let mut fee_hm = Vec::new();
@@ -127,46 +133,97 @@ pub fn setup_things(
     let mut excess_work_hm = Vec::new();
     let mut version_hm = Vec::new();
 
+    // BLOCK FEE
     fee_hm.insert(0, KeyColorRange::new(0, bp.black, 0, bp.black));
-    fee_hm.insert(
-        1,
-        KeyColorRange::new(1, bp.dark_orange, 5_000_000, bp.orange),
-    );
+    fee_hm.insert(1, KeyColorRange::new(0, bp.blue, 1_000_000, bp.light_green));
     fee_hm.insert(
         2,
-        KeyColorRange::new(5_000_001, bp.orange, 20_000_000, bp.red),
+        KeyColorRange::new(1_000_001, bp.light_green, 2_000_000, bp.yellow),
     );
     fee_hm.insert(
         3,
-        KeyColorRange::new(20_000_001, bp.red, 100_000_000, bp.pink),
+        KeyColorRange::new(2_000_000, bp.yellow, 5_000_000, bp.orange),
     );
     fee_hm.insert(
         4,
-        KeyColorRange::new(100_000_001, bp.pink, 500_000_000, bp.dark_magenta),
+        KeyColorRange::new(5_000_000, bp.orange, 20_000_000, bp.red),
     );
     fee_hm.insert(
         5,
-        KeyColorRange::new(500_000_001, bp.magenta, 10_000_000_000, bp.purple),
+        KeyColorRange::new(20_000_000, bp.red, 100_000_000, bp.hot_pink),
     );
     fee_hm.insert(
         6,
-        KeyColorRange::new(10_000_000_001, bp.white, u64::MAX, bp.white),
+        KeyColorRange::new(100_000_000, bp.hot_pink, 500_000_000, bp.magenta),
+    );
+    fee_hm.insert(
+        7,
+        KeyColorRange::new(500_000_000, bp.magenta, 1_000_000_000, bp.light_purple),
+    );
+    fee_hm.insert(
+        8,
+        KeyColorRange::new(1_000_000_000, bp.white, i64::MAX, bp.white),
     );
 
-    let blockchain_value_keys = BlockchainKeyValues {
-        fee: KeyColorRangeVec { vec: fee_hm },
-        block_time: KeyColorRangeVec { vec: block_time_hm },
-        tx_count: KeyColorRangeVec { vec: tx_count_hm },
-        byte: KeyColorRangeVec { vec: byte_hm },
-        weight: KeyColorRangeVec { vec: weight_hm },
-        tgt_diff: KeyColorRangeVec { vec: tgt_diff_hm },
-        leading_zeros: KeyColorRangeVec {
+    // BLOCK TIME
+
+    block_time_hm.insert(0, KeyColorRange::new(i64::MIN, bp.white, -5_000, bp.white));
+    block_time_hm.insert(1, KeyColorRange::new(-5_000, bp.light_blue, 0, bp.blue));
+    block_time_hm.insert(2, KeyColorRange::new(0, bp.light_green, 3_600, bp.green));
+    block_time_hm.insert(3, KeyColorRange::new(3_600, bp.green, 7_200, bp.dark_green));
+    block_time_hm.insert(4, KeyColorRange::new(7_200, bp.yellow, 10_800, bp.orange));
+    block_time_hm.insert(5, KeyColorRange::new(10_800, bp.orange, 21_600, bp.red));
+    block_time_hm.insert(6, KeyColorRange::new(21_600, bp.red, 43_200, bp.pink));
+    block_time_hm.insert(7, KeyColorRange::new(43_200, bp.pink, i64::MAX, bp.magenta));
+
+    // TX COUNT
+
+    tx_count_hm.insert(0, KeyColorRange::new(0, bp.black, 0, bp.black));
+    tx_count_hm.insert(1, KeyColorRange::new(-5_000, bp.light_blue, 0, bp.blue));
+    tx_count_hm.insert(2, KeyColorRange::new(0, bp.light_green, 3_600, bp.green));
+    tx_count_hm.insert(3, KeyColorRange::new(3_600, bp.green, 7_200, bp.dark_green));
+    tx_count_hm.insert(4, KeyColorRange::new(7_200, bp.yellow, 10_800, bp.orange));
+    tx_count_hm.insert(5, KeyColorRange::new(10_800, bp.orange, 21_600, bp.red));
+    tx_count_hm.insert(6, KeyColorRange::new(21_600, bp.red, 43_200, bp.pink));
+    tx_count_hm.insert(7, KeyColorRange::new(43_200, bp.pink, i64::MAX, bp.magenta));
+
+    let blockchain_value_keys = BlockchainFilterKeys {
+        fee: FilterLegend {
+            vec: fee_hm,
+            format_type: FormatType::Sats,
+        },
+        block_time: FilterLegend {
+            vec: block_time_hm,
+            format_type: FormatType::Time,
+        },
+        tx_count: FilterLegend {
+            vec: tx_count_hm,
+            format_type: FormatType::Sats,
+        },
+        byte: FilterLegend {
+            vec: byte_hm,
+            format_type: FormatType::Sats,
+        },
+        weight: FilterLegend {
+            vec: weight_hm,
+            format_type: FormatType::Sats,
+        },
+        tgt_diff: FilterLegend {
+            vec: tgt_diff_hm,
+            format_type: FormatType::Sats,
+        },
+        leading_zeros: FilterLegend {
             vec: leading_zeros_hm,
+            format_type: FormatType::Sats,
         },
-        excess_work: KeyColorRangeVec {
+        excess_work: FilterLegend {
             vec: excess_work_hm,
+            format_type: FormatType::Sats,
         },
-        version: KeyColorRangeVec { vec: version_hm },
+        version: FilterLegend {
+            vec: version_hm,
+            format_type: FormatType::Sats,
+        },
     };
     commands.insert_resource(bp);
     commands.insert_resource(ui_color_palette);

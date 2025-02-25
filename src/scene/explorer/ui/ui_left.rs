@@ -25,6 +25,8 @@ pub fn left_ui(
                 align_items: AlignItems::FlexEnd,
                 justify_content: JustifyContent::Center,
                 flex_direction: FlexDirection::Column,
+                // justify_items: JustifyItems::Start,
+                // justify_self: JustifySelf::Start,
                 ..default()
             },
             BorderRadius::all(Val::Px(4.0)),

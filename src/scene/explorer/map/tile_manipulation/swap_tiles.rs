@@ -19,20 +19,20 @@ use crate::{
                 },
                 tile_manipulation::blockchain_color::{
                     get_bits_color, get_blocktime_color, get_byte_color, get_excesswork_color,
-                    get_fee_color, get_leading_zeros_color, get_tx_count_color, get_version_color,
+                    get_leading_zeros_color, get_tx_count_color, get_version_color,
                     get_weight_color,
                 },
             },
         },
-        initer::ecs::resource::{BlockchainKeyColorPalette, BlockchainKeyValues, KeyColorRange},
+        initer::ecs::resource::BlockchainFilterKeys,
     },
 };
 
 pub const WEIRD_COLOR: Color = Color::Srgba(Srgba {
-    red: 0.,
-    green: 1.0,
-    blue: 0.,
-    alpha: 0.1,
+    red: 0.3,
+    green: 0.3,
+    blue: 0.3,
+    alpha: 1.,
 });
 
 pub fn swap_tile_index_reader(
@@ -47,7 +47,7 @@ pub fn swap_tile_index_reader(
     mut q_text_color: Query<(&mut TextColor, &AssociatedTileColor), With<TileText>>,
     mut current_tiles: ResMut<CurrentTilesRes>,
     blockchain_tiles: Res<WorldBlockchainTileMap>,
-    blockchain_legend_colors: Res<BlockchainKeyValues>,
+    blockchain_legend_colors: Res<BlockchainFilterKeys>,
 ) {
     for e in event_r.read() {
         let swap_type = if e == &SwapTilesEvent::Iter {
@@ -81,27 +81,20 @@ pub fn swap_tile_index_reader(
             }
             SwapTilesEvent::Fee => {
                 info!("Fee");
-                let a = blockchain_legend_colors.fee.clone();
+                let filter_legend = blockchain_legend_colors.fee.clone();
 
                 for (mut tile_index, _, mut tile_color, _, ulam) in query.iter_mut() {
                     if let Some(val) = blockchain_tiles.map.get(&ulam.0) {
                         //let c = get_fee_color(val.block_fee);
                         //let c = a::color_for_ranges(); //color_for_ranges(&a, val.block_fee);
-                        let ee = match a.color_for_ranges(val.block_fee) {
+                        let c = match filter_legend
+                            .color_for_ranges(val.block_fee.try_into().unwrap())
+                        {
                             Some(s) => s,
-                            None => {
-                                info!("failed for val: {}", val.block_fee);
-                                Srgba {
-                                    red: 0.,
-                                    green: 1.,
-                                    blue: 0.,
-                                    alpha: 1.,
-                                }
-                            }
+                            None => filter_legend.vec.last().unwrap().end.1.into(),
                         };
-                        let aa = Color::Srgba(ee);
                         //tile_color.0 = c;
-                        tile_color.0 = aa;
+                        tile_color.0 = Color::Srgba(c);
                     } else {
                         tile_color.0 = WEIRD_COLOR;
                     }
@@ -111,13 +104,22 @@ pub fn swap_tile_index_reader(
             }
             SwapTilesEvent::BlockTime => {
                 info!("BlockTime");
+                let filter_legend = blockchain_legend_colors.block_time.clone();
                 for (mut tile_index, _, mut tile_color, _, ulam) in query.iter_mut() {
                     if let Some(val) = blockchain_tiles.map.get(&ulam.0) {
                         let current = val.block_time;
                         let prev_o = blockchain_tiles.map.get(&(ulam.0 - 1));
                         let previous = prev_o.map_or(0, |prev| prev.block_time);
-                        let c = get_blocktime_color(current as i64 - previous as i64);
-                        tile_color.0 = c;
+                        //let c = get_blocktime_color(current as i64 - previous as i64);
+
+                        let c = match filter_legend
+                            .color_for_ranges(current as i64 - previous as i64)
+                        {
+                            Some(s) => s,
+                            None => filter_legend.vec.last().unwrap().end.1.into(),
+                        };
+                        //tile_color.0 = c;
+                        tile_color.0 = Color::Srgba(c);
                     } else {
                         tile_color.0 = WEIRD_COLOR;
                     }

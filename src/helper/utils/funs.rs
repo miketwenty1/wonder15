@@ -1,4 +1,9 @@
-use bevy::{prelude::*, utils::HashMap};
+use bevy::{
+    asset::RenderAssetUsages,
+    prelude::*,
+    render::render_resource::{Extent3d, TextureDimension, TextureFormat},
+    utils::HashMap,
+};
 
 use chrono::{DateTime, Duration, Utc};
 use rand::Rng;
@@ -126,5 +131,79 @@ pub fn get_text_color_per_tile_color(c: &Color) -> Color {
         Color::Srgba(Srgba::BLACK)
     } else {
         Color::Srgba(Srgba::WHITE)
+    }
+}
+
+pub fn make_gradient_image(
+    images: &mut Assets<Image>,
+    width: u32,
+    height: u32,
+    color_left: Color,
+    color_right: Color,
+) -> Handle<Image> {
+    let mut data = vec![0; (width * height * 4) as usize];
+
+    for y in 0..height {
+        for x in 0..width {
+            let t = x as f32 / (width - 1) as f32;
+            let c = lerp_color(color_left, color_right, t);
+            let i = (y * width + x) as usize * 4;
+            data[i] = (c.to_srgba().red * 255.0) as u8;
+            data[i + 1] = (c.to_srgba().green * 255.0) as u8;
+            data[i + 2] = (c.to_srgba().blue * 255.0) as u8;
+            data[i + 3] = (c.to_srgba().alpha * 255.0) as u8;
+        }
+    }
+
+    let mut image = Image::new_fill(
+        Extent3d {
+            width,
+            height,
+            depth_or_array_layers: 1,
+        },
+        TextureDimension::D2,
+        &[0, 0, 0, 0],
+        TextureFormat::Rgba8UnormSrgb,
+        RenderAssetUsages::default(),
+    );
+    image.data = data;
+
+    images.add(image)
+}
+
+pub fn lerp_color(a: Color, b: Color, t: f32) -> Color {
+    let a = a.to_linear();
+    let b = b.to_linear();
+    Color::srgba(
+        a.red + t * (b.red - a.red),
+        a.green + t * (b.green - a.green),
+        a.blue + t * (b.blue - a.blue),
+        a.alpha + t * (b.alpha - a.alpha),
+    )
+}
+
+pub fn format_sats<T: Into<i64>>(value: T) -> (String, String) {
+    let n = value.into();
+    let sign = if n < 0 { "-" } else { "" };
+    let n = n.abs() as u64;
+
+    if n <= 9_999 {
+        (format!("{}{}", sign, n), "sats".to_string())
+    } else if n <= 999_999 {
+        (format!("{}{}K", sign, n / 1_000), "sats".to_string())
+    } else if n <= 99_999_999 {
+        (format!("{}{}M", sign, n / 1_000_000), "sats".to_string())
+    } else {
+        (format!("{}{}", sign, n / 100_000_000), "BTC".to_string())
+    }
+}
+
+pub fn format_time(seconds: i64) -> (String, String) {
+    if seconds < 60 {
+        (seconds.to_string(), "secs".to_string())
+    } else if seconds < 3600 {
+        (format!("{}", seconds / 60), "mins".to_string())
+    } else {
+        (format!("{}", seconds / 3600), "hours".to_string())
     }
 }
