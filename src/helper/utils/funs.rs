@@ -207,3 +207,26 @@ pub fn format_time(seconds: i64) -> (String, String) {
         (format!("{}", seconds / 3600), "hours".to_string())
     }
 }
+
+pub fn format_count(count: i64) -> (String, String) {
+    (count.to_string(), String::new())
+}
+
+pub fn format_bytes(bytes: i64) -> (String, String) {
+    if bytes < 1000 {
+        (bytes.to_string(), "Bytes".to_string())
+    } else if bytes < 1_000_000 {
+        (format!("{}", bytes / 1000), "KB".to_string())
+    } else {
+        (format!("{}", bytes / 1_000_000), "MB".to_string())
+    }
+}
+pub fn format_vbytes(bytes: i64) -> (String, String) {
+    if bytes < 1000 {
+        (bytes.to_string(), "vBytes".to_string())
+    } else if bytes < 1_000_000 {
+        (format!("{}", bytes / 1000), "vKB".to_string())
+    } else {
+        (format!("{}", bytes / 1_000_000), "vMB".to_string())
+    }
+}

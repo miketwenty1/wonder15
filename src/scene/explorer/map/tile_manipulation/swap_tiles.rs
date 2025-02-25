@@ -18,9 +18,8 @@ use crate::{
                     hard::TEXTURE_INDEX_FOR_PLAYER_COLOR,
                 },
                 tile_manipulation::blockchain_color::{
-                    get_bits_color, get_blocktime_color, get_byte_color, get_excesswork_color,
-                    get_leading_zeros_color, get_tx_count_color, get_version_color,
-                    get_weight_color,
+                    get_bits_color, get_excesswork_color, get_leading_zeros_color,
+                    get_version_color,
                 },
             },
         },
@@ -129,10 +128,19 @@ pub fn swap_tile_index_reader(
             }
             SwapTilesEvent::TxCount => {
                 info!("TxCount");
+                let filter_legend = blockchain_legend_colors.tx_count.clone();
                 for (mut tile_index, _, mut tile_color, _, ulam) in query.iter_mut() {
                     if let Some(val) = blockchain_tiles.map.get(&ulam.0) {
-                        let c = get_tx_count_color(val.block_n_tx);
-                        tile_color.0 = c;
+                        // let c = get_tx_count_color(val.block_n_tx);
+                        // tile_color.0 = c;
+                        let c = match filter_legend
+                            .color_for_ranges(val.block_n_tx.try_into().unwrap())
+                        {
+                            Some(s) => s,
+                            None => filter_legend.vec.last().unwrap().end.1.into(),
+                        };
+                        //tile_color.0 = c;
+                        tile_color.0 = Color::Srgba(c);
                     } else {
                         tile_color.0 = WEIRD_COLOR;
                     }
@@ -142,10 +150,18 @@ pub fn swap_tile_index_reader(
             }
             SwapTilesEvent::Byte => {
                 info!("Byte");
+                let filter_legend = blockchain_legend_colors.byte.clone();
                 for (mut tile_index, _, mut tile_color, _, ulam) in query.iter_mut() {
                     if let Some(val) = blockchain_tiles.map.get(&ulam.0) {
-                        let c = get_byte_color(val.block_size);
-                        tile_color.0 = c;
+                        // let c = get_byte_color(val.block_size);
+                        // tile_color.0 = c;
+
+                        let c = match filter_legend.color_for_ranges(val.block_size.into()) {
+                            Some(s) => s,
+                            None => filter_legend.vec.last().unwrap().end.1.into(),
+                        };
+                        //tile_color.0 = c;
+                        tile_color.0 = Color::Srgba(c);
                     } else {
                         tile_color.0 = WEIRD_COLOR;
                     }
@@ -155,10 +171,19 @@ pub fn swap_tile_index_reader(
             }
             SwapTilesEvent::Weight => {
                 info!("Weight");
+                let filter_legend = blockchain_legend_colors.weight.clone();
                 for (mut tile_index, _, mut tile_color, _, ulam) in query.iter_mut() {
                     if let Some(val) = blockchain_tiles.map.get(&ulam.0) {
                         // let c = get_weight_color(val.block_weight);
                         //  tile_color.0 = c;
+                        let c = match filter_legend
+                            .color_for_ranges(val.block_weight.try_into().unwrap())
+                        {
+                            Some(s) => s,
+                            None => filter_legend.vec.last().unwrap().end.1.into(),
+                        };
+                        //tile_color.0 = c;
+                        tile_color.0 = Color::Srgba(c);
                     } else {
                         tile_color.0 = WEIRD_COLOR;
                     }
@@ -170,8 +195,8 @@ pub fn swap_tile_index_reader(
                 info!("TargetDifficulty");
                 for (mut tile_index, _, mut tile_color, _, ulam) in query.iter_mut() {
                     if let Some(val) = blockchain_tiles.map.get(&ulam.0) {
-                        //  let c = get_bits_color(val.block_bits);
-                        //  tile_color.0 = c;
+                        let c = get_bits_color(val.block_bits);
+                        tile_color.0 = c;
                     } else {
                         tile_color.0 = WEIRD_COLOR;
                     }

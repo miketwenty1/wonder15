@@ -12,7 +12,6 @@ pub fn spawn_game_toggle_button<T: Component>(
     colors: &UiColorPalette,
     font: &Handle<Font>,
 ) {
-    info!("spawning button: {}", btn_text);
     parent
         .spawn((
             Button,

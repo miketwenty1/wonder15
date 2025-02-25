@@ -169,23 +169,83 @@ pub fn setup_things(
 
     block_time_hm.insert(0, KeyColorRange::new(i64::MIN, bp.white, -5_000, bp.white));
     block_time_hm.insert(1, KeyColorRange::new(-5_000, bp.light_blue, 0, bp.blue));
-    block_time_hm.insert(2, KeyColorRange::new(0, bp.light_green, 3_600, bp.green));
-    block_time_hm.insert(3, KeyColorRange::new(3_600, bp.green, 7_200, bp.dark_green));
-    block_time_hm.insert(4, KeyColorRange::new(7_200, bp.yellow, 10_800, bp.orange));
+    block_time_hm.insert(
+        2,
+        KeyColorRange::new(0, bp.light_green, 3_600, bp.dark_green),
+    );
+    block_time_hm.insert(
+        3,
+        KeyColorRange::new(3_600, bp.yellow, 7_200, bp.dark_yellow),
+    );
+    block_time_hm.insert(
+        4,
+        KeyColorRange::new(7_200, bp.dark_yellow, 10_800, bp.orange),
+    );
     block_time_hm.insert(5, KeyColorRange::new(10_800, bp.orange, 21_600, bp.red));
     block_time_hm.insert(6, KeyColorRange::new(21_600, bp.red, 43_200, bp.pink));
     block_time_hm.insert(7, KeyColorRange::new(43_200, bp.pink, i64::MAX, bp.magenta));
 
     // TX COUNT
 
-    tx_count_hm.insert(0, KeyColorRange::new(0, bp.black, 0, bp.black));
-    tx_count_hm.insert(1, KeyColorRange::new(-5_000, bp.light_blue, 0, bp.blue));
-    tx_count_hm.insert(2, KeyColorRange::new(0, bp.light_green, 3_600, bp.green));
-    tx_count_hm.insert(3, KeyColorRange::new(3_600, bp.green, 7_200, bp.dark_green));
-    tx_count_hm.insert(4, KeyColorRange::new(7_200, bp.yellow, 10_800, bp.orange));
-    tx_count_hm.insert(5, KeyColorRange::new(10_800, bp.orange, 21_600, bp.red));
-    tx_count_hm.insert(6, KeyColorRange::new(21_600, bp.red, 43_200, bp.pink));
-    tx_count_hm.insert(7, KeyColorRange::new(43_200, bp.pink, i64::MAX, bp.magenta));
+    tx_count_hm.insert(0, KeyColorRange::new(1, bp.black, 1, bp.black));
+    tx_count_hm.insert(1, KeyColorRange::new(1, bp.green, 100, bp.light_green));
+    tx_count_hm.insert(2, KeyColorRange::new(100, bp.blue, 1000, bp.light_blue));
+    tx_count_hm.insert(3, KeyColorRange::new(1000, bp.yellow, 3000, bp.orange));
+    tx_count_hm.insert(4, KeyColorRange::new(3000, bp.orange, 6000, bp.red));
+    tx_count_hm.insert(5, KeyColorRange::new(6000, bp.red, 9000, bp.pink));
+    tx_count_hm.insert(6, KeyColorRange::new(9000, bp.pink, i64::MAX, bp.white));
+
+    // BYTES
+
+    byte_hm.insert(0, KeyColorRange::new(0, bp.black, 200, bp.black));
+    byte_hm.insert(1, KeyColorRange::new(200, bp.light_green, 10_000, bp.green));
+    byte_hm.insert(
+        2,
+        KeyColorRange::new(10_000, bp.light_blue, 50_000, bp.blue),
+    );
+    byte_hm.insert(3, KeyColorRange::new(50_000, bp.yellow, 400_000, bp.orange));
+    byte_hm.insert(4, KeyColorRange::new(400_000, bp.red, 600_000, bp.hot_pink));
+    byte_hm.insert(
+        5,
+        KeyColorRange::new(600_000, bp.light_purple, 800_000, bp.magenta),
+    );
+    byte_hm.insert(
+        6,
+        KeyColorRange::new(800_000, bp.magenta, 999_999, bp.llmagenta),
+    );
+    byte_hm.insert(
+        7,
+        KeyColorRange::new(1_000_000, bp.white, i64::MAX, bp.white),
+    );
+
+    // WEIGHT
+
+    weight_hm.insert(0, KeyColorRange::new(0, bp.black, 800, bp.black));
+    weight_hm.insert(1, KeyColorRange::new(800, bp.light_green, 40_000, bp.green));
+    weight_hm.insert(
+        2,
+        KeyColorRange::new(40_000, bp.light_blue, 200_000, bp.blue),
+    );
+    weight_hm.insert(
+        3,
+        KeyColorRange::new(200_000, bp.yellow, 1_600_000, bp.orange),
+    );
+    weight_hm.insert(
+        4,
+        KeyColorRange::new(1_600_000, bp.red, 2_400_000, bp.hot_pink),
+    );
+    weight_hm.insert(
+        5,
+        KeyColorRange::new(2_400_000, bp.light_purple, 3_200_000, bp.magenta),
+    );
+    weight_hm.insert(
+        6,
+        KeyColorRange::new(3_200_000, bp.magenta, 3_999_999, bp.llmagenta),
+    );
+    weight_hm.insert(
+        7,
+        KeyColorRange::new(4_000_000, bp.white, i64::MAX, bp.white),
+    );
 
     let blockchain_value_keys = BlockchainFilterKeys {
         fee: FilterLegend {
@@ -198,19 +258,19 @@ pub fn setup_things(
         },
         tx_count: FilterLegend {
             vec: tx_count_hm,
-            format_type: FormatType::Sats,
+            format_type: FormatType::Count,
         },
         byte: FilterLegend {
             vec: byte_hm,
-            format_type: FormatType::Sats,
+            format_type: FormatType::Bytes,
         },
         weight: FilterLegend {
             vec: weight_hm,
-            format_type: FormatType::Sats,
+            format_type: FormatType::VBytes,
         },
         tgt_diff: FilterLegend {
             vec: tgt_diff_hm,
-            format_type: FormatType::Sats,
+            format_type: FormatType::Count,
         },
         leading_zeros: FilterLegend {
             vec: leading_zeros_hm,

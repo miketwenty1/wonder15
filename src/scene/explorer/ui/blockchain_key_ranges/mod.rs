@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use blockchain_value_keys::spawn_legend_driver;
+use blockchain_value_keys::{spawn_legend_driver, spawn_tgt_diff_legend};
 
 use super::ecs::state::ColorBlockchainKeySubState;
 
@@ -22,6 +22,10 @@ impl Plugin for BlockchainKeyRangesPlugin {
             .add_systems(
                 OnEnter(ColorBlockchainKeySubState::TxCount),
                 (spawn_legend_driver).run_if(in_state(ColorBlockchainKeySubState::TxCount)),
+            )
+            .add_systems(
+                OnEnter(ColorBlockchainKeySubState::Byte),
+                (spawn_legend_driver).run_if(in_state(ColorBlockchainKeySubState::Byte)),
             )
             .add_systems(
                 OnEnter(ColorBlockchainKeySubState::Weight),

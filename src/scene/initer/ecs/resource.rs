@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use serde::Deserialize;
 
 use crate::{
-    helper::utils::funs::{format_sats, format_time},
+    helper::utils::funs::{format_bytes, format_count, format_sats, format_time, format_vbytes},
     scene::explorer::{ecs::event::SwapTilesEvent, ui::ecs::state::ColorBlockchainKeySubState},
 };
 
@@ -134,7 +134,9 @@ pub enum FormatType {
     #[default]
     Sats,
     Time,
-    //Count,
+    Count,
+    Bytes,
+    VBytes,
 }
 
 #[derive(Resource, Clone, Debug, Default, Deserialize)]
@@ -156,6 +158,9 @@ impl FilterLegend {
         match self.format_type {
             FormatType::Sats => format_sats(value),
             FormatType::Time => format_time(value),
+            FormatType::Count => format_count(value),
+            FormatType::Bytes => format_bytes(value),
+            FormatType::VBytes => format_vbytes(value),
         }
     }
 }
