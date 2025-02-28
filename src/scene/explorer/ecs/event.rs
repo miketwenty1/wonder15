@@ -37,6 +37,7 @@ pub enum SwapTilesEvent {
     Byte,
     Weight,
     TargetDifficulty,
+    TargetDifficultyDiff,
     LeadingZeros,
     ExcessWork,
     Version,

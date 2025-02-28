@@ -69,7 +69,7 @@ pub fn game15(
         })
         .insert_resource(BlockchainHeight(curent_height))
         .init_state::<SceneState>()
-        .add_plugins((InitScenePlugin, ExplorerScenePlugin))
+        .add_plugins(InitScenePlugin)
         .insert_state(full_map_state)
         .run();
 }

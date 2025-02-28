@@ -30,6 +30,9 @@ pub struct WeightToggleBtn;
 pub struct TgtDiffToggleBtn;
 
 #[derive(Component)]
+pub struct TgtDiffDiffToggleBtn;
+
+#[derive(Component)]
 pub struct LeadZerosToggleBtn;
 
 #[derive(Component)]

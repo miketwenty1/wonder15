@@ -2,7 +2,10 @@ use bevy::prelude::*;
 use serde::Deserialize;
 
 use crate::{
-    helper::utils::funs::{format_bytes, format_count, format_sats, format_time, format_vbytes},
+    helper::utils::funs::{
+        format_bytes, format_bytes_string, format_count, format_percent, format_sats, format_time,
+        format_vbytes,
+    },
     scene::explorer::{ecs::event::SwapTilesEvent, ui::ecs::state::ColorBlockchainKeySubState},
 };
 
@@ -63,7 +66,8 @@ pub struct BlockchainFilterKeys {
     pub tx_count: FilterLegend,
     pub byte: FilterLegend,
     pub weight: FilterLegend,
-    pub tgt_diff: FilterLegend,
+    pub tgt_diff_diff: FilterLegend,
+    // pub tgt_diff: FilterLegend,
     pub leading_zeros: FilterLegend,
     pub excess_work: FilterLegend,
     pub version: FilterLegend,
@@ -77,13 +81,15 @@ impl BlockchainFilterKeys {
             SwapTilesEvent::TxCount => Ok(&self.tx_count),
             SwapTilesEvent::Byte => Ok(&self.byte),
             SwapTilesEvent::Weight => Ok(&self.weight),
-            SwapTilesEvent::TargetDifficulty => Ok(&self.tgt_diff),
+            //SwapTilesEvent::TargetDifficulty => Ok(&self.tgt_diff),
+            SwapTilesEvent::TargetDifficultyDiff => Ok(&self.tgt_diff_diff),
             SwapTilesEvent::LeadingZeros => Ok(&self.leading_zeros),
             SwapTilesEvent::ExcessWork => Ok(&self.excess_work),
             SwapTilesEvent::Version => Ok(&self.version),
-            SwapTilesEvent::PlayerColor | SwapTilesEvent::Land | SwapTilesEvent::Iter => {
-                Err("No equivalent FilterLegend for this event")
-            }
+            SwapTilesEvent::PlayerColor
+            | SwapTilesEvent::Land
+            | SwapTilesEvent::Iter
+            | SwapTilesEvent::TargetDifficulty => Err("No equivalent FilterLegend for this event"),
         }
     }
     pub fn get_custom_string(&self, event: SwapTilesEvent) -> String {
@@ -93,12 +99,17 @@ impl BlockchainFilterKeys {
             SwapTilesEvent::Fee => "Fees Per Block".to_owned(),
             SwapTilesEvent::BlockTime => "Blocktime Per Block".to_owned(),
             SwapTilesEvent::TxCount => "Transactions Per Block".to_owned(),
-            SwapTilesEvent::Byte => "Size of Block in Bytes".to_owned(),
-            SwapTilesEvent::Weight => "Size of Block in vBytes".to_owned(),
-            SwapTilesEvent::TargetDifficulty => "TargetDifficulty of Block".to_owned(),
-            SwapTilesEvent::LeadingZeros => "Leading Zeros of Block Hash".to_owned(),
-            SwapTilesEvent::ExcessWork => "Excess Work of Block".to_owned(),
-            SwapTilesEvent::Version => "Version Header of Block".to_owned(),
+            SwapTilesEvent::Byte => "Size of Block\nin Bytes".to_owned(),
+            SwapTilesEvent::Weight => "Size of Block\nin vBytes".to_owned(),
+            SwapTilesEvent::TargetDifficulty => "Target Difficulty\nof Block".to_owned(),
+            SwapTilesEvent::TargetDifficultyDiff => {
+                "Target Difficulty\nChange % Between\nDifficulty Periods".to_owned()
+            }
+            SwapTilesEvent::LeadingZeros => "Leading Zeros\nof Block Hash\n(In Bits)".to_owned(),
+            SwapTilesEvent::ExcessWork => {
+                "Excess Work of Block\n(Leading Zero Bits\nPast Target)".to_owned()
+            }
+            SwapTilesEvent::Version => "Version Header\nof Block".to_owned(),
             SwapTilesEvent::Iter => "Iter".to_owned(),
         }
     }
@@ -113,6 +124,9 @@ impl BlockchainFilterKeys {
             SwapTilesEvent::Byte => Ok(ColorBlockchainKeySubState::Byte),
             SwapTilesEvent::Weight => Ok(ColorBlockchainKeySubState::Weight),
             SwapTilesEvent::TargetDifficulty => Ok(ColorBlockchainKeySubState::TargetDifficulty),
+            SwapTilesEvent::TargetDifficultyDiff => {
+                Ok(ColorBlockchainKeySubState::TargetDifficultyDiff)
+            }
             SwapTilesEvent::LeadingZeros => Ok(ColorBlockchainKeySubState::LeadingZeros),
             SwapTilesEvent::ExcessWork => Ok(ColorBlockchainKeySubState::ExcessWork),
             SwapTilesEvent::Version => Ok(ColorBlockchainKeySubState::Version),
@@ -137,6 +151,8 @@ pub enum FormatType {
     Count,
     Bytes,
     VBytes,
+    ByteString,
+    Percent,
 }
 
 #[derive(Resource, Clone, Debug, Default, Deserialize)]
@@ -161,6 +177,8 @@ impl FilterLegend {
             FormatType::Count => format_count(value),
             FormatType::Bytes => format_bytes(value),
             FormatType::VBytes => format_vbytes(value),
+            FormatType::ByteString => format_bytes_string(value as u32),
+            FormatType::Percent => format_percent(value),
         }
     }
 }

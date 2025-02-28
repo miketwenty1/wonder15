@@ -1,6 +1,9 @@
-use crate::ecs::{
-    resource::{WorldBlockchainTileMap, WorldOwnedTileMap},
-    state::SceneState,
+use crate::{
+    ecs::{
+        resource::{WorldBlockchainTileMap, WorldOwnedTileMap},
+        state::SceneState,
+    },
+    scene::explorer::ExplorerScenePlugin,
 };
 use bevy::{prelude::*, utils::HashMap};
 use camera::setup_camera;
@@ -34,6 +37,7 @@ impl Plugin for IniterInitPlugin {
         })
         .insert_resource(WorldBlockchainTileMap {
             map: HashMap::new(),
-        });
+        })
+        .add_plugins(ExplorerScenePlugin);
     }
 }

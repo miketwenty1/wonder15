@@ -4,7 +4,7 @@ use blockchain_key_ranges::BlockchainKeyRangesPlugin;
 use ecs::state::ColorBlockchainKeySubState;
 use toggle_button_q::{
     blocktime_btn, bytes_btn, excesswork_btn, fee_btn, general_btn, leadzeros_btn, tgtdiff_btn,
-    txcount_btn, version_btn, weights_btn,
+    tgtdiff_diff_btn, txcount_btn, version_btn, weights_btn,
 };
 
 use self::{
@@ -33,15 +33,11 @@ impl Plugin for ExplorerUiPlugin {
         app.add_systems(
             OnEnter(SceneState::Explorer),
             (((
-                ui_explorer,
-                top_ui,
-                left_ui,
-                right_ui,
-                bottom_ui,
-                apply_deferred,
+                (ui_explorer,),
+                (top_ui, left_ui, right_ui, bottom_ui), //apply_deferred
             )
-                .chain())
-            .run_if(run_once),),
+                .chain(),)
+                .run_if(run_once),),
         )
         .add_systems(
             Update,
@@ -53,6 +49,7 @@ impl Plugin for ExplorerUiPlugin {
                 bytes_btn,
                 weights_btn,
                 tgtdiff_btn,
+                tgtdiff_diff_btn,
                 leadzeros_btn,
                 excesswork_btn,
                 version_btn,

@@ -56,7 +56,7 @@ pub struct TileBlockchainData {
     pub height: u32,
     pub block_hash: [u8; 32],
     pub block_time: u64,
-    pub block_bits: u64,
+    pub block_bits: u32,
     pub block_n_tx: u32,
     pub block_size: u32,
     pub block_fee: u64,

@@ -1,6 +1,45 @@
 use bevy::prelude::*;
 use std::hash::{DefaultHasher, Hash, Hasher};
 
+pub fn get_bits_color(value: u32) -> Color {
+    // Create a hasher and hash the value
+    let mut hasher = DefaultHasher::new();
+    value.hash(&mut hasher);
+    let hash = hasher.finish();
+
+    // Extract RGB values from the hash
+    let r = (hash & 0xFF) as f32 / 255.0;
+    let g = ((hash >> 8) & 0xFF) as f32 / 255.0;
+    let b = ((hash >> 16) & 0xFF) as f32 / 255.0;
+
+    // Return the color
+    Color::Srgba(Srgba {
+        red: r,
+        green: g,
+        blue: b,
+        alpha: 1.0,
+    })
+}
+pub fn get_version_color(value: u32) -> Color {
+    // Create a hasher and hash the value
+    let mut hasher = DefaultHasher::new();
+    value.hash(&mut hasher);
+    let hash = hasher.finish();
+
+    // Extract RGB values from the hash
+    let r = (hash & 0xFF) as f32 / 255.0;
+    let g = ((hash >> 8) & 0xFF) as f32 / 255.0;
+    let b = ((hash >> 16) & 0xFF) as f32 / 255.0;
+
+    // Return the color
+    Color::Srgba(Srgba {
+        red: r,
+        green: g,
+        blue: b,
+        alpha: 1.0,
+    })
+}
+
 // pub fn get_fee_color(value: i64) -> Color {
 //     match value {
 //         // 0: Black
@@ -419,113 +458,94 @@ use std::hash::{DefaultHasher, Hash, Hasher};
 //         }),
 //     }
 // }
-pub fn get_bits_color(value: u64) -> Color {
-    // Create a hasher and hash the value
-    let mut hasher = DefaultHasher::new();
-    value.hash(&mut hasher);
-    let hash = hasher.finish();
 
-    // Extract RGB values from the hash
-    let r = (hash & 0xFF) as f32 / 255.0;
-    let g = ((hash >> 8) & 0xFF) as f32 / 255.0;
-    let b = ((hash >> 16) & 0xFF) as f32 / 255.0;
+// pub fn get_leading_zeros_color(value: usize) -> Color {
+//     match value {
+//         // Black
+//         0..=29 => Color::Srgba(Srgba {
+//             red: 0.0,
+//             green: 0.0,
+//             blue: 0.0,
+//             alpha: 1.0,
+//         }),
 
-    // Return the color
-    Color::Srgba(Srgba {
-        red: r,
-        green: g,
-        blue: b,
-        alpha: 1.0,
-    })
-}
+//         // BLUE
+//         30..=38 => {
+//             let intensity = (value - 8) as f32 / 3.0;
+//             Color::Srgba(Srgba {
+//                 red: 0.0,
+//                 green: 0.8 - intensity * 0.4,
+//                 blue: 0.0,
+//                 alpha: 1.0,
+//             })
+//         }
 
-pub fn get_leading_zeros_color(value: usize) -> Color {
-    match value {
-        // Black
-        0..=29 => Color::Srgba(Srgba {
-            red: 0.0,
-            green: 0.0,
-            blue: 0.0,
-            alpha: 1.0,
-        }),
+//         // mEH
+//         39..=44 => {
+//             let intensity = (value - 12) as f32 / 3.0;
+//             Color::Srgba(Srgba {
+//                 red: 0.0,
+//                 green: 0.4 - intensity * 0.2,
+//                 blue: intensity * 0.8,
+//                 alpha: 1.0,
+//             })
+//         }
 
-        // BLUE
-        30..=38 => {
-            let intensity = (value - 8) as f32 / 3.0;
-            Color::Srgba(Srgba {
-                red: 0.0,
-                green: 0.8 - intensity * 0.4,
-                blue: 0.0,
-                alpha: 1.0,
-            })
-        }
+//         // CYAN
+//         45..=60 => {
+//             let intensity = (value - 16) as f32 / 3.0;
+//             Color::Srgba(Srgba {
+//                 red: 0.0,
+//                 green: intensity * 0.5,
+//                 blue: 1.0,
+//                 alpha: 1.0,
+//             })
+//         }
 
-        // mEH
-        39..=44 => {
-            let intensity = (value - 12) as f32 / 3.0;
-            Color::Srgba(Srgba {
-                red: 0.0,
-                green: 0.4 - intensity * 0.2,
-                blue: intensity * 0.8,
-                alpha: 1.0,
-            })
-        }
+//         // RED
+//         61..=70 => {
+//             let intensity = (value - 20) as f32 / 3.0;
+//             Color::Srgba(Srgba {
+//                 red: intensity,
+//                 green: 0.0,
+//                 blue: 1.0 - intensity * 0.5,
+//                 alpha: 1.0,
+//             })
+//         }
 
-        // CYAN
-        45..=60 => {
-            let intensity = (value - 16) as f32 / 3.0;
-            Color::Srgba(Srgba {
-                red: 0.0,
-                green: intensity * 0.5,
-                blue: 1.0,
-                alpha: 1.0,
-            })
-        }
+//         // 24–50: Transition Magenta → White
+//         71..=150 => {
+//             let range = (50 - 24) as f32;
+//             let intensity = (value - 24) as f32 / range;
+//             Color::Srgba(Srgba {
+//                 red: 1.0,
+//                 green: intensity,
+//                 blue: 1.0,
+//                 alpha: 1.0,
+//             })
+//         }
 
-        // RED
-        61..=70 => {
-            let intensity = (value - 20) as f32 / 3.0;
-            Color::Srgba(Srgba {
-                red: intensity,
-                green: 0.0,
-                blue: 1.0 - intensity * 0.5,
-                alpha: 1.0,
-            })
-        }
+//         // 51–256: Final range
+//         151..=256 => {
+//             let range = (256 - 51) as f32;
+//             let intensity = (value - 51) as f32 / range;
+//             Color::Srgba(Srgba {
+//                 red: 1.0,
+//                 green: 1.0,
+//                 blue: 1.0 - intensity * 0.5,
+//                 alpha: 1.0,
+//             })
+//         }
 
-        // 24–50: Transition Magenta → White
-        71..=150 => {
-            let range = (50 - 24) as f32;
-            let intensity = (value - 24) as f32 / range;
-            Color::Srgba(Srgba {
-                red: 1.0,
-                green: intensity,
-                blue: 1.0,
-                alpha: 1.0,
-            })
-        }
-
-        // 51–256: Final range
-        151..=256 => {
-            let range = (256 - 51) as f32;
-            let intensity = (value - 51) as f32 / range;
-            Color::Srgba(Srgba {
-                red: 1.0,
-                green: 1.0,
-                blue: 1.0 - intensity * 0.5,
-                alpha: 1.0,
-            })
-        }
-
-        // Above 256 (optional clamp)
-        _ => Color::Srgba(Srgba {
-            red: 1.0,
-            green: 1.0,
-            blue: 1.0,
-            alpha: 1.0,
-        }),
-    }
-}
+//         // Above 256 (optional clamp)
+//         _ => Color::Srgba(Srgba {
+//             red: 1.0,
+//             green: 1.0,
+//             blue: 1.0,
+//             alpha: 1.0,
+//         }),
+//     }
+// }
 
 // pub fn get_leading_zeros_color(value: usize) -> Color {
 //     match value {
@@ -594,85 +614,65 @@ pub fn get_leading_zeros_color(value: usize) -> Color {
 //     }
 // }
 
-pub fn get_excesswork_color(value: usize) -> Color {
-    match value {
-        // 1: Green
-        0 => Color::Srgba(Srgba {
-            red: 0.0,
-            green: 1.0,
-            blue: 0.0,
-            alpha: 1.0,
-        }),
+// pub fn get_excesswork_color(value: usize) -> Color {
+//     match value {
+//         // 1: Green
+//         0 => Color::Srgba(Srgba {
+//             red: 0.0,
+//             green: 1.0,
+//             blue: 0.0,
+//             alpha: 1.0,
+//         }),
 
-        // 2: Light Blue
-        1 => Color::Srgba(Srgba {
-            red: 0.5,
-            green: 0.5,
-            blue: 1.0,
-            alpha: 1.0,
-        }),
+//         // 2: Light Blue
+//         1 => Color::Srgba(Srgba {
+//             red: 0.5,
+//             green: 0.5,
+//             blue: 1.0,
+//             alpha: 1.0,
+//         }),
 
-        // 4: Yellow
-        2 => Color::Srgba(Srgba {
-            red: 1.0,
-            green: 1.0,
-            blue: 0.0,
-            alpha: 1.0,
-        }),
+//         // 4: Yellow
+//         2 => Color::Srgba(Srgba {
+//             red: 1.0,
+//             green: 1.0,
+//             blue: 0.0,
+//             alpha: 1.0,
+//         }),
 
-        // 5: Orange
-        3 => Color::Srgba(Srgba {
-            red: 1.0,
-            green: 0.5,
-            blue: 0.0,
-            alpha: 1.0,
-        }),
+//         // 5: Orange
+//         3 => Color::Srgba(Srgba {
+//             red: 1.0,
+//             green: 0.5,
+//             blue: 0.0,
+//             alpha: 1.0,
+//         }),
 
-        // 6: Red
-        4 => Color::Srgba(Srgba {
-            red: 1.0,
-            green: 0.0,
-            blue: 0.0,
-            alpha: 1.0,
-        }),
+//         // 6: Red
+//         4 => Color::Srgba(Srgba {
+//             red: 1.0,
+//             green: 0.0,
+//             blue: 0.0,
+//             alpha: 1.0,
+//         }),
 
-        // 7: Purplish Magenta
-        5 => Color::Srgba(Srgba {
-            red: 0.8,
-            green: 0.0,
-            blue: 0.8,
-            alpha: 1.0,
-        }),
+//         // 7: Purplish Magenta
+//         5 => Color::Srgba(Srgba {
+//             red: 0.8,
+//             green: 0.0,
+//             blue: 0.8,
+//             alpha: 1.0,
+//         }),
 
-        // 6+: Hot Pink (Intensifying with higher values)
-        _ => {
-            let intensity = ((value - 8) as f32 / 4.0).min(1.0);
-            Color::Srgba(Srgba {
-                red: 1.0,
-                green: 0.0,
-                blue: 0.5 + intensity * 0.5,
-                alpha: 1.0,
-            })
-        }
-    }
-}
-
-pub fn get_version_color(value: u32) -> Color {
-    // Create a hasher and hash the value
-    let mut hasher = DefaultHasher::new();
-    value.hash(&mut hasher);
-    let hash = hasher.finish();
-
-    // Extract RGB values from the hash
-    let r = (hash & 0xFF) as f32 / 255.0;
-    let g = ((hash >> 8) & 0xFF) as f32 / 255.0;
-    let b = ((hash >> 16) & 0xFF) as f32 / 255.0;
-
-    // Return the color
-    Color::Srgba(Srgba {
-        red: r,
-        green: g,
-        blue: b,
-        alpha: 1.0,
-    })
-}
+//         // 6+: Hot Pink (Intensifying with higher values)
+//         _ => {
+//             let intensity = ((value - 8) as f32 / 4.0).min(1.0);
+//             Color::Srgba(Srgba {
+//                 red: 1.0,
+//                 green: 0.0,
+//                 blue: 0.5 + intensity * 0.5,
+//                 alpha: 1.0,
+//             })
+//         }
+//     }
+// }

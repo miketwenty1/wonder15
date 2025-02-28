@@ -13,6 +13,7 @@ pub enum ColorBlockchainKeySubState {
     Byte,
     Weight,
     TargetDifficulty,
+    TargetDifficultyDiff,
     LeadingZeros,
     ExcessWork,
     Version,

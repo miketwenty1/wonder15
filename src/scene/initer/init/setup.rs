@@ -1,6 +1,10 @@
 use std::{i64, u32, u64};
 
-use bevy::{color::palettes::css::DARK_GREEN, prelude::*, utils::HashMap};
+use bevy::{
+    color::palettes::css::{DARK_GREEN, MAROON},
+    prelude::*,
+    utils::HashMap,
+};
 
 use crate::{
     ecs::{
@@ -41,10 +45,10 @@ pub fn setup_things(
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
     mut scene_state: ResMut<NextState<SceneState>>,
     //scene_state: Res<State<SceneState>>,
-    current_blockheight: Res<BlockchainHeight>,
+    //current_blockheight: Res<BlockchainHeight>,
     mut comm_map_state: ResMut<NextState<ExplorerCommsSubState>>,
 ) {
-    let map_side_length = ((current_blockheight.0 as f64).sqrt().ceil()) as u32 + 2;
+    let map_side_length = 1000; //((current_blockheight.0 as f64).sqrt().ceil()) as u32 + 2;
     commands.insert_resource(FullMapLength(map_side_length));
     let texture = asset_server.load("spritesheet/gabe-idle-run.png");
     let layout = TextureAtlasLayout::from_grid(UVec2::splat(24), 7, 1, None, None);
@@ -128,7 +132,8 @@ pub fn setup_things(
     let mut tx_count_hm = Vec::new();
     let mut byte_hm = Vec::new();
     let mut weight_hm = Vec::new();
-    let mut tgt_diff_hm = Vec::new();
+    //let mut tgt_diff_hm = Vec::new();
+    let mut tgt_diff_diff_hm = Vec::new();
     let mut leading_zeros_hm = Vec::new();
     let mut excess_work_hm = Vec::new();
     let mut version_hm = Vec::new();
@@ -247,6 +252,96 @@ pub fn setup_things(
         KeyColorRange::new(4_000_000, bp.white, i64::MAX, bp.white),
     );
 
+    // TGT DIFF DIFF
+
+    tgt_diff_diff_hm.insert(
+        0,
+        KeyColorRange::new(i64::MIN, bp.dark_red, -75, bp.dark_red),
+    );
+    tgt_diff_diff_hm.insert(1, KeyColorRange::new(-75, bp.red, -20, bp.red));
+    tgt_diff_diff_hm.insert(
+        2,
+        KeyColorRange::new(-20, bp.dark_orange, -5, bp.dark_orange),
+    );
+    tgt_diff_diff_hm.insert(3, KeyColorRange::new(-5, bp.orange, -1, bp.orange));
+    tgt_diff_diff_hm.insert(4, KeyColorRange::new(0, bp.black, 0, bp.black));
+    tgt_diff_diff_hm.insert(5, KeyColorRange::new(1, bp.dark_blue, 5, bp.dark_blue));
+    tgt_diff_diff_hm.insert(6, KeyColorRange::new(5, bp.blue, 10, bp.blue));
+    tgt_diff_diff_hm.insert(7, KeyColorRange::new(10, bp.cyan, 30, bp.cyan));
+    tgt_diff_diff_hm.insert(8, KeyColorRange::new(30, bp.pink, 50, bp.pink));
+    tgt_diff_diff_hm.insert(9, KeyColorRange::new(50, bp.hot_pink, 100, bp.hot_pink));
+    tgt_diff_diff_hm.insert(
+        10,
+        KeyColorRange::new(100, bp.dark_magenta, 200, bp.dark_magenta),
+    );
+    tgt_diff_diff_hm.insert(11, KeyColorRange::new(200, bp.magenta, 300, bp.magenta));
+    tgt_diff_diff_hm.insert(
+        12,
+        KeyColorRange::new(300, bp.llmagenta, i64::MAX, bp.white),
+    );
+
+    // LEADING ZEROS
+
+    leading_zeros_hm.insert(0, KeyColorRange::new(32, bp.black, 32, bp.black));
+    leading_zeros_hm.insert(1, KeyColorRange::new(32, bp.light_green, 40, bp.green));
+    leading_zeros_hm.insert(2, KeyColorRange::new(40, bp.light_blue, 50, bp.blue));
+    leading_zeros_hm.insert(3, KeyColorRange::new(50, bp.yellow, 60, bp.orange));
+    leading_zeros_hm.insert(4, KeyColorRange::new(60, bp.cyan, 70, bp.light_purple));
+    leading_zeros_hm.insert(
+        5,
+        KeyColorRange::new(70, bp.light_purple, 80, bp.dark_purple),
+    );
+    leading_zeros_hm.insert(6, KeyColorRange::new(80, bp.dark_purple, 90, bp.red));
+    leading_zeros_hm.insert(7, KeyColorRange::new(90, bp.dark_orange, 95, bp.dark_red));
+    leading_zeros_hm.insert(8, KeyColorRange::new(95, bp.hot_pink, 100, bp.magenta));
+    leading_zeros_hm.insert(9, KeyColorRange::new(100, bp.magenta, 256, bp.white));
+
+    // EXCESS WORK
+
+    excess_work_hm.insert(0, KeyColorRange::new(0, bp.black, 6, bp.dark_blue));
+    excess_work_hm.insert(1, KeyColorRange::new(6, bp.purple, 10, bp.purple));
+    excess_work_hm.insert(2, KeyColorRange::new(10, bp.orange, 12, bp.orange));
+    excess_work_hm.insert(3, KeyColorRange::new(12, bp.red, 14, bp.red));
+    excess_work_hm.insert(4, KeyColorRange::new(14, bp.white, i64::MAX, bp.white));
+
+    // VERSION
+
+    version_hm.insert(0, KeyColorRange::new(1, bp.light_brown, 1, bp.light_brown));
+    version_hm.insert(1, KeyColorRange::new(2, bp.lavender, 2, bp.lavender));
+    version_hm.insert(
+        2,
+        KeyColorRange::new(3, bp.dark_magenta, 3, bp.dark_magenta),
+    );
+    version_hm.insert(
+        3,
+        KeyColorRange::new(4, bp.light_purple, 4, bp.light_purple),
+    );
+    version_hm.insert(
+        4,
+        KeyColorRange::new(536870912, MAROON.into(), 536870912, MAROON.into()),
+    );
+    version_hm.insert(
+        5,
+        KeyColorRange::new(541065216, bp.light_green, 541065216, bp.light_green),
+    );
+    version_hm.insert(
+        6,
+        KeyColorRange::new(536870914, bp.orange, 536870914, bp.orange),
+    );
+    version_hm.insert(7, KeyColorRange::new(549453824, bp.red, 549453824, bp.red));
+    version_hm.insert(
+        8,
+        KeyColorRange::new(545259520, bp.hot_pink, 545259520, bp.hot_pink),
+    );
+    version_hm.insert(
+        9,
+        KeyColorRange::new(536870916, bp.pink, 536870916, bp.pink),
+    );
+    version_hm.insert(
+        10,
+        KeyColorRange::new(1073733632, bp.yellow, 1073733632, bp.yellow),
+    );
+
     let blockchain_value_keys = BlockchainFilterKeys {
         fee: FilterLegend {
             vec: fee_hm,
@@ -268,21 +363,21 @@ pub fn setup_things(
             vec: weight_hm,
             format_type: FormatType::VBytes,
         },
-        tgt_diff: FilterLegend {
-            vec: tgt_diff_hm,
-            format_type: FormatType::Count,
+        tgt_diff_diff: FilterLegend {
+            vec: tgt_diff_diff_hm,
+            format_type: FormatType::Percent,
         },
         leading_zeros: FilterLegend {
             vec: leading_zeros_hm,
-            format_type: FormatType::Sats,
+            format_type: FormatType::Count,
         },
         excess_work: FilterLegend {
             vec: excess_work_hm,
-            format_type: FormatType::Sats,
+            format_type: FormatType::Count,
         },
         version: FilterLegend {
             vec: version_hm,
-            format_type: FormatType::Sats,
+            format_type: FormatType::ByteString,
         },
     };
     commands.insert_resource(bp);

@@ -4,8 +4,8 @@ use crate::scene::{
     explorer::ecs::{
         component::{
             BlockTimeToggleBtn, ByteToggleBtn, ExcessWorkToggleBtn, FeeToggleBtn,
-            LeadZerosToggleBtn, TgtDiffToggleBtn, TxCountToggleBtn, VersionToggleBtn,
-            WeightToggleBtn,
+            LeadZerosToggleBtn, TgtDiffDiffToggleBtn, TgtDiffToggleBtn, TxCountToggleBtn,
+            VersionToggleBtn, WeightToggleBtn,
         },
         event::SwapTilesEvent,
     },
@@ -73,6 +73,18 @@ pub fn tgtdiff_btn(
         if *interaction == Interaction::Pressed {
             event.send(SwapTilesEvent::TargetDifficulty);
             state.set(ColorBlockchainKeySubState::TargetDifficulty);
+        }
+    }
+}
+pub fn tgtdiff_diff_btn(
+    interaction_query: Query<&Interaction, (Changed<Interaction>, With<TgtDiffDiffToggleBtn>)>,
+    mut event: EventWriter<SwapTilesEvent>,
+    mut state: ResMut<NextState<ColorBlockchainKeySubState>>,
+) {
+    for interaction in &interaction_query {
+        if *interaction == Interaction::Pressed {
+            event.send(SwapTilesEvent::TargetDifficultyDiff);
+            state.set(ColorBlockchainKeySubState::TargetDifficultyDiff);
         }
     }
 }

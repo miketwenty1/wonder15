@@ -8,17 +8,20 @@ use bevy_ecs_tilemap::{
 use crate::{
     ecs::resource::{BlockchainHeight, WorldOwnedTileMap},
     helper::utils::funs::get_text_color_per_tile_color,
-    scene::explorer::{
-        ecs::{
-            event::SwapTilesEvent,
-            hard::{TEXT_Z, TILE_SIZE},
-            resource::{ChunkTypeNumsRes, CurrentTilesRes, DespawnTextRangeRes},
+    scene::{
+        explorer::{
+            ecs::{
+                event::SwapTilesEvent,
+                hard::{TEXT_Z, TILE_SIZE},
+                resource::{ChunkTypeNumsRes, CurrentTilesRes, DespawnTextRangeRes},
+            },
+            map::ecs::{
+                component::{AssociatedTileColor, ChunkTextMapComp, PlayerTileColorComp, TileText},
+                hard::TILE_SPACING,
+                resource::ChunkTextManagerRes,
+            },
         },
-        map::ecs::{
-            component::{AssociatedTileColor, ChunkTextMapComp, PlayerTileColorComp, TileText},
-            hard::TILE_SPACING,
-            resource::ChunkTextManagerRes,
-        },
+        initer::ecs::resource::BlockchainKeyColorPalette,
     },
 };
 

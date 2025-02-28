@@ -146,12 +146,60 @@ pub fn make_gradient_image(
     for y in 0..height {
         for x in 0..width {
             let t = x as f32 / (width - 1) as f32;
-            let c = lerp_color(color_left, color_right, t);
+            let c = if color_left == color_right {
+                color_left
+            } else {
+                lerp_color(color_left, color_right, t)
+            };
+
             let i = (y * width + x) as usize * 4;
             data[i] = (c.to_srgba().red * 255.0) as u8;
             data[i + 1] = (c.to_srgba().green * 255.0) as u8;
             data[i + 2] = (c.to_srgba().blue * 255.0) as u8;
             data[i + 3] = (c.to_srgba().alpha * 255.0) as u8;
+        }
+    }
+
+    let mut image = Image::new_fill(
+        Extent3d {
+            width,
+            height,
+            depth_or_array_layers: 1,
+        },
+        TextureDimension::D2,
+        &[0, 0, 0, 0],
+        TextureFormat::Rgba8UnormSrgb,
+        RenderAssetUsages::default(),
+    );
+    image.data = data;
+
+    images.add(image)
+}
+
+pub fn make_gradient_image_corners(
+    images: &mut Assets<Image>,
+    width: u32,
+    height: u32,
+    tl: Color,
+    tr: Color,
+    bl: Color,
+    br: Color,
+) -> Handle<Image> {
+    let mut data = vec![0; (width * height * 4) as usize];
+
+    for y in 0..height {
+        let v = y as f32 / (height - 1) as f32;
+        for x in 0..width {
+            let u = x as f32 / (width - 1) as f32;
+            let top = lerp_color(tl, tr, u);
+            let bottom = lerp_color(bl, br, u);
+            let color = lerp_color(top, bottom, v);
+            let i = (y * width + x) as usize * 4;
+            let srgba = color.to_srgba();
+            data[i] = (srgba.red * 255.0) as u8;
+            data[i + 1] = (srgba.green * 255.0) as u8;
+            data[i + 2] = (srgba.blue * 255.0) as u8;
+            data[i + 3] = (srgba.alpha * 255.0) as u8;
         }
     }
 
@@ -229,4 +277,57 @@ pub fn format_vbytes(bytes: i64) -> (String, String) {
     } else {
         (format!("{}", bytes / 1_000_000), "vMB".to_string())
     }
+}
+
+pub fn format_bytes_string(bytes: u32) -> (String, String) {
+    let mut b = bytes.to_ne_bytes();
+    b.reverse();
+    let formatted = format!("0x{:02X}{:02X}{:02X}{:02X}", b[0], b[1], b[2], b[3]);
+    (formatted, "v".to_string())
+}
+
+pub fn format_percent(diff: i64) -> (String, String) {
+    (diff.to_string(), "%".to_string())
+}
+
+// fn bits_to_target(bits: u32) -> f64 {
+//     let exponent = (bits >> 24) as i32;
+//     let mantissa = (bits & 0x007fffff) as f64;
+//     if exponent <= 3 {
+//         mantissa / 2_f64.powi(8 * (3 - exponent))
+//     } else {
+//         mantissa * 2_f64.powi(8 * (exponent - 3))
+//     }
+// }
+
+// pub fn percent_change_of_difficulties(previous_bits: u32, current_bits: u32) -> i32 {
+//     let target_prev = bits_to_target(previous_bits);
+//     let target_curr = bits_to_target(current_bits);
+//     // Since difficulty is the inverse of the target,
+//     // an increase in difficulty means target decreases.
+//     // Thus, ratio = target_prev / target_curr will be > 1 when difficulty increases.
+//     let ratio = target_prev / target_curr;
+//     ((ratio - 1.0) * 100.0).round() as i32
+// }
+
+fn bits_to_target(bits: u32) -> f64 {
+    let exponent = (bits >> 24) as i32;
+    let mantissa = (bits & 0x007fffff) as f64;
+    if exponent <= 3 {
+        mantissa / 2_f64.powi(8 * (3 - exponent))
+    } else {
+        mantissa * 2_f64.powi(8 * (exponent - 3))
+    }
+}
+
+fn difficulty_from_bits(bits: u32) -> f64 {
+    let max_target = bits_to_target(486604799);
+    max_target / bits_to_target(bits)
+}
+
+pub fn percent_change_of_difficulties(previous_bits: u32, current_bits: u32) -> i32 {
+    let diff_prev = difficulty_from_bits(previous_bits);
+    let diff_curr = difficulty_from_bits(current_bits);
+    // Calculate percentage change as (current/previous - 1)*100.
+    ((diff_curr / diff_prev - 1.0) * 100.0).round() as i32
 }

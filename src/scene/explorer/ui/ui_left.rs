@@ -3,7 +3,8 @@ use bevy::prelude::*;
 use crate::scene::{
     explorer::ecs::component::{
         BlockTimeToggleBtn, ByteToggleBtn, ExcessWorkToggleBtn, FeeToggleBtn, LeadZerosToggleBtn,
-        TgtDiffToggleBtn, TxCountToggleBtn, VersionToggleBtn, WeightToggleBtn,
+        TgtDiffDiffToggleBtn, TgtDiffToggleBtn, TxCountToggleBtn, VersionToggleBtn,
+        WeightToggleBtn,
     },
     initer::ecs::resource::UiColorPalette,
 };
@@ -22,11 +23,11 @@ pub fn left_ui(
             Node {
                 width: Val::Percent(100.0),
                 height: Val::Percent(100.0),
-                align_items: AlignItems::FlexEnd,
-                justify_content: JustifyContent::Center,
+                align_items: AlignItems::Start,
+                //justify_items: JustifyItems::Start,
+                //justify_content: JustifyContent::Center,
                 flex_direction: FlexDirection::Column,
-                // justify_items: JustifyItems::Start,
-                // justify_self: JustifySelf::Start,
+                //margin: UiRect::bottom(Val::Auto),
                 ..default()
             },
             BorderRadius::all(Val::Px(4.0)),
@@ -50,6 +51,15 @@ pub fn left_ui(
         });
         side_parent.with_children(|parent| {
             spawn_game_toggle_button(parent, TgtDiffToggleBtn, "TargetDifficulty", &colors, &font);
+        });
+        side_parent.with_children(|parent| {
+            spawn_game_toggle_button(
+                parent,
+                TgtDiffDiffToggleBtn,
+                "TargetDifficultyDiff",
+                &colors,
+                &font,
+            );
         });
         side_parent.with_children(|parent| {
             spawn_game_toggle_button(parent, LeadZerosToggleBtn, "LeadingZeros", &colors, &font);

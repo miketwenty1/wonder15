@@ -38,8 +38,8 @@ pub fn spawn_startup_fullmap(
     // need to do an offset so it lines up with the chunking logic overlay sprites and tiles. Right now it's off by half the distance of a tile in both x/y directions
     // given a 66 pixel tile, the offset would be +33., +33. in for x/y.
     let offset_tran = Vec3::new(
-        center.translation.x, // + (TILE_SIZE.x / 2.),
-        center.translation.y, // + (TILE_SIZE.y / 2.),
+        center.translation.x - (TILE_SIZE.x / 2.), //
+        center.translation.y - (TILE_SIZE.y / 2.), //
         0.,
     );
     let transform_for_map = Transform::from_translation(offset_tran);
