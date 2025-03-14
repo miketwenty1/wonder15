@@ -47,19 +47,30 @@ pub fn swap_tile_index_reader(
     blockchain_legend_colors: Res<BlockchainFilterKeys>,
 ) {
     for e in event_r.read() {
-        let swap_type = if e == &SwapTilesEvent::Iter {
-            current_tiles.0.next_tile_swap()
+        let mut set_type = true;
+
+        info!("e {:?}", e);
+        let swap_type = if *e == SwapTilesEvent::Iter {
+            current_tiles.0 = current_tiles.0.next_tile_swap();
+            set_type = false;
+            info!("current_tiles.0 {:?}", current_tiles.0);
+            &current_tiles.0
         } else {
-            e.clone()
+            e
         };
 
-        match swap_type {
+        info!("swap? {:?}", swap_type);
+
+        match *swap_type {
             SwapTilesEvent::PlayerColor => {
+                info!("swap2? {:?}", swap_type);
                 for (mut tile_index, _, mut tile_color, player_tile_color, _) in query.iter_mut() {
-                    if *tile_index != TileTextureIndex(TEXTURE_INDEX_FOR_PLAYER_COLOR) {
-                        *tile_color = player_tile_color.0;
-                        *tile_index = TileTextureIndex(TEXTURE_INDEX_FOR_PLAYER_COLOR);
-                    }
+                    // if *tile_index != TileTextureIndex(TEXTURE_INDEX_FOR_PLAYER_COLOR) {
+                    //     *tile_color = player_tile_color.0;
+                    //     *tile_index = TileTextureIndex(TEXTURE_INDEX_FOR_PLAYER_COLOR);
+                    // }
+                    *tile_color = player_tile_color.0;
+                    *tile_index = TileTextureIndex(TEXTURE_INDEX_FOR_PLAYER_COLOR);
                 }
                 for (mut text_color, player_color) in q_text_color.iter_mut() {
                     *text_color = TextColor(get_text_color_per_tile_color(&player_color.0));
@@ -198,9 +209,9 @@ pub fn swap_tile_index_reader(
                 let filter_legend = blockchain_legend_colors.tgt_diff_diff.clone();
                 for (mut tile_index, _, mut tile_color, _, ulam) in query.iter_mut() {
                     if let Some(val) = blockchain_tiles.map.get(&ulam.0) {
-                        let mut current = val.block_bits;
+                        let current = val.block_bits;
                         let prev_o = blockchain_tiles.map.get(&(ulam.0 - 2016));
-                        let mut previous = prev_o.map_or(val.block_bits, |prev| prev.block_bits);
+                        let previous = prev_o.map_or(val.block_bits, |prev| prev.block_bits);
 
                         // let mut rng = rand::thread_rng();
                         // let current = rng.gen_range(100.0..400.0);
@@ -281,9 +292,7 @@ pub fn swap_tile_index_reader(
                 info!("Version");
                 for (mut tile_index, _, mut tile_color, _, ulam) in query.iter_mut() {
                     if let Some(val) = blockchain_tiles.map.get(&ulam.0) {
-                        let c = match filter_legend
-                            .color_for_ranges(val.block_ver.try_into().unwrap())
-                        {
+                        let c = match filter_legend.color_for_ranges(val.block_ver.into()) {
                             Some(s) => s,
                             None => get_version_color(val.block_ver).into(),
                         };
@@ -296,9 +305,12 @@ pub fn swap_tile_index_reader(
                 }
             }
             SwapTilesEvent::Iter => {
-                info!("this shouldnt be reached this was taken care of above for swap_type");
+                info!("iter");
             }
         }
-        *current_tiles = CurrentTilesRes(e.clone());
+        if set_type {
+            *current_tiles = CurrentTilesRes(e.clone());
+            info!("eee {:?}", e);
+        }
     }
 }

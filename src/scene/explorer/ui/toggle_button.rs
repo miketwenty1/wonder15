@@ -29,7 +29,7 @@ pub fn spawn_game_toggle_button<T: Component>(
             },
             BackgroundColor(colors.button_color),
             BorderColor(colors.node_color),
-            BorderRadius::all(Val::Px(3.0)),
+            BorderRadius::all(Val::Px(4.0)),
             toggle_btn_type,
             ToggleBlockchainBtn,
         ))

@@ -99,7 +99,9 @@ impl BlockchainFilterKeys {
             SwapTilesEvent::Fee => "Fees Per Block".to_owned(),
             SwapTilesEvent::BlockTime => "Blocktime Per Block".to_owned(),
             SwapTilesEvent::TxCount => "Transactions Per Block".to_owned(),
-            SwapTilesEvent::Byte => "Size of Block\nin Bytes".to_owned(),
+            SwapTilesEvent::Byte => {
+                "Size of Block\nin Bytes\nNot Accounting\nfor Segwit".to_owned()
+            }
             SwapTilesEvent::Weight => "Size of Block\nin vBytes".to_owned(),
             SwapTilesEvent::TargetDifficulty => "Target Difficulty\nof Block".to_owned(),
             SwapTilesEvent::TargetDifficultyDiff => {

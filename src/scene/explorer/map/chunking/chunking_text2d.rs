@@ -1,27 +1,24 @@
 use bevy::{math::Vec3A, prelude::*, render::primitives::Aabb, text::FontSmoothing};
 use bevy_ecs_tilemap::{
     map::{TilemapGridSize, TilemapId, TilemapRenderSettings, TilemapType},
-    tiles::{TileBundle, TileColor, TilePos, TileStorage},
+    tiles::{TileBundle, TilePos, TileStorage},
     TilemapBundle,
 };
 
 use crate::{
     ecs::resource::{BlockchainHeight, WorldOwnedTileMap},
     helper::utils::funs::get_text_color_per_tile_color,
-    scene::{
-        explorer::{
-            ecs::{
-                event::SwapTilesEvent,
-                hard::{TEXT_Z, TILE_SIZE},
-                resource::{ChunkTypeNumsRes, CurrentTilesRes, DespawnTextRangeRes},
-            },
-            map::ecs::{
-                component::{AssociatedTileColor, ChunkTextMapComp, PlayerTileColorComp, TileText},
-                hard::TILE_SPACING,
-                resource::ChunkTextManagerRes,
-            },
+    scene::explorer::{
+        ecs::{
+            event::SwapTilesEvent,
+            hard::{TEXT_Z, TILE_SIZE},
+            resource::{ChunkTypeNumsRes, CurrentTilesRes, DespawnTextRangeRes},
         },
-        initer::ecs::resource::BlockchainKeyColorPalette,
+        map::ecs::{
+            component::{AssociatedTileColor, ChunkTextMapComp, TileText, UlamComp},
+            hard::TILE_SPACING,
+            resource::ChunkTextManagerRes,
+        },
     },
 };
 
@@ -88,6 +85,7 @@ fn spawn_chunk(
                             //text_visi.visi_or_nawh(),
                             TileText,
                             TextColor(text_color),
+                            UlamComp(ulam_v),
                             AssociatedTileColor(player_tile_color),
                             TextLayout::new_with_justify(JustifyText::Center),
                             //Adding Aabb to attempt to cull Text2d that isn't on screen (works with sprites as parents, but not sure about TileBundles),

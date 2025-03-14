@@ -23,13 +23,18 @@ pub fn left_ui(
             Node {
                 width: Val::Percent(100.0),
                 height: Val::Percent(100.0),
-                align_items: AlignItems::Start,
-                //justify_items: JustifyItems::Start,
-                //justify_content: JustifyContent::Center,
+                // align_items: AlignItems::Start,
+                // justify_items: JustifyItems::Start,
+                // justify_content: JustifyContent::Start,
+                // align_content: AlignContent::Start,
+                // align_self: AlignSelf::Start,
+                // justify_self: JustifySelf::Start,
                 flex_direction: FlexDirection::Column,
-                //margin: UiRect::bottom(Val::Auto),
+                margin: UiRect::bottom(Val::Auto),
+
                 ..default()
             },
+            BackgroundColor(colors.node_color),
             BorderRadius::all(Val::Px(4.0)),
         ));
         let font = asset_server.load("fonts/FiraSans-Bold.ttf");
@@ -44,31 +49,37 @@ pub fn left_ui(
             spawn_game_toggle_button(parent, TxCountToggleBtn, "TxCount", &colors, &font);
         });
         side_parent.with_children(|parent| {
-            spawn_game_toggle_button(parent, ByteToggleBtn, "Bytes", &colors, &font);
+            spawn_game_toggle_button(parent, ByteToggleBtn, "Block Size", &colors, &font);
         });
-        side_parent.with_children(|parent| {
-            spawn_game_toggle_button(parent, WeightToggleBtn, "Weights", &colors, &font);
-        });
-        side_parent.with_children(|parent| {
-            spawn_game_toggle_button(parent, TgtDiffToggleBtn, "TargetDifficulty", &colors, &font);
-        });
+        // side_parent.with_children(|parent| {
+        //     spawn_game_toggle_button(parent, WeightToggleBtn, "Weights", &colors, &font);
+        // });
         side_parent.with_children(|parent| {
             spawn_game_toggle_button(
                 parent,
-                TgtDiffDiffToggleBtn,
-                "TargetDifficultyDiff",
+                TgtDiffToggleBtn,
+                "Target Difficulty",
                 &colors,
                 &font,
             );
         });
         side_parent.with_children(|parent| {
-            spawn_game_toggle_button(parent, LeadZerosToggleBtn, "LeadingZeros", &colors, &font);
+            spawn_game_toggle_button(
+                parent,
+                TgtDiffDiffToggleBtn,
+                "Difficulty Changes",
+                &colors,
+                &font,
+            );
         });
         side_parent.with_children(|parent| {
-            spawn_game_toggle_button(parent, ExcessWorkToggleBtn, "ExcessWork", &colors, &font);
+            spawn_game_toggle_button(parent, LeadZerosToggleBtn, "Leading Zeros", &colors, &font);
         });
         side_parent.with_children(|parent| {
-            spawn_game_toggle_button(parent, VersionToggleBtn, "Version", &colors, &font);
+            spawn_game_toggle_button(parent, ExcessWorkToggleBtn, "Excess Work", &colors, &font);
+        });
+        side_parent.with_children(|parent| {
+            spawn_game_toggle_button(parent, VersionToggleBtn, "Version Header", &colors, &font);
         });
 
         side_parent.set_parent(ent);

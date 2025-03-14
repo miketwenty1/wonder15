@@ -24,7 +24,7 @@ pub struct ZoomLevelNumsRes {
 
 #[derive(Resource, Clone)]
 pub struct ChunkTypeNumsRes {
-    pub building: UVec2,
+    pub building: UVec3, // x, y, and value
     pub tile: UVec2,
     pub text: UVec2,
 }

@@ -1,16 +1,14 @@
 use bevy::{
-    asset::RenderAssetUsages,
     color::palettes::{
         css::WHITE,
         tailwind::{BLUE_300, GREEN_300, RED_300},
     },
     prelude::*,
-    render::render_resource::{Extent3d, TextureDimension, TextureFormat},
     text::FontSmoothing,
 };
 
 use crate::{
-    helper::utils::funs::{format_sats, make_gradient_image, make_gradient_image_corners},
+    helper::utils::funs::{make_gradient_image, make_gradient_image_corners},
     scene::{
         explorer::{
             ecs::event::SwapTilesEvent,
@@ -33,51 +31,59 @@ pub fn spawn_legend_driver(
     for e in event.read() {
         let scope = key_color_ranges.get_substate(e.clone()).unwrap();
         let header = key_color_ranges.get_custom_string(e.clone());
-        if *e == SwapTilesEvent::TargetDifficulty {
-            spawn_tgt_diff_legend(
-                &mut commands,
-                &asset_server,
-                &placement_query,
-                &ui_colors,
-                header,
-                scope,
-            );
-        } else if *e == SwapTilesEvent::TargetDifficultyDiff {
-            let filter = key_color_ranges.get_filter(e.clone()).unwrap();
-            spawn_tgt_diff_diff_legend(
-                &mut commands,
-                &asset_server,
-                &placement_query,
-                &ui_colors,
-                filter.clone(),
-                &mut images,
-                header,
-                scope,
-            );
-        } else if *e == SwapTilesEvent::Version {
-            let filter = key_color_ranges.get_filter(e.clone()).unwrap();
-            spawn_version_legend(
-                &mut commands,
-                &asset_server,
-                &placement_query,
-                &ui_colors,
-                filter.clone(),
-                &mut images,
-                header,
-                scope,
-            );
-        } else {
-            let filter = key_color_ranges.get_filter(e.clone()).unwrap();
-            spawn_legend(
-                &mut commands,
-                &asset_server,
-                &placement_query,
-                &ui_colors,
-                filter.clone(),
-                &mut images,
-                header,
-                scope,
-            );
+        match *e {
+            SwapTilesEvent::TargetDifficulty => {
+                spawn_tgt_diff_legend(
+                    &mut commands,
+                    &asset_server,
+                    &placement_query,
+                    &ui_colors,
+                    header,
+                    scope,
+                );
+            }
+            SwapTilesEvent::TargetDifficultyDiff => {
+                let filter = key_color_ranges.get_filter(e.clone()).unwrap();
+                spawn_tgt_diff_diff_legend(
+                    &mut commands,
+                    &asset_server,
+                    &placement_query,
+                    &ui_colors,
+                    filter.clone(),
+                    &mut images,
+                    header,
+                    scope,
+                );
+            }
+            SwapTilesEvent::Version => {
+                let filter = key_color_ranges.get_filter(e.clone()).unwrap();
+                spawn_version_legend(
+                    &mut commands,
+                    &asset_server,
+                    &placement_query,
+                    &ui_colors,
+                    filter.clone(),
+                    &mut images,
+                    header,
+                    scope,
+                );
+            }
+            SwapTilesEvent::Iter => {
+                info!("do no ting");
+            }
+            _ => {
+                let filter = key_color_ranges.get_filter(e.clone()).unwrap();
+                spawn_legend(
+                    &mut commands,
+                    &asset_server,
+                    &placement_query,
+                    &ui_colors,
+                    filter.clone(),
+                    &mut images,
+                    header,
+                    scope,
+                );
+            }
         }
     }
 }

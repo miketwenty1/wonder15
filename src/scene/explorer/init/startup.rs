@@ -96,7 +96,7 @@ pub fn init_startup(
             medium_threshold: MEDIUM_ZOOM_THRESHOLD,
         });
         commands.insert_resource(ChunkTypeNumsRes {
-            building: BUILDING_CHUNK_SIZE,
+            building: UVec3::new(BUILDING_CHUNK_SIZE.x, BUILDING_CHUNK_SIZE.y, 0),
             tile: TILE_CHUNK_SIZE,
             text: TEXT_CHUNK_SIZE,
         });
@@ -117,7 +117,7 @@ pub fn init_startup(
             medium_threshold: SLIM_MEDIUM_ZOOM_THRESHOLD,
         });
         commands.insert_resource(ChunkTypeNumsRes {
-            building: SLIM_BUILDING_CHUNK_SIZE,
+            building: UVec3::new(SLIM_BUILDING_CHUNK_SIZE.x, SLIM_BUILDING_CHUNK_SIZE.y, 0),
             tile: SLIM_TILE_CHUNK_SIZE,
             text: SLIM_TEXT_CHUNK_SIZE,
         });
