@@ -18,16 +18,16 @@ pub fn read_tile_update_event_text(
     current_tiles: Res<CurrentTilesRes>,
 ) {
     for e in event.read() {
-        // let mew_tiles_map = vec_tile_updates_to_hashmap(e.0.clone());
-        // for (mut text_color, height) in query.iter_mut() {
-        //     let text_color_new = match mew_tiles_map.get(&height.0) {
-        //         Some(s) => match current_tiles.0 {
-        //             SwapTilesEvent::PlayerColor => get_text_color_per_tile_color(&s.color),
-        //             _ => Color::WHITE,
-        //         },
-        //         None => Color::WHITE,
-        //     };
-        //     text_color.0 = text_color_new;
-        // }
+        let mew_tiles_map = vec_tile_updates_to_hashmap(e.0.clone());
+        for (mut text_color, height) in query.iter_mut() {
+            if let Some(s) = mew_tiles_map.get(&height.0) {
+                match current_tiles.0 {
+                    SwapTilesEvent::PlayerColor => {
+                        text_color.0 = get_text_color_per_tile_color(&s.color)
+                    }
+                    _ => text_color.0 = Color::WHITE,
+                }
+            };
+        }
     }
 }

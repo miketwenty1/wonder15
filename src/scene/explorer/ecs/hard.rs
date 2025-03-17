@@ -20,7 +20,7 @@ pub const TEXT_RENDER_CHUNK_SIZE: UVec2 = UVec2 {
     x: TEXT_CHUNK_SIZE.x * 2,
     y: TEXT_CHUNK_SIZE.y * 2,
 };
-pub const BUILDING_CHUNK_SIZE: UVec2 = UVec2 { x: 32, y: 32 };
+pub const BUILDING_CHUNK_SIZE: UVec2 = UVec2 { x: 16, y: 16 };
 pub const BUILDING_RENDER_CHUNK_SIZE: UVec2 = UVec2 {
     x: BUILDING_CHUNK_SIZE.x * 2,
     y: BUILDING_CHUNK_SIZE.y * 2,
@@ -35,7 +35,7 @@ pub const SLIM_TEXT_RENDER_CHUNK_SIZE: UVec2 = UVec2 {
     x: SLIM_TEXT_CHUNK_SIZE.x * 2,
     y: SLIM_TEXT_CHUNK_SIZE.y * 2,
 };
-pub const SLIM_BUILDING_CHUNK_SIZE: UVec2 = UVec2 { x: 16, y: 16 };
+pub const SLIM_BUILDING_CHUNK_SIZE: UVec2 = UVec2 { x: 12, y: 12 };
 pub const SLIM_BUILDING_RENDER_CHUNK_SIZE: UVec2 = UVec2 {
     x: SLIM_BUILDING_CHUNK_SIZE.x * 2,
     y: SLIM_BUILDING_CHUNK_SIZE.y * 2,
