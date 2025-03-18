@@ -1,5 +1,7 @@
+use std::collections::HashMap;
+
 use crate::ecs::{resource::WorldOwnedTileMap, state::SceneState};
-use bevy::{prelude::*, utils::HashMap};
+use bevy::prelude::*;
 use startup::{init_startup, setup_animation};
 
 pub mod startup;

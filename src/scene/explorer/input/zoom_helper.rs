@@ -7,14 +7,19 @@ use crate::scene::explorer::ecs::{
 
 pub fn changed_ortho(
     mut zoom_res: ResMut<CurrentZoomLevelRes>,
-    cam_query: Query<&OrthographicProjection, (With<Camera>, Changed<OrthographicProjection>)>,
+    cam_query: Query<&Projection, (With<Camera>, Changed<Projection>)>,
     mut zoom_state: ResMut<NextState<ExplorerRunningZoomSub2State>>,
     zooms: Res<ZoomLevelNumsRes>,
 ) {
-    for cam in cam_query.iter() {
-        let zoom_level = if cam.scale > zooms.medium_threshold {
+    for cam_projection in cam_query.iter() {
+        let cam_ortho = match *cam_projection {
+            Projection::Orthographic(ref ortho) => ortho,
+            _ => panic!("Expected Orthographic projection"),
+        };
+
+        let zoom_level = if cam_ortho.scale > zooms.medium_threshold {
             ExplorerRunningZoomSub2State::Far
-        } else if cam.scale > zooms.close_threshold {
+        } else if cam_ortho.scale > zooms.close_threshold {
             ExplorerRunningZoomSub2State::Medium
         } else {
             ExplorerRunningZoomSub2State::Close

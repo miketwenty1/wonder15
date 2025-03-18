@@ -1,6 +1,6 @@
 use async_channel::{Receiver, Sender};
 use bevy::{
-    ecs::system::Resource,
+    ecs::resource::Resource,
     time::{Timer, TimerMode},
 };
 use chrono::{DateTime, Utc};

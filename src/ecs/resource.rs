@@ -1,4 +1,6 @@
-use bevy::{color::Color, ecs::system::Resource, utils::HashMap};
+use std::collections::HashMap;
+
+use bevy::{color::Color, ecs::resource::Resource};
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 

@@ -4,23 +4,28 @@ use crate::scene::explorer::ecs::resource::ZoomLevelNumsRes;
 
 pub fn zoom_keyboard(
     keyboard_input: Res<ButtonInput<KeyCode>>,
-    mut cam_query: Query<&mut OrthographicProjection, With<Camera>>,
+    mut cam_query: Query<&mut Projection, With<Camera>>,
     zooms: Res<ZoomLevelNumsRes>,
 ) {
-    for mut ortho in cam_query.iter_mut() {
+    for mut ortho_projection in cam_query.iter_mut() {
+        let cam_ortho = match *ortho_projection {
+            Projection::Orthographic(ref mut ortho) => ortho,
+            _ => panic!("Expected Orthographic projection"),
+        };
+
         if keyboard_input.pressed(KeyCode::KeyZ) {
-            if ortho.scale + 0.2 > zooms.max_zoom {
-                ortho.scale = zooms.max_zoom;
+            if cam_ortho.scale + 0.2 > zooms.max_zoom {
+                cam_ortho.scale = zooms.max_zoom;
             } else {
-                ortho.scale += 0.2;
+                cam_ortho.scale += 0.2;
             }
         }
 
         if keyboard_input.pressed(KeyCode::KeyX) {
-            if ortho.scale - 0.2 < zooms.min_zoom {
-                ortho.scale = zooms.min_zoom;
+            if cam_ortho.scale - 0.2 < zooms.min_zoom {
+                cam_ortho.scale = zooms.min_zoom;
             } else {
-                ortho.scale -= 0.2;
+                cam_ortho.scale -= 0.2;
             }
         }
     }

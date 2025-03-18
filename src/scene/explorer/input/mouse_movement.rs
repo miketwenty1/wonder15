@@ -6,7 +6,7 @@ use super::hard::MOVE_VELOCITY;
 pub fn mouse_movement_camera_system(
     mut mouse_motion_events: EventReader<MouseMotion>,
     mouse: Res<ButtonInput<MouseButton>>,
-    mut q_camera: Query<(&mut Transform, &OrthographicProjection), With<Camera>>,
+    mut q_camera: Query<(&mut Transform, &Projection), With<Camera>>,
     time: Res<Time>,
     // mut clear_last_selected: EventWriter<ClearLastSelectedTile>,
 ) {
@@ -15,7 +15,12 @@ pub fn mouse_movement_camera_system(
             || mouse.pressed(MouseButton::Left)
             || mouse.pressed(MouseButton::Right)
         {
-            for (mut cam_transform, cam_ortho) in q_camera.iter_mut() {
+            for (mut cam_transform, cam_ortho_projection) in q_camera.iter_mut() {
+                let cam_ortho = match *cam_ortho_projection {
+                    Projection::Orthographic(ref ortho) => ortho,
+                    _ => panic!("Expected Orthographic projection"),
+                };
+
                 let timefactor = if time.delta_secs() > 0.01 {
                     0.01
                 } else {
