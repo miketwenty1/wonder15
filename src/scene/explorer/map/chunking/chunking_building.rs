@@ -12,12 +12,8 @@ use crate::{
             hard::{BUILDING_Z, TILE_SIZE},
             resource::{ChunkTypeNumsRes, DespawnBuildingRangeRes, SpriteSheetBuildingRes},
         },
-        map::{
-            ecs::{
-                component::ChunkBuildingMapComp, hard::TILE_SPACING,
-                resource::ChunkBuildingManagerRes,
-            },
-            world_map,
+        map::ecs::{
+            component::ChunkBuildingMapComp, hard::TILE_SPACING, resource::ChunkBuildingManagerRes,
         },
     },
 };

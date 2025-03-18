@@ -15,7 +15,7 @@ pub const SLIM_MAX_ZOOM: f32 = 5.0;
 pub const SLIM_CLOSE_ZOOM_THRESHOLD: f32 = 1.0;
 pub const SLIM_MEDIUM_ZOOM_THRESHOLD: f32 = 2.0;
 
-pub const TEXT_CHUNK_SIZE: UVec2 = UVec2 { x: 12, y: 8 };
+pub const TEXT_CHUNK_SIZE: UVec2 = UVec2 { x: 10, y: 7 };
 pub const TEXT_RENDER_CHUNK_SIZE: UVec2 = UVec2 {
     x: TEXT_CHUNK_SIZE.x * 2,
     y: TEXT_CHUNK_SIZE.y * 2,
@@ -30,7 +30,7 @@ pub const TILE_RENDER_CHUNK_SIZE: UVec2 = UVec2 {
     x: TILE_CHUNK_SIZE.x * 2,
     y: TILE_CHUNK_SIZE.y * 2,
 };
-pub const SLIM_TEXT_CHUNK_SIZE: UVec2 = UVec2 { x: 8, y: 8 };
+pub const SLIM_TEXT_CHUNK_SIZE: UVec2 = UVec2 { x: 8, y: 6 };
 pub const SLIM_TEXT_RENDER_CHUNK_SIZE: UVec2 = UVec2 {
     x: SLIM_TEXT_CHUNK_SIZE.x * 2,
     y: SLIM_TEXT_CHUNK_SIZE.y * 2,
