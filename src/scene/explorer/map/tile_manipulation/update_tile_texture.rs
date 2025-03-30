@@ -2,6 +2,7 @@ use bevy::prelude::*;
 use bevy_ecs_tilemap::tiles::{TileColor, TileTextureIndex};
 
 use crate::{
+    ecs::resource::GameStaticInputs,
     helper::utils::funs::{get_resource_for_tile, vec_tile_updates_to_hashmap},
     scene::explorer::{
         ecs::{
@@ -25,6 +26,7 @@ pub fn read_tile_update_event_color(
         &mut PlayerTileColorComp,
     )>, //
     current_tiles: Res<CurrentTilesRes>,
+    // static_inputs: Res<GameStaticInputs>,
 ) {
     for e in event.read() {
         let mew_tiles_map = vec_tile_updates_to_hashmap(e.0.clone());
@@ -51,6 +53,12 @@ pub fn read_tile_update_event_color(
                     }
                 }
             }
+            // mew_tiles_map.remove(&height.0);
         }
+        // if !mew_tiles_map.is_empty() && static_inputs.full_map_mode {
+        //     for (_key, value) in &mew_tiles_map {
+        //         info!("missed: {}", value.height);
+        //     }
+        // }
     }
 }

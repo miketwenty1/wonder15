@@ -23,7 +23,7 @@ pub fn api_get_map_tiles(
     mut event: EventReader<GetTileUpdates>,
 ) {
     for e in event.read() {
-        //info!("send api request for tiles");
+        info!("send api request for tiles");
         let ts_str = gametime.ts.to_string();
         let game_height = game_height.0;
         //for event in player_move_event_reader.read() {

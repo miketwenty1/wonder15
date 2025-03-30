@@ -65,7 +65,6 @@ pub fn init_startup(
     mut init_map_state: ResMut<NextState<InitSpawnTileMapState>>,
     mut explorer_sub_state: ResMut<NextState<ExplorerSubState>>,
     full_map_state: Res<State<FullMapState>>,
-    mut get_tiles: EventWriter<GetTileUpdates>,
 ) {
     let building_atlas = TextureAtlasLayout::from_grid(
         bevy::prelude::UVec2::new(32, 32),
@@ -96,7 +95,7 @@ pub fn init_startup(
             medium_threshold: MEDIUM_ZOOM_THRESHOLD,
         });
         commands.insert_resource(ChunkTypeNumsRes {
-            building: BUILDING_CHUNK_SIZE.into(),
+            building: BUILDING_CHUNK_SIZE,
             tile: TILE_CHUNK_SIZE,
             text: TEXT_CHUNK_SIZE,
         });
@@ -134,6 +133,4 @@ pub fn init_startup(
 
     init_map_state.set(InitSpawnTileMapState::Running);
     explorer_sub_state.set(ExplorerSubState::Running);
-    // if data already is loaded from local then TS otherwise Height.
-    get_tiles.send(GetTileUpdates(GetTileType::Height));
 }

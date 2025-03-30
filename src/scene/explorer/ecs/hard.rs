@@ -46,6 +46,6 @@ pub const SLIM_TILE_RENDER_CHUNK_SIZE: UVec2 = UVec2 {
     y: SLIM_TILE_CHUNK_SIZE.y * 2,
 };
 pub const TILE_DESPAWN_RANGE_MULTIPLIER: f32 = 4.0;
-pub const BUILDING_DESPAWN_RANGE_MULTIPLIER: f32 = 4.0;
+pub const BUILDING_DESPAWN_RANGE_MULTIPLIER: f32 = 8.0;
 pub const TEXT_DESPAWN_RANGE_MULTIPLIER: f32 = 4.0;
 pub const TILE_SIZE: TilemapTileSize = TilemapTileSize { x: 98.0, y: 98.0 };

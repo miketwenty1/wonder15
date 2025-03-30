@@ -80,7 +80,7 @@ fn spawn_chunk(
     let transform = Transform::from_translation(Vec3::new(
         chunk_pos.x as f32 * chunks.tile.x as f32 * (TILE_SIZE.x),
         chunk_pos.y as f32 * chunks.tile.y as f32 * (TILE_SIZE.y),
-        1.0,
+        TILE_Z,
     ));
 
     let texture_handle: Handle<Image> =

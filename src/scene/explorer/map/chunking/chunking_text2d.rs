@@ -105,7 +105,7 @@ fn spawn_chunk(
     let transform = Transform::from_translation(Vec3::new(
         chunk_pos.x as f32 * chunks.text.x as f32 * (TILE_SIZE.x),
         chunk_pos.y as f32 * chunks.text.y as f32 * (TILE_SIZE.y),
-        2.0,
+        TEXT_Z,
     ));
 
     commands
@@ -165,7 +165,7 @@ pub fn spawn_text_chunk_around_camera(
                         &chunks,
                         &world_map,
                         &current_tiles,
-                    )
+                    );
                 }
             }
         }

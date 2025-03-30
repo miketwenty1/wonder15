@@ -5,7 +5,11 @@ use bevy_ecs_tilemap::{
 };
 
 use crate::{
-    ecs::resource::{BlockchainHeight, FullMapLength, WorldOwnedTileMap},
+    ecs::{
+        resource::{BlockchainHeight, FullMapLength, WorldOwnedTileMap},
+        state::ExplorerCommsSubState,
+    },
+    helper::plugins::comms::ecs::{event::GetTileUpdates, structy::GetTileType},
     scene::explorer::{
         ecs::state::InitSpawnTileMapState,
         map::ecs::{
@@ -42,6 +46,7 @@ pub fn startup_fullmap(
         for i in previous..new_destionation {
             if total_tiles_res.0 == current_block_height.0 {
                 state.set(InitSpawnTileMapState::Done);
+                info!("end");
                 return;
             }
             let tile_from_owned_map = world_map.map.get(&i);

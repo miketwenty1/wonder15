@@ -3,6 +3,7 @@ use chunk_full_map::startup_fullmap;
 use chunking_building::{despawn_building_outofrange_chunks, spawn_building_chunks_around_camera};
 use chunking_text2d::{despawn_text_outofrange_chunks, spawn_text_chunk_around_camera};
 use chunking_tiles::{despawn_tile_outofrange_chunks, spawn_tile_chunks_around_camera};
+use get_tile_trigger::after_map_init;
 
 use super::ecs::state::{BuildingToggleState, TextToggleState};
 use crate::{
@@ -16,6 +17,7 @@ mod chunk_full_map;
 mod chunking_building;
 mod chunking_text2d;
 mod chunking_tiles;
+mod get_tile_trigger;
 
 pub struct ExplorerMapChunkingPlugin;
 
@@ -25,6 +27,10 @@ impl Plugin for ExplorerMapChunkingPlugin {
             Update,
             (startup_fullmap)
                 .run_if(in_state(InitSpawnTileMapState::Running).and(in_state(FullMapState::On))),
+        )
+        .add_systems(
+            Update,
+            (after_map_init).run_if(in_state(InitSpawnTileMapState::Done).and(run_once)),
         )
         .add_systems(
             Update,

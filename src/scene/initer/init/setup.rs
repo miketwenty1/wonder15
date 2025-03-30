@@ -8,7 +8,7 @@ use bevy::{
 
 use crate::{
     ecs::{
-        resource::{BlockchainHeight, FullMapLength},
+        resource::{BlockchainHeight, FullMapLength, GameStaticInputs},
         state::{ExplorerCommsSubState, SceneState},
     },
     scene::initer::ecs::{
@@ -47,6 +47,7 @@ pub fn setup_things(
     //scene_state: Res<State<SceneState>>,
     //current_blockheight: Res<BlockchainHeight>,
     mut comm_map_state: ResMut<NextState<ExplorerCommsSubState>>,
+    static_inputs: Res<GameStaticInputs>,
 ) {
     let map_side_length = 1000; //((current_blockheight.0 as f64).sqrt().ceil()) as u32 + 2;
     commands.insert_resource(FullMapLength(map_side_length));
@@ -72,11 +73,6 @@ pub fn setup_things(
         AnimationTimerComp(Timer::from_seconds(0.1, TimerMode::Repeating)),
         StateScoped(SceneState::Init),
     ));
-
-    info!("we are about to set to Explorer!");
-    scene_state.set(SceneState::Explorer);
-    // need to set to Ts if cache was found
-    comm_map_state.set(ExplorerCommsSubState::Height);
 
     let ui_color_palette = UiColorPalette {
         node_color: Srgba::hex("222831").unwrap().into(),
@@ -383,4 +379,9 @@ pub fn setup_things(
     commands.insert_resource(bp);
     commands.insert_resource(ui_color_palette);
     commands.insert_resource(blockchain_value_keys);
+
+    info!("we are about to set to Explorer!");
+    scene_state.set(SceneState::Explorer);
+    // need to set to Ts if cache was found
+    // comm_map_state.set(ExplorerCommsSubState::Height);
 }
