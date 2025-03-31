@@ -7,28 +7,33 @@ use bevy_ecs_tilemap::{
 
 use crate::{
     ecs::resource::{BlockchainHeight, WorldOwnedTileMap},
-    scene::explorer::{
-        ecs::{
-            hard::{BUILDING_CHUNK_SIZE, BUILDING_Z, TILE_SIZE},
-            resource::{ChunkTypeNumsRes, DespawnBuildingRangeRes, SpriteSheetBuildingRes},
-        },
-        map::{
+    scene::{
+        explorer::{
             ecs::{
-                component::ChunkBuildingMapComp, hard::TILE_SPACING,
-                resource::ChunkBuildingManagerRes,
+                hard::{BUILDING_CHUNK_SIZE, BUILDING_SPAN_SPAWN_NUMBER, BUILDING_Z, TILE_SIZE},
+                resource::{ChunkTypeNumsRes, DespawnBuildingRangeRes, SpriteSheetBuildingRes},
             },
-            world_map,
+            map::{
+                ecs::{
+                    component::ChunkBuildingMapComp, hard::TILE_SPACING,
+                    resource::ChunkBuildingManagerRes,
+                },
+                world_map,
+            },
         },
+        initer::ecs::resource::BuildingValueLevelMapper,
     },
 };
 
-const SPAN_MAGIC_NUMBER: i32 = 4;
+use super::building_config::spawn_tile_level;
+
 fn spawn_chunk(
     commands: &mut Commands,
     layout: &Handle<TextureAtlasLayout>,
     texture: &Handle<Image>,
     chunk_pos: IVec2,
     world_values: &Res<WorldOwnedTileMap>,
+    building_value_mapper: &Res<BuildingValueLevelMapper>,
 ) {
     let tilemap_entity = commands.spawn_empty().id();
     let mut tile_storage = TileStorage::empty(BUILDING_CHUNK_SIZE.into());
@@ -67,24 +72,33 @@ fn spawn_chunk(
                         Transform::from_translation(tile_center),
                     ))
                     .with_children(|parent| {
-                        let translation = Vec3::new(TILE_SIZE.x, TILE_SIZE.y, 3.0);
-                        let transform = Transform {
-                            translation,
-                            ..Default::default()
-                        };
+                        // let translation = Vec3::new(TILE_SIZE.x, TILE_SIZE.y, 3.0);
+                        // let transform = Transform {
+                        //     translation,
+                        //     ..Default::default()
+                        // };
 
-                        parent.spawn((
-                            Sprite {
-                                color: Color::Srgba(s.color.into()),
-                                texture_atlas: Some(TextureAtlas {
-                                    layout: layout.clone(),
-                                    index: 2, //get_building_texture_index(s.value),
-                                }),
-                                image: texture.clone(),
-                                ..default()
-                            },
-                            // transform,
-                        ));
+                        // _texture: &Handle<Image>,
+                        // _layout: &Handle<TextureAtlasLayout>,
+                        // _builder: &mut ChildBuilder,
+                        // _color: Color,
+                        // _locationcoord: Location,
+                        // _visibility_toggle: Visibility,
+
+                        let level_val = building_value_mapper.get(&s.value).unwrap();
+                        spawn_tile_level(level_val, layout, texture, parent, s.color, s.height);
+                        // parent.spawn((
+                        //     Sprite {
+                        //         color: Color::Srgba(s.color.into()),
+                        //         texture_atlas: Some(TextureAtlas {
+                        //             layout: layout.clone(),
+                        //             index: 2, //get_building_texture_index(s.value),
+                        //         }),
+                        //         image: texture.clone(),
+                        //         ..default()
+                        //     },
+                        //     // transform,
+                        // ));
                     })
                     .id();
                 tile_storage.set(&tile_pos, tile_entity);
@@ -138,14 +152,16 @@ pub fn spawn_building_chunks_around_camera(
     mut chunk_manager: ResMut<ChunkBuildingManagerRes>,
     texture_atlas_handle_building: Res<SpriteSheetBuildingRes>,
     world_map: Res<WorldOwnedTileMap>,
+    building_value_mapper: Res<BuildingValueLevelMapper>,
 ) {
     for transform in camera_query.iter() {
         //let mut spawn_hashmap = HashMap::new();
         let camera_chunk_pos = camera_pos_to_chunk_pos(&transform.translation.xy());
-        for y in (camera_chunk_pos.y - SPAN_MAGIC_NUMBER)..(camera_chunk_pos.y + SPAN_MAGIC_NUMBER)
+        for y in (camera_chunk_pos.y - BUILDING_SPAN_SPAWN_NUMBER)
+            ..(camera_chunk_pos.y + BUILDING_SPAN_SPAWN_NUMBER)
         {
-            for x in
-                (camera_chunk_pos.x - SPAN_MAGIC_NUMBER)..(camera_chunk_pos.x + SPAN_MAGIC_NUMBER)
+            for x in (camera_chunk_pos.x - BUILDING_SPAN_SPAWN_NUMBER)
+                ..(camera_chunk_pos.x + BUILDING_SPAN_SPAWN_NUMBER)
             {
                 if !chunk_manager.spawned_chunks.contains(&IVec2::new(x, y)) {
                     chunk_manager.spawned_chunks.insert(IVec2::new(x, y));
@@ -155,6 +171,7 @@ pub fn spawn_building_chunks_around_camera(
                         &texture_atlas_handle_building.texture,
                         IVec2::new(x, y),
                         &world_map,
+                        &building_value_mapper,
                     );
                 }
             }

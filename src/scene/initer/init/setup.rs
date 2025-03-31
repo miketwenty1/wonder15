@@ -1,5 +1,3 @@
-use std::{i64, u32, u64};
-
 use bevy::{
     color::palettes::css::{DARK_GREEN, MAROON},
     prelude::*,
@@ -14,8 +12,8 @@ use crate::{
     scene::initer::ecs::{
         component::{AnimationIndicesComp, AnimationTimerComp},
         resource::{
-            BlockchainFilterKeys, BlockchainKeyColorPalette, FilterLegend, FormatType,
-            KeyColorRange, UiColorPalette,
+            BlockchainFilterKeys, BlockchainKeyColorPalette, BuildingValueLevelMapper,
+            FilterLegend, FormatType, KeyColorRange, UiColorPalette,
         },
     },
 };
@@ -73,6 +71,28 @@ pub fn setup_things(
         AnimationTimerComp(Timer::from_seconds(0.1, TimerMode::Repeating)),
         StateScoped(SceneState::Init),
     ));
+
+    let mut numbers_map = HashMap::new();
+    numbers_map.insert(0 as u32, 0 as u32);
+    numbers_map.insert(32, 1);
+    numbers_map.insert(64, 1);
+    numbers_map.insert(128, 2);
+    numbers_map.insert(256, 3);
+    numbers_map.insert(512, 4);
+    numbers_map.insert(1024, 5);
+    numbers_map.insert(2048, 6);
+    numbers_map.insert(4096, 7);
+    numbers_map.insert(8192, 8);
+    numbers_map.insert(16384, 9);
+    numbers_map.insert(32768, 10);
+    numbers_map.insert(65536, 11);
+    numbers_map.insert(131072, 11);
+    numbers_map.insert(262144, 11);
+    numbers_map.insert(524288, 11);
+    numbers_map.insert(1048576, 11);
+    numbers_map.insert(2097152, 11);
+    numbers_map.insert(4194304, 11);
+    numbers_map.insert(8388608, 11);
 
     let ui_color_palette = UiColorPalette {
         node_color: Srgba::hex("222831").unwrap().into(),
@@ -379,6 +399,7 @@ pub fn setup_things(
     commands.insert_resource(bp);
     commands.insert_resource(ui_color_palette);
     commands.insert_resource(blockchain_value_keys);
+    commands.insert_resource(BuildingValueLevelMapper(numbers_map));
 
     info!("we are about to set to Explorer!");
     scene_state.set(SceneState::Explorer);

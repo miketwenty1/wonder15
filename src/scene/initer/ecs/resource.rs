@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+use bevy::{prelude::*, utils::HashMap};
 use serde::Deserialize;
 
 use crate::{
@@ -8,6 +8,9 @@ use crate::{
     },
     scene::explorer::{ecs::event::SwapTilesEvent, ui::ecs::state::ColorBlockchainKeySubState},
 };
+
+#[derive(Resource, Clone, Debug, Default, Deserialize, Deref)]
+pub struct BuildingValueLevelMapper(pub HashMap<u32, u32>);
 
 #[derive(Resource, Clone, Debug, Default, Deserialize)]
 pub struct UiColorPalette {

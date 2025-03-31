@@ -4,15 +4,6 @@ use bevy::{
 };
 
 #[derive(Component)]
-pub struct AnimationIndicesComp {
-    pub first: usize,
-    pub last: usize,
-}
-
-#[derive(Component, Deref, DerefMut)]
-pub struct AnimationTimerComp(pub Timer);
-
-#[derive(Component)]
 pub struct FeeToggleBtn;
 
 #[derive(Component)]

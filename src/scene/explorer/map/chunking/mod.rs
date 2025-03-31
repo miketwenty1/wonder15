@@ -13,6 +13,7 @@ use crate::{
     },
 };
 
+mod building_config;
 mod chunk_full_map;
 mod chunking_building;
 mod chunking_text2d;

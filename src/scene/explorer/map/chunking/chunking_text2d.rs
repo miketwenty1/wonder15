@@ -11,7 +11,7 @@ use crate::{
     scene::explorer::{
         ecs::{
             event::SwapTilesEvent,
-            hard::{TEXT_Z, TILE_SIZE},
+            hard::{TEXT_SPAN_SPAWN_NUMBER, TEXT_Z, TILE_SIZE},
             resource::{ChunkTypeNumsRes, CurrentTilesRes, DespawnTextRangeRes},
         },
         map::ecs::{
@@ -153,8 +153,12 @@ pub fn spawn_text_chunk_around_camera(
 ) {
     for transform in camera_query.iter() {
         let camera_chunk_pos = camera_pos_to_chunk_pos(&transform.translation.xy(), &chunks);
-        for y in (camera_chunk_pos.y - 2)..(camera_chunk_pos.y + 2) {
-            for x in (camera_chunk_pos.x - 2)..(camera_chunk_pos.x + 2) {
+        for y in (camera_chunk_pos.y - TEXT_SPAN_SPAWN_NUMBER)
+            ..(camera_chunk_pos.y + TEXT_SPAN_SPAWN_NUMBER)
+        {
+            for x in (camera_chunk_pos.x - TEXT_SPAN_SPAWN_NUMBER)
+                ..(camera_chunk_pos.x + TEXT_SPAN_SPAWN_NUMBER)
+            {
                 if !chunk_manager.spawned_chunks.contains(&IVec2::new(x, y)) {
                     chunk_manager.spawned_chunks.insert(IVec2::new(x, y));
                     spawn_chunk(

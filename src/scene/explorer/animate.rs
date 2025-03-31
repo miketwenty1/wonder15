@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use super::ecs::component::{AnimationIndicesComp, AnimationTimerComp};
+use crate::scene::initer::ecs::component::{AnimationIndicesComp, AnimationTimerComp};
 
 pub fn animate_sprite(
     time: Res<Time>,

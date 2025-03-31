@@ -6,12 +6,14 @@ use bevy::{
 use crate::{
     ecs::state::FullMapState,
     helper::plugins::comms::ecs::structy::GetTileType,
-    scene::explorer::ecs::hard::{CLOSE_ZOOM_THRESHOLD, MAX_ZOOM, MEDIUM_ZOOM_THRESHOLD, MIN_ZOOM},
+    scene::{
+        explorer::ecs::hard::{CLOSE_ZOOM_THRESHOLD, MAX_ZOOM, MEDIUM_ZOOM_THRESHOLD, MIN_ZOOM},
+        initer::ecs::component::{AnimationIndicesComp, AnimationTimerComp},
+    },
 };
 use crate::{
     helper::plugins::comms::ecs::event::GetTileUpdates,
     scene::explorer::ecs::{
-        component::{AnimationIndicesComp, AnimationTimerComp},
         hard::{
             ANIMATED_SPRITE_Z, BUILDING_CHUNK_SIZE, BUILDING_DESPAWN_RANGE_MULTIPLIER,
             SLIM_BUILDING_CHUNK_SIZE, SLIM_CLOSE_ZOOM_THRESHOLD, SLIM_MAX_ZOOM,
