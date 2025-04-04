@@ -246,11 +246,6 @@ pub fn swap_tile_index_reader(
                         let hash = val.block_hash;
                         let leading_zeros = leading_zeros_in_32(&hash);
 
-                        if val.height > 531766 && val.height < 531769 {
-                            info!("{:?}", val);
-                            info!("leading zeros for {} {}", val.height, leading_zeros);
-                        }
-
                         let c = match filter_legend.color_for_ranges(leading_zeros as i64) {
                             Some(s) => s,
                             None => filter_legend.vec.last().unwrap().end.1.into(),
@@ -276,9 +271,7 @@ pub fn swap_tile_index_reader(
                             Some(s) => s,
                             None => filter_legend.vec.last().unwrap().end.1.into(),
                         };
-                        if diff > 14 {
-                            info!("zz {} - {}", val.height, diff);
-                        }
+
                         tile_color.0 = Color::Srgba(c);
                     } else {
                         tile_color.0 = WEIRD_COLOR;

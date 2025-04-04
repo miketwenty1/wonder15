@@ -3,6 +3,10 @@ use crate::{
         resource::{WorldBlockchainTileMap, WorldOwnedTileMap},
         state::SceneState,
     },
+    helper::plugins::browser::{
+        event::{ReadGameTilesIdb, WriteGameTilesIdb},
+        state::BrowserStorageState,
+    },
     scene::explorer::ExplorerScenePlugin,
 };
 use bevy::{prelude::*, utils::HashMap};
@@ -38,6 +42,9 @@ impl Plugin for IniterInitPlugin {
         .insert_resource(WorldBlockchainTileMap {
             map: HashMap::new(),
         })
-        .add_plugins(ExplorerScenePlugin);
+        .add_event::<ReadGameTilesIdb>()
+        .add_event::<WriteGameTilesIdb>()
+        .add_plugins(ExplorerScenePlugin)
+        .init_state::<BrowserStorageState>();
     }
 }

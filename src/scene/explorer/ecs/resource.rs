@@ -15,6 +15,12 @@ pub struct SpriteSheetBuildingRes {
 }
 
 #[derive(Resource, Clone)]
+pub struct SpriteSheetManualSelectRes {
+    pub layout: Handle<TextureAtlasLayout>,
+    pub texture: Handle<Image>,
+}
+
+#[derive(Resource, Clone)]
 pub struct ZoomLevelNumsRes {
     pub max_zoom: f32,
     pub min_zoom: f32,
@@ -37,3 +43,7 @@ pub struct DespawnTextRangeRes(pub f32);
 
 #[derive(Resource, Debug)]
 pub struct DespawnBuildingRangeRes(pub f32);
+
+//ulam value
+#[derive(Resource, Debug)]
+pub struct MouseSelectedTile(pub u32);

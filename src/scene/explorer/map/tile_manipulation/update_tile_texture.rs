@@ -53,12 +53,6 @@ pub fn read_tile_update_event_color(
                     }
                 }
             }
-            // mew_tiles_map.remove(&height.0);
         }
-        // if !mew_tiles_map.is_empty() && static_inputs.full_map_mode {
-        //     for (_key, value) in &mew_tiles_map {
-        //         info!("missed: {}", value.height);
-        //     }
-        // }
     }
 }

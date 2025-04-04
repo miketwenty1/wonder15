@@ -1,7 +1,8 @@
 use bevy::{prelude::*, text::FontSmoothing};
 
 use crate::scene::{
-    explorer::ui::components::ToggleBlockchainBtn, initer::ecs::resource::UiColorPalette,
+    explorer::{blockchain_ui::components::ToggleBlockchainBtn, ecs::component::GeneralUiBtn},
+    initer::ecs::resource::UiColorPalette,
 };
 
 #[warn(clippy::too_many_arguments)]
@@ -32,6 +33,7 @@ pub fn spawn_game_toggle_button<T: Component>(
             BorderRadius::all(Val::Px(4.0)),
             toggle_btn_type,
             ToggleBlockchainBtn,
+            GeneralUiBtn,
         ))
         .with_children(|parent| {
             parent.spawn((

@@ -18,7 +18,5 @@ pub enum SceneState {
 pub enum ExplorerCommsSubState {
     #[default]
     Off,
-    Height,
-    Ts,
     Live,
 }

@@ -31,14 +31,8 @@ pub struct UserBlockInventoryChannel {
     pub rx: Receiver<String>,
 }
 
-// #[derive(Resource, Clone)]
-// pub struct BrowserMapLocalStorageChannel {
-//     pub tx: Sender<String>,
-//     pub rx: Receiver<String>,
-// }
-
 #[derive(Resource, Clone)]
-pub struct CheckpointChannel {
+pub struct BrowserGameCheckpointChannel {
     pub tx: Sender<String>,
     pub rx: Receiver<String>,
 }
@@ -79,14 +73,14 @@ pub struct BlockchainTileUpdateChannel {
 }
 
 #[derive(Resource, Clone, Debug, Default, Serialize, Deserialize)]
-pub struct UpdateGameTimetamp {
-    pub ts: DateTime<Utc>,
+pub struct GameTimetamp {
+    pub ts: Option<DateTime<Utc>>,
 }
 
-#[derive(Resource, Clone, Debug, Default, Serialize, Deserialize)]
-pub struct CheckpointTimetamp {
-    pub ts: DateTime<Utc>,
-}
+// #[derive(Resource, Clone, Debug, Default, Serialize, Deserialize)]
+// pub struct CheckpointTimetamp {
+//     pub ts: DateTime<Utc>,
+// }
 
 #[derive(Resource)]
 pub struct ApiPollingTimer {

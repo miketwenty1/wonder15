@@ -1,29 +1,17 @@
 use crate::{
-    ecs::resource::{
-        BlockchainDataHeight, GameHeight, GameStaticInputs, TileBlockchainData, TileData,
-    },
-    helper::{
-        server_struct::{BlockchainDataHeightFromDB, GameBlockMapDataHeightFromDB},
-        utils::funs::{get_resource_for_tile, hex_str_to_32_bytes},
-    },
-    scene::explorer::ecs::event::{UpdateWorldBlockchainDataEvent, UpdateWorldMapTilesEvent},
+    ecs::resource::{BlockchainFiltersHeight, GameStaticInputs, TileBlockchainData},
+    helper::{server_struct::BlockchainDataHeightFromDB, utils::funs::hex_str_to_32_bytes},
+    scene::explorer::ecs::event::UpdateWorldBlockchainDataEvent,
 };
 use bevy::prelude::*;
 use wasm_bindgen_futures::spawn_local;
 
-use super::ecs::{
-    event::{GetBlockchainUpdates, GetTileUpdates},
-    resource::BlockchainTileUpdateChannel,
-    structy::GetTileType,
-};
+use super::ecs::{event::GetBlockchainUpdates, resource::BlockchainTileUpdateChannel};
 
 pub fn api_get_blockchain_data(
     channel: Res<BlockchainTileUpdateChannel>,
     api_server: Res<GameStaticInputs>,
-    // gametime: Res<UpdateGameTimetamp>,
-    // game_height: Res<GameHeight>,
     mut event: EventReader<GetBlockchainUpdates>,
-    blockchain_data_height: Res<BlockchainDataHeight>,
 ) {
     for e in event.read() {
         //info!("send api request for tiles");
@@ -63,20 +51,9 @@ pub fn api_get_blockchain_data(
 #[allow(clippy::too_many_arguments)]
 pub fn api_receive_blockchain_server_tiles_by_height(
     channel: ResMut<BlockchainTileUpdateChannel>,
-    //api_timer: Res<ApiPollingTimer>,
-    //tile_map: Res<WorldOwnedTileMap>,
     mut update_tile_event: EventWriter<UpdateWorldBlockchainDataEvent>,
-    //mut gametime: ResMut<UpdateGameTimetamp>,
-    // mut checkpoint_time: ResMut<CheckpointTimetamp>,
-    // mut game_height: ResMut<GameHeight>,
-    //  blockchain_height: Res<BlockchainHeight>,
     mut get_more_tiles: EventWriter<GetBlockchainUpdates>,
-    //mut toast: EventWriter<ToastEvent>,
-    //mut despawn_inventory: EventWriter<DespawnInventoryHeights>,
-    //mut spawn_inventory: EventWriter<AddInventoryRow>,
-    //inventory: Res<UserInventoryBlocks>,
-    //mut browser_event: EventWriter<WriteBrowserStorage>,
-    mut blockchain_data_height: ResMut<BlockchainDataHeight>,
+    mut blockchain_data_height: ResMut<BlockchainFiltersHeight>,
 ) {
     if !channel.rx.is_empty() {
         //api_timer.timer.finished() &&
@@ -125,77 +102,7 @@ pub fn api_receive_blockchain_server_tiles_by_height(
                             // check if this tile is already in the worldmap as it's coming in.
 
                             new_tile_vec.push(new_td.clone());
-                            //tile_map.map.insert(block_data.height as u32, new_td);
-
-                            // // // // inventory update code
-
-                            // let user_inv_map = &inventory.ownedblocks;
-                            // let inv_o = user_inv_map.get(&new_td.height);
-                            // if let Some(_s) = inv_o {
-                            //     let inv_amount = user_inv_map.get(&new_td.height).unwrap().amount;
-
-                            //     //let aa = new_td.clone();
-                            //     #[allow(clippy::comparison_chain)]
-                            //     if user_inv_map.contains_key(&new_td.height) {
-                            //         if inv_amount < new_td.value {
-                            //             info!("need to DEL this from inventory: {}, invamount: {}, checkamount: {}", new_td.height, inv_amount, new_td.value);
-                            //             remove_inventory_holder.push(new_td.height);
-                            //         } else if inv_amount > new_td.value {
-                            //             info!("need to ADD this from inventory: {}, invamount: {}, checkamount: {}", new_td.height, inv_amount, new_td.value);
-                            //             add_inventory_holder.push(UserGameBlock {
-                            //                 height: new_td.height,
-                            //                 amount: new_td.value,
-                            //                 color: convert_color_to_hexstring(
-                            //                     new_td.color.to_srgba(),
-                            //                 ),
-                            //             });
-                            //         } else {
-                            //             info!("block came in and matches inv amount");
-                            //         }
-                            //     }
-                            // }
-
-                            //update_inventory(new_td);
-                            // let tile_check = tile_map.map.get(&(block_data.height as u32));
-                            // match tile_check {
-                            //     Some(existing_tile) => {
-                            //         new_td.land_index = existing_tile.land_index;
-                            //         if existing_tile != &new_td {
-                            //             // if new_td.height == 0 {
-                            //             //     info!("A0 is: {:#?}", &new_td);
-                            //             // }
-                            //             //new_insert_update = true;
-                            //             send_update = true;
-                            //             new_tile_vec.push(new_td.clone());
-                            //         }
-                            //     }
-                            //     None => {
-                            //         // if new_td.height == 0 {
-                            //         //     info!("B0 is: {:#?}", &new_td);
-                            //         // }
-                            //         //new_insert_update = true;
-                            //         send_update = true;
-                            //         new_tile_vec.push(new_td.clone());
-                            //     }
-                            // }
-                            // if new_insert_update {
-                            //     tile_map.map.insert(block_data.height as u32, new_td);
-                            // }
                         }
-
-                        //let land_index_map = calculate_index_for_resourced_lands(&mut tile_map.map);
-                        //*tile_map = land_index_map;
-
-                        // // // inventory update code
-                        // if !remove_inventory_holder.is_empty() {
-                        //     despawn_inventory
-                        //         .send(DespawnInventoryHeights(remove_inventory_holder));
-                        // }
-                        // if !add_inventory_holder.is_empty() {
-                        //     info!("am i making it to line 243? {:#?}", add_inventory_holder);
-                        //     spawn_inventory.send(AddInventoryRow(add_inventory_holder));
-                        // }
-                        // // // inventory update code
 
                         if !new_tile_vec.is_empty() {
                             update_tile_event.send(UpdateWorldBlockchainDataEvent(new_tile_vec));
@@ -204,25 +111,10 @@ pub fn api_receive_blockchain_server_tiles_by_height(
                         }
                     }
                     Err(e) => {
-                        info!("error matching on blockchain data r_block_result: {}", e);
-                        // if og_r.to_string().contains("logout") {
-                        //     logout_user("receive server tiles 1");
-                        // } else if !e.to_string().contains("EOF")
-                        //     && !e.to_string().contains("empty channel")
-                        // {
-                        //     if e.to_string().contains("line 1 column 1") {
-                        //         toast.send(ToastEvent {
-                        //             ttype: ToastType::Bad,
-                        //             message: "Seems you lost connection to the server".to_string(),
-                        //         });
-                        //     } else {
-                        //         toast.send(ToastEvent {
-                        //             ttype: ToastType::Bad,
-                        //             message: format!("error: {}", e),
-                        //         });
-                        //     }
-                        // }
-                        // info!("tile receive fail: {}", e);
+                        info!(
+                            "error matching on blockchain data r_block_result: {}\ndata: {:#?}",
+                            e, og_r
+                        );
                     }
                 }
                 //og_r

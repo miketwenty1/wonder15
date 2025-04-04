@@ -3,11 +3,13 @@ use bevy::prelude::*;
 use crate::{
     helper::plugins::comms::ecs::event::GetBlockchainUpdates,
     scene::explorer::ecs::{
+        component::BlockchainFilterToggleParent,
         event::{BuildingToggleEvent, SwapTilesEvent, TextToggleEvent},
         resource::ZoomLevelNumsRes,
     },
 };
 
+#[allow(clippy::too_many_arguments)]
 pub fn map_keyboard_hotkeys(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut swap_tile: EventWriter<SwapTilesEvent>,
@@ -18,6 +20,7 @@ pub fn map_keyboard_hotkeys(
     // zoom_res: ResMut<ZoomLevelRes>,
     zooms: Res<ZoomLevelNumsRes>,
     mut blockchain: EventWriter<GetBlockchainUpdates>,
+    mut blockchain_filter_parent_node_q: Query<&mut Node, With<BlockchainFilterToggleParent>>,
 ) {
     if keyboard_input.just_pressed(KeyCode::Space) {
         swap_tile.send(SwapTilesEvent::Iter);
@@ -30,6 +33,8 @@ pub fn map_keyboard_hotkeys(
     }
     if keyboard_input.just_pressed(KeyCode::KeyP) {
         blockchain.send(GetBlockchainUpdates(0));
+        let mut di = blockchain_filter_parent_node_q.get_single_mut().unwrap();
+        di.display = Display::Flex;
     }
     // digits 1-4
     if keyboard_input.just_pressed(KeyCode::Digit1) {

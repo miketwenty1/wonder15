@@ -22,9 +22,6 @@ pub struct ExplorerUiNodeMiddle;
 pub struct BlockCountNode;
 
 #[derive(Component)]
-pub struct BlockCountText;
-
-#[derive(Component)]
 pub struct AmountNode;
 
 #[derive(Component)]

@@ -2,11 +2,12 @@ use crate::{
     ecs::resource::{BlockchainHeight, WorldOwnedTileMap},
     scene::explorer::{
         ecs::{
+            component::SelectedTile,
             hard::{TILE_SIZE, TILE_SPAN_SPAWN_NUMBER, TILE_Z},
             resource::{ChunkTypeNumsRes, DespawnTileRangeRes},
         },
         map::ecs::{
-            component::{ChunkTileMapComp, LandIndexComp, PlayerTileColorComp, UlamComp},
+            component::{BaseTile, LandIndexComp, MainBaseTileMap, PlayerTileColorComp, UlamComp},
             hard::{DEFAULT_UNSET_TILE_INDEX, TEXTURE_INDEX_FOR_PLAYER_COLOR, TILE_SPACING},
             resource::ChunkTileManagerRes,
         },
@@ -65,6 +66,8 @@ fn spawn_chunk(
                             color: TileColor(player_color),
                             ..Default::default()
                         },
+                        BaseTile,
+                        SelectedTile(false),
                         UlamComp(ulam_v),
                         PlayerTileColorComp(TileColor(player_color)),
                         LandIndexComp(land_index),
@@ -105,7 +108,7 @@ fn spawn_chunk(
                 },
                 ..Default::default()
             },
-            ChunkTileMapComp,
+            MainBaseTileMap,
         ))
         .add_children(&tile_entities);
 }
@@ -153,7 +156,7 @@ pub fn spawn_tile_chunks_around_camera(
 pub fn despawn_tile_outofrange_chunks(
     mut commands: Commands,
     camera_query: Query<&Transform, With<Camera>>,
-    chunks_query_map: Query<(Entity, &Transform), With<ChunkTileMapComp>>,
+    chunks_query_map: Query<(Entity, &Transform), With<MainBaseTileMap>>,
     mut chunk_manager: ResMut<ChunkTileManagerRes>,
     despawn_range: Res<DespawnTileRangeRes>,
     chunks: Res<ChunkTypeNumsRes>,

@@ -1,22 +1,27 @@
 use animate::animate_sprite;
 use bevy::prelude::*;
+use blockchain_ui::ExplorerUiPlugin;
 use ecs::{
     event::{ExplorerEventPlugin, SwapTilesEvent},
-    resource::{CurrentTilesRes, CurrentZoomLevelRes},
+    resource::{CurrentTilesRes, CurrentZoomLevelRes, MouseSelectedTile},
     state::{ExplorerRunningZoomSub2State, ExplorerSubState},
 };
+use general_button_behavior::general_btn;
 use init::ExplorerInitPlugin;
 use input::ExplorerInputPlugin;
 use map::ExplorerMapPlugin;
-use ui::ExplorerUiPlugin;
+use tile_cart::TileCartPlugin;
 
 mod animate;
 //mod blockchain_color;
+pub mod blockchain_ui;
+mod cart_details_menu;
 pub mod ecs;
+pub mod general_button_behavior;
 mod init;
 mod input;
 mod map;
-pub mod ui;
+pub mod tile_cart;
 
 pub struct ExplorerScenePlugin;
 
@@ -28,14 +33,17 @@ impl Plugin for ExplorerScenePlugin {
                 Update,
                 (animate_sprite).run_if(in_state(ExplorerSubState::Running)),
             )
+            .add_systems(Update, general_btn)
             .insert_resource(CurrentTilesRes(SwapTilesEvent::PlayerColor))
             .insert_resource(CurrentZoomLevelRes(ExplorerRunningZoomSub2State::Close))
+            .insert_resource(MouseSelectedTile(999_999_999))
             .add_plugins((
                 ExplorerInputPlugin,
                 ExplorerMapPlugin,
                 ExplorerEventPlugin,
                 ExplorerInitPlugin,
                 ExplorerUiPlugin,
+                TileCartPlugin,
             ));
     }
 }

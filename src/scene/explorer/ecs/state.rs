@@ -21,9 +21,10 @@ pub enum ExplorerRunningZoomSub2State {
 }
 
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
-pub enum InitSpawnTileMapState {
+pub enum InitSpawnMapState {
     #[default]
     Off,
-    Running,
+    MapSpawn,
+    LocalStorageRead,
     Done,
 }

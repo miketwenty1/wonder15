@@ -10,7 +10,7 @@ pub struct BlockchainKeyRangesPlugin;
 impl Plugin for BlockchainKeyRangesPlugin {
     fn build(&self, app: &mut App) {
         app.init_state::<ColorBlockchainKeySubState>()
-            .enable_state_scoped_entities::<ColorBlockchainKeySubState>()
+            //.nable_state_scoped_entities::<ColorBlockchainKeySubState>()
             .add_systems(
                 OnEnter(ColorBlockchainKeySubState::Fee),
                 (spawn_legend_driver).run_if(in_state(ColorBlockchainKeySubState::Fee)),

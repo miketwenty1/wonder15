@@ -1,9 +1,9 @@
 use bevy::ecs::event::Event;
 
-use super::structy::GetTileType;
+use super::structy::TileUpdatePattern;
 
 #[derive(Event, Debug)]
-pub struct GetTileUpdates(pub GetTileType);
+pub struct RequestServerGameTiles(pub TileUpdatePattern);
 
 #[derive(Event, Debug)]
 pub struct GetBlockchainUpdates(pub u32);

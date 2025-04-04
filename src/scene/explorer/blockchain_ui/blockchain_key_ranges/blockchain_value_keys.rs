@@ -11,8 +11,10 @@ use crate::{
     helper::utils::funs::{make_gradient_image, make_gradient_image_corners},
     scene::{
         explorer::{
+            blockchain_ui::{
+                components::ExplorerUiNodeRight, ecs::state::ColorBlockchainKeySubState,
+            },
             ecs::event::SwapTilesEvent,
-            ui::{components::ExplorerUiNodeRight, ecs::state::ColorBlockchainKeySubState},
         },
         initer::ecs::resource::{BlockchainFilterKeys, FilterLegend, UiColorPalette},
     },

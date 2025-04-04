@@ -5,14 +5,17 @@ use bevy::{
 
 use crate::{
     ecs::state::FullMapState,
-    helper::plugins::comms::ecs::structy::GetTileType,
+    helper::plugins::comms::ecs::structy::TileUpdatePattern,
     scene::{
-        explorer::ecs::hard::{CLOSE_ZOOM_THRESHOLD, MAX_ZOOM, MEDIUM_ZOOM_THRESHOLD, MIN_ZOOM},
+        explorer::ecs::{
+            hard::{CLOSE_ZOOM_THRESHOLD, MAX_ZOOM, MEDIUM_ZOOM_THRESHOLD, MIN_ZOOM},
+            resource::SpriteSheetManualSelectRes,
+        },
         initer::ecs::component::{AnimationIndicesComp, AnimationTimerComp},
     },
 };
 use crate::{
-    helper::plugins::comms::ecs::event::GetTileUpdates,
+    helper::plugins::comms::ecs::event::RequestServerGameTiles,
     scene::explorer::ecs::{
         hard::{
             ANIMATED_SPRITE_Z, BUILDING_CHUNK_SIZE, BUILDING_DESPAWN_RANGE_MULTIPLIER,
@@ -25,7 +28,7 @@ use crate::{
             ChunkTypeNumsRes, DespawnBuildingRangeRes, DespawnTextRangeRes, DespawnTileRangeRes,
             SpriteSheetBuildingRes, ZoomLevelNumsRes,
         },
-        state::{ExplorerSubState, InitSpawnTileMapState},
+        state::{ExplorerSubState, InitSpawnMapState},
     },
 };
 
@@ -64,7 +67,7 @@ pub fn init_startup(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut texture_atlases: ResMut<Assets<TextureAtlasLayout>>,
-    mut init_map_state: ResMut<NextState<InitSpawnTileMapState>>,
+    mut init_map_state: ResMut<NextState<InitSpawnMapState>>,
     mut explorer_sub_state: ResMut<NextState<ExplorerSubState>>,
     full_map_state: Res<State<FullMapState>>,
 ) {
@@ -87,6 +90,27 @@ pub fn init_startup(
     commands.insert_resource(SpriteSheetBuildingRes {
         layout: building_texture_atlas,
         texture: building_texture,
+    });
+
+    let manual_select_atlas = TextureAtlasLayout::from_grid(
+        bevy::prelude::UVec2::new(32, 32),
+        18,
+        1,
+        Some(bevy::prelude::UVec2::new(2, 2)),
+        Some(bevy::prelude::UVec2::new(1, 1)),
+    );
+    let manual_select_texture_atlas = texture_atlases.add(manual_select_atlas);
+
+    let manual_select_texture = asset_server.load_with_settings(
+        "spritesheet/select.png",
+        |settings: &mut ImageLoaderSettings| {
+            settings.sampler = ImageSampler::nearest();
+        },
+    );
+
+    commands.insert_resource(SpriteSheetManualSelectRes {
+        layout: manual_select_texture_atlas,
+        texture: manual_select_texture,
     });
 
     if *full_map_state == FullMapState::On {
@@ -133,6 +157,6 @@ pub fn init_startup(
         ));
     }
 
-    init_map_state.set(InitSpawnTileMapState::Running);
+    init_map_state.set(InitSpawnMapState::MapSpawn);
     explorer_sub_state.set(ExplorerSubState::Running);
 }

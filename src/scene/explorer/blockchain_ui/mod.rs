@@ -3,13 +3,13 @@ use bevy::prelude::*;
 use blockchain_key_ranges::BlockchainKeyRangesPlugin;
 use ecs::state::ColorBlockchainKeySubState;
 use toggle_button_q::{
-    blocktime_btn, bytes_btn, excesswork_btn, fee_btn, general_btn, leadzeros_btn, tgtdiff_btn,
+    blocktime_btn, bytes_btn, excesswork_btn, fee_btn, leadzeros_btn, tgtdiff_btn,
     tgtdiff_diff_btn, txcount_btn, version_btn, weights_btn,
 };
 
 use self::{
-    overall_ui::ui_explorer, ui_bottom::bottom_ui, ui_left::left_ui, ui_right::right_ui,
-    ui_top::top_ui,
+    overall_ui::ui_explorer, ui_blockchain_toggles::left_ui, ui_bottom::bottom_ui,
+    ui_right::right_ui, ui_top::top_ui,
 };
 
 use super::ecs::state::ExplorerSubState;
@@ -21,11 +21,10 @@ pub mod event;
 mod overall_ui;
 mod toggle_button;
 mod toggle_button_q;
+pub mod ui_blockchain_toggles;
 pub mod ui_bottom;
-pub mod ui_left;
 pub mod ui_right;
 mod ui_top;
-
 pub struct ExplorerUiPlugin;
 
 impl Plugin for ExplorerUiPlugin {
@@ -42,7 +41,6 @@ impl Plugin for ExplorerUiPlugin {
         .add_systems(
             Update,
             (
-                general_btn,
                 fee_btn,
                 blocktime_btn,
                 txcount_btn,

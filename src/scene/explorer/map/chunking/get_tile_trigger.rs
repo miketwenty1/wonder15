@@ -1,16 +1,37 @@
 use bevy::prelude::*;
+use chrono::{Duration, Utc};
 
 use crate::{
     ecs::state::ExplorerCommsSubState,
-    helper::plugins::comms::ecs::{event::GetTileUpdates, structy::GetTileType},
+    helper::plugins::{
+        browser::event::{ReadGameTilesIdb, WriteGameTilesIdb},
+        comms::ecs::{
+            event::RequestServerGameTiles, resource::GameTimetamp, structy::TileUpdatePattern,
+        },
+    },
+    scene::explorer::ecs::state::InitSpawnMapState,
 };
+// #[default]
+// Off,
+// MapSpawn,
+// LocalStorageRead,,
+// Done,
 
-pub fn after_map_init(
-    mut comm_map_state: ResMut<NextState<ExplorerCommsSubState>>,
-    mut get_tiles: EventWriter<GetTileUpdates>,
+pub fn init_local_storage_read(
+    mut get_tiles: EventWriter<RequestServerGameTiles>,
+    mut browser_indexeddb: EventWriter<ReadGameTilesIdb>,
+    mut browser_writer: EventWriter<WriteGameTilesIdb>,
+    mut gts: ResMut<GameTimetamp>,
+    mut init_state: ResMut<NextState<InitSpawnMapState>>,
+    mut comms_state: ResMut<NextState<ExplorerCommsSubState>>,
 ) {
-    comm_map_state.set(ExplorerCommsSubState::Height);
-    // if data already is loaded from local then TS otherwise Height.
-    get_tiles.send(GetTileUpdates(GetTileType::Height));
-    info!("sending height want");
+    if gts.ts.is_some() {
+        browser_indexeddb.send(ReadGameTilesIdb);
+    } else {
+        gts.ts = Some(Utc::now() - Duration::minutes(20));
+        get_tiles.send(RequestServerGameTiles(TileUpdatePattern::Height));
+        info!("sending height update pattern");
+        comms_state.set(ExplorerCommsSubState::Live);
+        init_state.set(InitSpawnMapState::Done);
+    }
 }

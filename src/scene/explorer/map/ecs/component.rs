@@ -1,14 +1,14 @@
 use bevy::{
     color::Color,
-    prelude::{Component, Deref},
+    prelude::{Component, Deref, DerefMut},
 };
 use bevy_ecs_tilemap::tiles::TileColor;
 
 #[derive(Component, Debug)]
 pub struct MainBaseTileMap;
 
-#[derive(Component, Debug)]
-pub struct ChunkTileMapComp;
+// #[derive(Component, Debug)]
+// pub struct ChunkTileMapComp;
 
 #[derive(Component, Debug)]
 pub struct ChunkTextMapComp;
@@ -30,3 +30,9 @@ pub struct LandIndexComp(pub u32);
 
 #[derive(Component, Debug)]
 pub struct TileText;
+
+#[derive(Component, Debug)]
+pub struct BaseTile;
+
+#[derive(Component, Debug)]
+pub struct SelectionSprite;

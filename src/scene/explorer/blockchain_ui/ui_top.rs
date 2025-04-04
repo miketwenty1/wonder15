@@ -1,8 +1,6 @@
 use bevy::{prelude::*, text::FontSmoothing};
 
-use super::components::{
-    AmountNode, AmountText, BlockCountNode, BlockCountText, ExplorerUiNodeTop,
-};
+use super::components::{AmountNode, AmountText, BlockCountNode, ExplorerUiNodeTop};
 
 pub fn top_ui(
     mut commands: Commands,

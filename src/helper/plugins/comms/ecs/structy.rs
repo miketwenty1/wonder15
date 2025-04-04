@@ -1,5 +1,5 @@
 #[derive(Clone, Debug)]
-pub enum GetTileType {
+pub enum TileUpdatePattern {
     Height,
     Ts,
 }

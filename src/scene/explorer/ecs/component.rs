@@ -4,6 +4,9 @@ use bevy::{
 };
 
 #[derive(Component)]
+pub struct BlockchainFilterToggleParent;
+
+#[derive(Component)]
 pub struct FeeToggleBtn;
 
 #[derive(Component)]
@@ -31,3 +34,9 @@ pub struct ExcessWorkToggleBtn;
 
 #[derive(Component)]
 pub struct VersionToggleBtn;
+
+#[derive(Component)]
+pub struct SelectedTile(pub bool);
+
+#[derive(Component)]
+pub struct GeneralUiBtn;

@@ -61,3 +61,15 @@ pub const DARKEST_ALLOWED_BUILDING: Srgba = Srgba {
     blue: 0.2,
     alpha: 1.0,
 };
+
+pub const UI_SMALL_TEXT_SIZE: f32 = 15.0;
+pub const UI_MEDIUM_TEXT_SIZE: f32 = 20.0;
+pub const UI_LARGE_TEXT_SIZE: f32 = 30.0;
+pub const UI_LARGE_BUTTON_WIDTH: f32 = 75.0;
+pub const UI_LARGE_BUTTON_HEIGHT: f32 = 45.0;
+
+pub const UI_ICON_SIZE: f32 = 60.0;
+
+pub const TILE_MAP_LENGTH: u32 = 1000;
+
+pub const MINIMUM_COST_AMOUNT: u32 = 32;

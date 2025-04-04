@@ -9,7 +9,7 @@ use bevy_ecs_tilemap::{
 use crate::{
     ecs::resource::FullMapLength,
     scene::explorer::{
-        ecs::{hard::TILE_SIZE, state::InitSpawnTileMapState},
+        ecs::{hard::TILE_SIZE, state::InitSpawnMapState},
         map::ecs::{component::MainBaseTileMap, hard::TILE_SPACING},
     },
 };
@@ -57,9 +57,11 @@ pub fn spawn_startup_fullmap(
         transform: transform_for_map,
         ..Default::default()
     });
+
     //explorer_sub_state.set(ExplorerSubState::Running);
 }
 
-pub fn spawn_startup_non_fullmap(mut state: ResMut<NextState<InitSpawnTileMapState>>) {
-    state.set(InitSpawnTileMapState::Done);
+pub fn spawn_startup_non_fullmap(mut state: ResMut<NextState<InitSpawnMapState>>) {
+    info!("non full map, init done");
+    state.set(InitSpawnMapState::LocalStorageRead);
 }

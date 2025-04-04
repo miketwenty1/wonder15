@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use bevy_ecs_tilemap::{
-    map::TilemapId,
+    map::{TilemapGridSize, TilemapId, TilemapType},
     tiles::{TileBundle, TileColor, TilePos, TileStorage, TileTextureIndex},
 };
 
@@ -9,11 +9,11 @@ use crate::{
         resource::{BlockchainHeight, FullMapLength, WorldOwnedTileMap},
         state::ExplorerCommsSubState,
     },
-    helper::plugins::comms::ecs::{event::GetTileUpdates, structy::GetTileType},
+    helper::plugins::comms::ecs::{event::RequestServerGameTiles, structy::TileUpdatePattern},
     scene::explorer::{
-        ecs::state::InitSpawnTileMapState,
+        ecs::{component::SelectedTile, hard::TILE_SIZE, state::InitSpawnMapState},
         map::ecs::{
-            component::{LandIndexComp, MainBaseTileMap, PlayerTileColorComp, UlamComp},
+            component::{BaseTile, LandIndexComp, MainBaseTileMap, PlayerTileColorComp, UlamComp},
             hard::{
                 CHUNK_INIT_LOAD_SIZE, DEFAULT_UNSET_TILE_INDEX, TEXTURE_INDEX_FOR_PLAYER_COLOR,
             },
@@ -26,7 +26,7 @@ use crate::{
 pub fn startup_fullmap(
     mut commands: Commands,
     mut tile_storage_q: Query<(Entity, &mut TileStorage), With<MainBaseTileMap>>,
-    mut state: ResMut<NextState<InitSpawnTileMapState>>,
+    mut state: ResMut<NextState<InitSpawnMapState>>,
     mut total_tiles_res: ResMut<TotalTilesSpawnedRes>,
     time: Res<Time>,
     mut timer: ResMut<AdditionalSetupTilesTimerRes>,
@@ -45,8 +45,8 @@ pub fn startup_fullmap(
     for (tilemap_ent, mut tile_storage) in tile_storage_q.iter_mut() {
         for i in previous..new_destionation {
             if total_tiles_res.0 == current_block_height.0 {
-                state.set(InitSpawnTileMapState::Done);
                 info!("end");
+                state.set(InitSpawnMapState::LocalStorageRead);
                 return;
             }
             let tile_from_owned_map = world_map.map.get(&i);
@@ -62,6 +62,10 @@ pub fn startup_fullmap(
             };
 
             //let transform = Transform::from_xyz(0., 0., 0.);
+            // doing this to counter act the uoff
+
+            let transform =
+                Transform::from_xyz(sx as f32 * TILE_SIZE.x, sy as f32 * TILE_SIZE.y, 50.);
             let tile = commands
                 .spawn((
                     TileBundle {
@@ -71,10 +75,12 @@ pub fn startup_fullmap(
                         color: TileColor(player_tile_color),
                         ..Default::default()
                     },
+                    BaseTile,
                     UlamComp(i),
                     PlayerTileColorComp(TileColor(player_tile_color)),
                     LandIndexComp(land_index),
-                    // transform,
+                    SelectedTile(false),
+                    transform,
                 ))
                 .id();
 

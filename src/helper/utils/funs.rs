@@ -5,7 +5,7 @@ use bevy::{
     utils::HashMap,
 };
 
-use chrono::{DateTime, Duration, Utc};
+use chrono::{DateTime, Duration, NaiveDateTime, Timelike, Utc};
 use rand::Rng;
 
 use crate::ecs::{
@@ -40,11 +40,22 @@ pub fn to_millisecond_precision(dt: DateTime<Utc>) -> DateTime<Utc> {
     dt - Duration::microseconds(micros_to_subtract as i64)
 }
 
+pub fn str_to_dateutc(dt: String) -> DateTime<Utc> {
+    let format = "%Y-%m-%d %H:%M:%S.%3f %Z";
+    let datetime_utc = NaiveDateTime::parse_from_str(&dt, format).unwrap();
+    let nanos = datetime_utc.nanosecond();
+    let millis_only_nanos = (nanos / 1_000_000) * 1_000_000;
+    let now_with_millis_only = datetime_utc.with_nanosecond(millis_only_nanos).unwrap();
+
+    now_with_millis_only.and_utc()
+}
+
 pub fn get_resource_for_tile(block_hash: &[u8]) -> TileResource {
     if block_hash.len() != 32 {
         info!("hlen is {}", block_hash.len());
         return TileResource::Unknown;
     }
+
     let last_two_num = block_hash.last().unwrap();
     // Get the last two characters
     //let last_two_chars = &block_hash[block_hash.len() - 2..];
@@ -330,4 +341,10 @@ pub fn percent_change_of_difficulties(previous_bits: u32, current_bits: u32) -> 
     let diff_curr = difficulty_from_bits(current_bits);
     // Calculate percentage change as (current/previous - 1)*100.
     ((diff_curr / diff_prev - 1.0) * 100.0).round() as i32
+}
+
+pub fn convert_color_to_hexstring(c: Srgba) -> String {
+    let s = c.to_hex();
+    // removes #
+    s.chars().filter(|&c| c != '#').collect()
 }

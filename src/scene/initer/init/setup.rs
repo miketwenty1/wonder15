@@ -9,11 +9,14 @@ use crate::{
         resource::{BlockchainHeight, FullMapLength, GameStaticInputs},
         state::{ExplorerCommsSubState, SceneState},
     },
-    scene::initer::ecs::{
-        component::{AnimationIndicesComp, AnimationTimerComp},
-        resource::{
-            BlockchainFilterKeys, BlockchainKeyColorPalette, BuildingValueLevelMapper,
-            FilterLegend, FormatType, KeyColorRange, UiColorPalette,
+    scene::{
+        explorer::ecs::hard::TILE_MAP_LENGTH,
+        initer::ecs::{
+            component::{AnimationIndicesComp, AnimationTimerComp},
+            resource::{
+                BlockchainFilterKeys, BlockchainKeyColorPalette, BuildingValueLevelMapper,
+                FilterLegend, FormatType, KeyColorRange, UiColorPalette,
+            },
         },
     },
 };
@@ -44,11 +47,11 @@ pub fn setup_things(
     mut scene_state: ResMut<NextState<SceneState>>,
     //scene_state: Res<State<SceneState>>,
     //current_blockheight: Res<BlockchainHeight>,
-    mut comm_map_state: ResMut<NextState<ExplorerCommsSubState>>,
-    static_inputs: Res<GameStaticInputs>,
+    // mut comm_map_state: ResMut<NextState<ExplorerCommsSubState>>,
+    // static_inputs: Res<GameStaticInputs>,
 ) {
-    let map_side_length = 1000; //((current_blockheight.0 as f64).sqrt().ceil()) as u32 + 2;
-    commands.insert_resource(FullMapLength(map_side_length));
+    // let map_side_length = 1000; //((current_blockheight.0 as f64).sqrt().ceil()) as u32 + 2;
+    commands.insert_resource(FullMapLength(TILE_MAP_LENGTH));
     let texture = asset_server.load("spritesheet/gabe-idle-run.png");
     let layout = TextureAtlasLayout::from_grid(UVec2::splat(24), 7, 1, None, None);
     let texture_atlas_layout = texture_atlas_layouts.add(layout);
@@ -73,7 +76,7 @@ pub fn setup_things(
     ));
 
     let mut numbers_map = HashMap::new();
-    numbers_map.insert(0 as u32, 0 as u32);
+    numbers_map.insert(0, 0);
     numbers_map.insert(32, 1);
     numbers_map.insert(64, 1);
     numbers_map.insert(128, 2);

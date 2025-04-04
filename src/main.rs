@@ -1,9 +1,11 @@
 use bevy::{asset::AssetMetaCheck, prelude::*};
+use chrono::{Duration, Utc};
 use ecs::{
-    resource::{BlockchainDataHeight, BlockchainHeight, GameHeight, GameStaticInputs, WinSize},
+    resource::{BlockchainFiltersHeight, BlockchainHeight, GameHeight, GameStaticInputs, WinSize},
     state::{FullMapState, SceneState},
 };
-use scene::{explorer::ExplorerScenePlugin, initer::InitScenePlugin};
+use helper::{plugins::comms::ecs::resource::GameTimetamp, utils::funs::str_to_dateutc};
+use scene::initer::InitScenePlugin;
 
 use wasm_bindgen::prelude::wasm_bindgen;
 
@@ -19,9 +21,9 @@ pub fn game15(
     username: String,
     server_url: String,
     ln_address: String,
-    curent_height: u32,
-    browser_height: u32,
-    blockchain_filters: bool,
+    curent_blockchain_height: u32,
+    game_ts: String,
+    blockchain_filters_height: u32,
     viewport_width: u32,
     viewport_height: u32,
     _screen_width: u32,
@@ -34,6 +36,12 @@ pub fn game15(
         title: "SatoshiSettlers".to_string(),
         ..default()
     };
+    let gts = if game_ts.is_empty() {
+        None
+    } else {
+        Some(str_to_dateutc(game_ts))
+    };
+
     let full_map_state = if full_map_mode {
         info!("full map mode on");
         FullMapState::On
@@ -58,18 +66,18 @@ pub fn game15(
             ln_address,
             using_iphone,
             server_url,
-            blockchain_filters,
             full_map_mode,
         })
-        .insert_resource(GameHeight(browser_height))
-        .insert_resource(BlockchainDataHeight(0))
+        .insert_resource(GameHeight(0))
+        .insert_resource(BlockchainFiltersHeight(blockchain_filters_height))
         .insert_resource(WinSize {
             width: viewport_width as f32,
             height: viewport_height as f32,
         })
-        .insert_resource(BlockchainHeight(curent_height))
+        .insert_resource(BlockchainHeight(curent_blockchain_height))
         .init_state::<SceneState>()
         .add_plugins(InitScenePlugin)
         .insert_state(full_map_state)
+        .insert_resource(GameTimetamp { ts: gts })
         .run();
 }

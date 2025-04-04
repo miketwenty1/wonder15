@@ -1,0 +1,46 @@
+- FullMapState
+    * On,
+    * Off,
+- SceneState
+    * Init,
+    * Explorer,
+    	- ExplorerCommsSubState
+    		* Off,
+    		* Live,
+    	- ExplorerSubState
+    		* Off,
+    		* Running
+    			- ExplorerRunningZoomSub2State
+    				* Close
+    				* Medium
+    				* Far
+    			- ExplorerRunningCartSub2State
+    				* On
+    				* Off
+    			- ColorBlockchainKeySubState
+    				* Off,
+    				* Fee,
+    				* BlockTime,
+    				* TxCount,
+    				* Byte,
+    				* Weight,
+    				* TargetDifficulty,
+    				* TargetDifficultyDiff,
+    				* LeadingZeros,
+    				* ExcessWork,
+    				* Version,
+    		* Paused,
+- BrowserStorageState
+    * Off,
+    * On,
+- InitSpawnMapState
+    * Off,
+    * MapSpawn,
+    * LocalStorageRead,
+    * Done,
+- BuildingToggleState
+    * On,
+    * Off,
+- TextToggleState
+    * On,
+    * Off,

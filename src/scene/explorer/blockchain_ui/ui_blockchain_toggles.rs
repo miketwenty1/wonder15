@@ -2,9 +2,9 @@ use bevy::prelude::*;
 
 use crate::scene::{
     explorer::ecs::component::{
-        BlockTimeToggleBtn, ByteToggleBtn, ExcessWorkToggleBtn, FeeToggleBtn, LeadZerosToggleBtn,
-        TgtDiffDiffToggleBtn, TgtDiffToggleBtn, TxCountToggleBtn, VersionToggleBtn,
-        WeightToggleBtn,
+        BlockTimeToggleBtn, BlockchainFilterToggleParent, ByteToggleBtn, ExcessWorkToggleBtn,
+        FeeToggleBtn, LeadZerosToggleBtn, TgtDiffDiffToggleBtn, TgtDiffToggleBtn, TxCountToggleBtn,
+        VersionToggleBtn,
     },
     initer::ecs::resource::UiColorPalette,
 };
@@ -31,11 +31,12 @@ pub fn left_ui(
                 // justify_self: JustifySelf::Start,
                 flex_direction: FlexDirection::Column,
                 margin: UiRect::bottom(Val::Auto),
-
+                display: Display::None,
                 ..default()
             },
             BackgroundColor(colors.node_color),
             BorderRadius::all(Val::Px(4.0)),
+            BlockchainFilterToggleParent,
         ));
         let font = asset_server.load("fonts/FiraSans-Bold.ttf");
 

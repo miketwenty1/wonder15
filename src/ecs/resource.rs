@@ -1,6 +1,13 @@
-use bevy::{color::Color, ecs::system::Resource, utils::HashMap};
+use bevy::{
+    color::{Color, Srgba},
+    ecs::system::Resource,
+    prelude::Deref,
+    utils::HashMap,
+};
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
+
+use crate::helper::utils::funs::{convert_color_to_hexstring, get_resource_for_tile};
 
 #[derive(Resource, Clone)]
 pub struct GameStaticInputs {
@@ -8,7 +15,6 @@ pub struct GameStaticInputs {
     pub ln_address: String,
     pub using_iphone: bool,
     pub server_url: String,
-    pub blockchain_filters: bool,
     pub full_map_mode: bool,
 }
 
@@ -16,7 +22,7 @@ pub struct GameStaticInputs {
 pub struct BlockchainHeight(pub u32);
 
 #[derive(Resource, Clone, Debug, Default, Deserialize)]
-pub struct BlockchainDataHeight(pub u32);
+pub struct BlockchainFiltersHeight(pub u32);
 
 #[derive(Resource, Clone, Debug, Default, Deserialize)]
 pub struct WinSize {
@@ -27,10 +33,76 @@ pub struct WinSize {
 #[derive(Resource, Clone, Debug, Default, Deserialize)]
 pub struct GameHeight(pub u32);
 
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct TrimTile {
+    // color
+    pub c: Srgba,
+    // value
+    pub v: u32,
+    // hash
+    pub h: [u8; 32],
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct TrimGameTileForIdb {
+    pub map: HashMap<u32, TrimTile>,
+}
+
+impl TrimGameTileForIdb {
+    pub fn convert_trim_to_tilemap(self) -> WorldOwnedTileMap {
+        let mut tile_map = HashMap::new();
+        for (key, trim_tile) in self.map.into_iter() {
+            let resource = get_resource_for_tile(&trim_tile.h);
+            let tile_data = TileData {
+                color: Color::Srgba(trim_tile.c),
+                resource: resource.clone(),
+                block_hash: trim_tile.h,
+                value: trim_tile.v,
+                cost: trim_tile.v * 2,
+                height: key,
+                land_index: resource.spritesheet_index_value() as u32,
+                ..Default::default()
+            };
+            tile_map.insert(key, tile_data);
+        }
+
+        WorldOwnedTileMap { map: tile_map }
+    }
+}
+
 #[derive(Resource, Clone, PartialEq, Serialize, Deserialize)]
 pub struct WorldOwnedTileMap {
     pub map: HashMap<u32, TileData>,
 }
+
+impl WorldOwnedTileMap {
+    pub fn trim_for_browser_storage(&self) -> TrimGameTileForIdb {
+        let trimmed_map: HashMap<u32, TrimTile> = self
+            .map
+            .iter()
+            .map(|(&key, tile_data)| {
+                (
+                    key,
+                    TrimTile {
+                        c: tile_data.color.to_srgba(),
+                        v: tile_data.value,
+                        h: tile_data.block_hash,
+                    },
+                )
+            })
+            .collect();
+
+        TrimGameTileForIdb { map: trimmed_map }
+    }
+
+    pub fn to_tiledata_vec(&self) -> Vec<TileData>
+    where
+        TileData: Clone,
+    {
+        self.map.values().cloned().collect()
+    }
+}
+
 #[derive(Resource, Clone, PartialEq, Serialize, Deserialize)]
 pub struct WorldBlockchainTileMap {
     pub map: HashMap<u32, TileBlockchainData>,
@@ -87,5 +159,5 @@ impl TileResource {
     }
 }
 
-#[derive(Resource, Clone, Debug, Default, Deserialize)]
+#[derive(Resource, Clone, Debug, Default, Deserialize, Deref)]
 pub struct FullMapLength(pub u32);

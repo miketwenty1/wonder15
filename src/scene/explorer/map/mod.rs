@@ -1,4 +1,4 @@
-use super::ecs::state::InitSpawnTileMapState;
+use super::ecs::state::InitSpawnMapState;
 use bevy::prelude::*;
 use chunking::ExplorerMapChunkingPlugin;
 use ecs::{
@@ -10,7 +10,7 @@ use tile_manipulation::ExplorerMapTileManipulationPlugin;
 use world_map::ExplorerMapWorldMapPlugin;
 
 mod chunking;
-mod ecs;
+pub mod ecs;
 mod init;
 mod tile_manipulation;
 mod world_map;
@@ -26,7 +26,7 @@ impl Plugin for ExplorerMapPlugin {
             ExplorerMapTileManipulationPlugin,
             ExplorerMapWorldMapPlugin,
         ))
-        .init_state::<InitSpawnTileMapState>()
+        .init_state::<InitSpawnMapState>()
         .init_state::<BuildingToggleState>()
         .init_state::<TextToggleState>();
     }

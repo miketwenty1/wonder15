@@ -38,7 +38,6 @@ pub fn ui_explorer(mut commands: Commands) {
                 height: Val::Px(50.0),
                 ..default()
             },
-            Visibility::Hidden,
             ExplorerUiNodeTop,
         ));
     });
@@ -87,7 +86,7 @@ pub fn ui_explorer(mut commands: Commands) {
                 flex_direction: FlexDirection::Row,
                 justify_content: JustifyContent::Center,
                 grid_column: GridPlacement::span(3),
-                //width: Val::Percent(100.0),
+                align_items: AlignItems::FlexEnd,
                 ..default()
             },
             ExplorerUiNodeBottom,
