@@ -8,7 +8,7 @@ const RADIAN_90: f32 = 1.5707961;
 pub fn spawn_road(
     texture: &Handle<Image>,
     layout: &Handle<TextureAtlasLayout>,
-    builder: &mut ChildBuilder,
+    builder: &mut ChildSpawnerCommands,
     color: Color,
     offset: usize,
     height: u32,

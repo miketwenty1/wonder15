@@ -6,7 +6,7 @@ use crate::scene::explorer::ecs::component::Castle;
 pub fn spawn_castle(
     texture: &Handle<Image>,
     layout: &Handle<TextureAtlasLayout>,
-    builder: &mut ChildBuilder,
+    builder: &mut ChildSpawnerCommands,
     color: Color,
     translation: Vec3,
     scale_multiplier: f32,

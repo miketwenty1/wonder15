@@ -80,7 +80,7 @@ fn spawn_chunk(
 
                         // _texture: &Handle<Image>,
                         // _layout: &Handle<TextureAtlasLayout>,
-                        // _builder: &mut ChildBuilder,
+                        // _builder: &mut ChildSpawnerCommands,
                         // _color: Color,
                         // _locationcoord: Location,
                         // _visibility_toggle: Visibility,

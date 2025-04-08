@@ -8,7 +8,7 @@ use super::building_templates::{castle::spawn_castle, road::spawn_road};
 pub fn spawn(
     texture: &Handle<Image>,
     layout: &Handle<TextureAtlasLayout>,
-    builder: &mut ChildBuilder,
+    builder: &mut ChildSpawnerCommands,
     color: Color,
     height: u32,
 ) {

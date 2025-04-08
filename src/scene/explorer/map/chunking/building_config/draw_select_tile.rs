@@ -9,7 +9,7 @@ use crate::{
 pub fn spawn(
     texture: &Handle<Image>,
     layout: &Handle<TextureAtlasLayout>,
-    builder: &mut ChildBuilder,
+    builder: &mut ChildSpawnerCommands,
     locationcoord: Location,
     color: Color,
 ) {

@@ -56,6 +56,7 @@ pub fn spawn_selection_info(
                         font: font.clone(),
                         font_size: UI_MEDIUM_TEXT_SIZE,
                         font_smoothing: FontSmoothing::AntiAliased,
+                        ..default()
                     },
                     TextColor(colors.text_color),
                     BlockCountText,
@@ -88,6 +89,7 @@ pub fn spawn_selection_info(
                         font,
                         font_size: UI_MEDIUM_TEXT_SIZE,
                         font_smoothing: FontSmoothing::AntiAliased,
+                        ..default()
                     },
                     TextColor(colors.text_color),
                     CartPriceText,
@@ -132,6 +134,7 @@ pub fn spawn_explorer_buttons_for_tilecart(
                         font: font.clone(),
                         font_size: UI_SMALL_TEXT_SIZE,
                         font_smoothing: FontSmoothing::AntiAliased,
+                        ..default()
                     },
                     TextColor(colors.text_color),
                 ));
@@ -164,6 +167,7 @@ pub fn spawn_explorer_buttons_for_tilecart(
                         font: font.clone(),
                         font_size: UI_SMALL_TEXT_SIZE,
                         font_smoothing: FontSmoothing::AntiAliased,
+                        ..default()
                     },
                     TextColor(colors.text_color),
                 ));

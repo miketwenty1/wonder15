@@ -141,6 +141,7 @@ pub fn spawn_legend(
                             font: font_header.clone(),
                             font_size: 15.,
                             font_smoothing: FontSmoothing::AntiAliased,
+                            ..default()
                         },
                         TextColor(ui_colors.text_color),
                     ));
@@ -221,6 +222,7 @@ pub fn spawn_legend(
                                         font: font_light.clone(),
                                         font_size: 15.,
                                         font_smoothing: FontSmoothing::AntiAliased,
+                                        ..default()
                                     },
                                     TextColor(ui_colors.text_color),
                                 ));
@@ -285,6 +287,7 @@ pub fn spawn_tgt_diff_diff_legend(
                             font: font_header.clone(),
                             font_size: 15.,
                             font_smoothing: FontSmoothing::AntiAliased,
+                            ..default()
                         },
                         TextColor(ui_colors.text_color),
                     ));
@@ -365,6 +368,7 @@ pub fn spawn_tgt_diff_diff_legend(
                                         font: font_light.clone(),
                                         font_size: 15.,
                                         font_smoothing: FontSmoothing::AntiAliased,
+                                        ..default()
                                     },
                                     TextColor(ui_colors.text_color),
                                 ));
@@ -427,6 +431,7 @@ pub fn spawn_tgt_diff_legend(
                             font: font_header.clone(),
                             font_size: 15.,
                             font_smoothing: FontSmoothing::AntiAliased,
+                            ..default()
                         },
                         TextColor(ui_colors.text_color),
                     ));
@@ -454,6 +459,7 @@ pub fn spawn_tgt_diff_legend(
                             font: font_light.clone(),
                             font_size: 15.,
                             font_smoothing: FontSmoothing::AntiAliased,
+                            ..default()
                         },
                         TextColor(ui_colors.text_color),
                     ));
@@ -515,6 +521,7 @@ pub fn spawn_version_legend(
                             font: font_header.clone(),
                             font_size: 15.,
                             font_smoothing: FontSmoothing::AntiAliased,
+                            ..default()
                         },
                         TextColor(ui_colors.text_color),
                     ));
@@ -595,6 +602,7 @@ pub fn spawn_version_legend(
                                         font: font_light.clone(),
                                         font_size: 15.,
                                         font_smoothing: FontSmoothing::AntiAliased,
+                                        ..default()
                                     },
                                     TextColor(ui_colors.text_color),
                                 ));
@@ -651,6 +659,7 @@ pub fn spawn_version_legend(
                                     font: font_light.clone(),
                                     font_size: 15.,
                                     font_smoothing: FontSmoothing::AntiAliased,
+                                    ..default()
                                 },
                                 TextColor(ui_colors.text_color),
                             ));

@@ -4,7 +4,7 @@ use bevy::prelude::*;
 pub fn spawn_hut(
     texture: &Handle<Image>,
     layout: &Handle<TextureAtlasLayout>,
-    builder: &mut ChildBuilder,
+    builder: &mut ChildSpawnerCommands,
     color: Color,
     translation: Vec3,
     scale_multiplier: f32,

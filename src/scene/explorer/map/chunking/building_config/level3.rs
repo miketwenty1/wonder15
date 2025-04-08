@@ -9,7 +9,7 @@ use super::building_templates::camp::spawn_camp;
 pub fn spawn(
     texture: &Handle<Image>,
     layout: &Handle<TextureAtlasLayout>,
-    builder: &mut ChildBuilder,
+    builder: &mut ChildSpawnerCommands,
     color: Color,
 ) {
     let place_val = TILE_SIZE.x / 2.3 - 10.;

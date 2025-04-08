@@ -9,7 +9,7 @@ use super::building_templates::{hut::spawn_hut, road::spawn_road};
 pub fn spawn(
     texture: &Handle<Image>,
     layout: &Handle<TextureAtlasLayout>,
-    builder: &mut ChildBuilder,
+    builder: &mut ChildSpawnerCommands,
     color: Color,
     height: u32,
 ) {

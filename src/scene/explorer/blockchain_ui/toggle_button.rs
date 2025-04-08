@@ -7,7 +7,7 @@ use crate::scene::{
 
 #[warn(clippy::too_many_arguments)]
 pub fn spawn_game_toggle_button<T: Component>(
-    parent: &mut ChildBuilder,
+    parent: &mut ChildSpawnerCommands,
     toggle_btn_type: T,
     btn_text: &str,
     colors: &UiColorPalette,
@@ -42,6 +42,7 @@ pub fn spawn_game_toggle_button<T: Component>(
                     font: font.clone(),
                     font_size: 13.,
                     font_smoothing: FontSmoothing::AntiAliased,
+                    ..default()
                 },
                 TextColor(colors.text_color),
             ));

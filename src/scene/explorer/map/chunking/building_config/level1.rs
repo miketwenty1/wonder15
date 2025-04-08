@@ -4,7 +4,7 @@ use bevy::prelude::*;
 pub fn spawn(
     _texture: &Handle<Image>,
     _layout: &Handle<TextureAtlasLayout>,
-    _builder: &mut ChildBuilder,
+    _builder: &mut ChildSpawnerCommands,
     _color: Color,
 ) {
 }

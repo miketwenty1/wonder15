@@ -7,12 +7,13 @@ edition = "2021"
 # bevy = { version = "0.15", features = ["trace"]}
 # tracy-client = "0.18"
 # tracy-client-sys = "0.24"
-bevy = {version = "0.15.3"}
+bevy = {git = "https://github.com/bevyengine/bevy.git", tag = "v0.16.0-rc.3"}
 
 ulam = { git = "https://github.com/miketwenty1/ulam", branch = "master" }
 rand = "0.8"
 async-channel = "2.1"
-bevy_ecs_tilemap = "0.15.0"
+bevy_ecs_tilemap = { git = "https://github.com/ChristopherBiscardi/bevy_ecs_tilemap", branch = "bevy-0.16" }
+
 # thiserror = "2.0"
 # ldtk_rust = { version = "0.6" }
 serde-wasm-bindgen = "0.6"
@@ -38,6 +39,14 @@ chrono = { version = "0.4", features = ["serde"] }
 # [patch.crates-io]
 # tracy-client = { git = "https://github.com/nagisa/rust_tracy_client", tag = "tracy-client-v0.18.0" }
 
+[dependencies.uuid]
+version = "1.16"
+features = [
+  "v4",                # Lets you generate random UUIDs
+  "fast-rng",          # Use a faster (but still sufficiently random) RNG
+  "macro-diagnostics", # Enable better diagnostics for compile-time UUIDs
+  "serde",
+]
 
 [workspace]
 resolver = "2"

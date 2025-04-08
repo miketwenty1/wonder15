@@ -81,6 +81,7 @@ fn spawn_chunk(
                                 font: asset_server.load("fonts/FiraSans-Bold.ttf"),
                                 font_size,
                                 font_smoothing: FontSmoothing::AntiAliased,
+                                ..default()
                             },
                             //text_visi.visi_or_nawh(),
                             TileText,

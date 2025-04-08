@@ -1,8 +1,9 @@
+use std::collections::HashMap;
+
 use bevy::{
     asset::RenderAssetUsages,
     prelude::*,
     render::render_resource::{Extent3d, TextureDimension, TextureFormat},
-    utils::HashMap,
 };
 
 use chrono::{DateTime, Duration, NaiveDateTime, Timelike, Utc};
@@ -182,7 +183,7 @@ pub fn make_gradient_image(
         TextureFormat::Rgba8UnormSrgb,
         RenderAssetUsages::default(),
     );
-    image.data = data;
+    image.data = Some(data);
 
     images.add(image)
 }
@@ -225,7 +226,7 @@ pub fn make_gradient_image_corners(
         TextureFormat::Rgba8UnormSrgb,
         RenderAssetUsages::default(),
     );
-    image.data = data;
+    image.data = Some(data);
 
     images.add(image)
 }

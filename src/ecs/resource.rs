@@ -1,8 +1,9 @@
+use std::collections::HashMap;
+
 use bevy::{
     color::{Color, Srgba},
-    ecs::system::Resource,
+    ecs::resource::Resource,
     prelude::Deref,
-    utils::HashMap,
 };
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};

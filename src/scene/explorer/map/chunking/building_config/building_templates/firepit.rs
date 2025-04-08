@@ -6,7 +6,7 @@ use crate::scene::initer::ecs::component::{AnimationIndicesComp, AnimationTimerC
 pub fn spawn_firepit(
     texture: &Handle<Image>,
     layout: &Handle<TextureAtlasLayout>,
-    builder: &mut ChildBuilder,
+    builder: &mut ChildSpawnerCommands,
     translation: Vec3,
     scale_multiplier: f32,
 ) {
