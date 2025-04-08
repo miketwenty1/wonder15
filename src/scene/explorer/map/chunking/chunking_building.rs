@@ -1,24 +1,22 @@
-use bevy::{prelude::*, utils::HashMap};
+use bevy::prelude::*;
 use bevy_ecs_tilemap::{
-    map::{TilemapGridSize, TilemapId, TilemapRenderSettings, TilemapType},
+    anchor::TilemapAnchor,
+    map::{TilemapGridSize, TilemapId, TilemapRenderSettings, TilemapSize, TilemapType},
     tiles::{TileBundle, TilePos, TileStorage},
     TilemapBundle,
 };
 
 use crate::{
-    ecs::resource::{BlockchainHeight, WorldOwnedTileMap},
+    ecs::resource::WorldOwnedTileMap,
     scene::{
         explorer::{
             ecs::{
                 hard::{BUILDING_CHUNK_SIZE, BUILDING_SPAN_SPAWN_NUMBER, BUILDING_Z, TILE_SIZE},
                 resource::{ChunkTypeNumsRes, DespawnBuildingRangeRes, SpriteSheetBuildingRes},
             },
-            map::{
-                ecs::{
-                    component::ChunkBuildingMapComp, hard::TILE_SPACING,
-                    resource::ChunkBuildingManagerRes,
-                },
-                world_map,
+            map::ecs::{
+                component::ChunkBuildingMapComp, hard::TILE_SPACING,
+                resource::ChunkBuildingManagerRes,
             },
         },
         initer::ecs::resource::BuildingValueLevelMapper,
@@ -40,20 +38,31 @@ fn spawn_chunk(
     let mut tile_entities =
         Vec::with_capacity(BUILDING_CHUNK_SIZE.x as usize * BUILDING_CHUNK_SIZE.y as usize);
     //let mut random = rand::thread_rng();
+    let map_size = TilemapSize {
+        x: BUILDING_CHUNK_SIZE.x,
+        y: BUILDING_CHUNK_SIZE.y,
+    };
+    let grid_size = TilemapGridSize {
+        x: TILE_SIZE.x,
+        y: TILE_SIZE.y,
+    };
+    let tile_size = TILE_SIZE;
+    let map_type = TilemapType::Square;
+    let anchor = TilemapAnchor::BottomLeft;
+
     for x in 0..BUILDING_CHUNK_SIZE.x {
         for y in 0..BUILDING_CHUNK_SIZE.y {
             let ulam_v = ulam::get_value_from_xy(
-                (chunk_pos.x * BUILDING_CHUNK_SIZE.x as i32) + x as i32,
-                (chunk_pos.y * BUILDING_CHUNK_SIZE.y as i32) + y as i32,
+                (chunk_pos.x * BUILDING_CHUNK_SIZE.x as i32), // + x as i32,
+                (chunk_pos.y * BUILDING_CHUNK_SIZE.y as i32), // + y as i32,
             );
 
             if let Some(s) = world_values.map.get(&ulam_v) {
                 let tile_pos = TilePos { x, y };
-
-                let map_type = TilemapType::Square;
                 let tile_center_noz = tile_pos
-                    .center_in_world(&TILE_SIZE.into(), &map_type)
+                    .center_in_world(&map_size, &grid_size, &tile_size, &map_type, &anchor)
                     .extend(1.0);
+
                 let tile_center = Vec3 {
                     x: tile_center_noz.x,
                     y: tile_center_noz.y,
@@ -64,41 +73,14 @@ fn spawn_chunk(
                         TileBundle {
                             position: tile_pos,
                             tilemap_id: TilemapId(tilemap_entity),
-                            //  texture_index: TileTextureIndex(num),
                             ..Default::default()
                         },
-                        // Visibility::Visible,
-                        // YoTile,
+                        Visibility::Visible,
                         Transform::from_translation(tile_center),
                     ))
                     .with_children(|parent| {
-                        // let translation = Vec3::new(TILE_SIZE.x, TILE_SIZE.y, 3.0);
-                        // let transform = Transform {
-                        //     translation,
-                        //     ..Default::default()
-                        // };
-
-                        // _texture: &Handle<Image>,
-                        // _layout: &Handle<TextureAtlasLayout>,
-                        // _builder: &mut ChildSpawnerCommands,
-                        // _color: Color,
-                        // _locationcoord: Location,
-                        // _visibility_toggle: Visibility,
-
                         let level_val = building_value_mapper.get(&s.value).unwrap();
                         spawn_tile_level(level_val, layout, texture, parent, s.color, s.height);
-                        // parent.spawn((
-                        //     Sprite {
-                        //         color: Color::Srgba(s.color.into()),
-                        //         texture_atlas: Some(TextureAtlas {
-                        //             layout: layout.clone(),
-                        //             index: 2, //get_building_texture_index(s.value),
-                        //         }),
-                        //         image: texture.clone(),
-                        //         ..default()
-                        //     },
-                        //     // transform,
-                        // ));
                     })
                     .id();
                 tile_storage.set(&tile_pos, tile_entity);
@@ -118,16 +100,14 @@ fn spawn_chunk(
         .entity(tilemap_entity)
         .insert((
             TilemapBundle {
-                grid_size: TilemapGridSize {
-                    x: TILE_SIZE.x,
-                    y: TILE_SIZE.y,
-                },
-                size: BUILDING_CHUNK_SIZE.xy().into(),
+                grid_size,
+                size: map_size,
                 storage: tile_storage,
                 //texture: TilemapTexture::Single(texture_handle),
-                tile_size: TILE_SIZE,
+                tile_size,
                 spacing: TILE_SPACING,
                 transform,
+                anchor,
                 render_settings: TilemapRenderSettings {
                     render_chunk_size: BUILDING_CHUNK_SIZE.xy() * 2,
                     ..Default::default()
@@ -196,7 +176,7 @@ pub fn despawn_building_outofrange_chunks(
                 let x = (chunk_pos.x / (chunks.building.x as f32 * TILE_SIZE.x)).floor() as i32;
                 let y = (chunk_pos.y / (chunks.building.y as f32 * TILE_SIZE.y)).floor() as i32;
                 chunk_manager.spawned_chunks.remove(&IVec2::new(x, y));
-                commands.entity(entity).despawn_recursive();
+                commands.entity(entity).despawn();
             }
         }
     }

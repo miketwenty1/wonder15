@@ -1,9 +1,8 @@
 use bevy::prelude::*;
 use channels::init_js_comms_channels;
-use chrono::{Duration, Utc};
 use ecs::{
     event::{GetBlockchainUpdates, RequestServerGameTiles},
-    resource::{ApiPollingTimer, GameTimetamp},
+    resource::ApiPollingTimer,
 };
 use get_blockchain_data::{api_get_blockchain_data, api_receive_blockchain_server_tiles_by_height};
 use get_game_tiles_from_server::{

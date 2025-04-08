@@ -42,7 +42,7 @@ pub fn random_hal_to_castle(
     let dt = time.delta_secs();
 
     // Get the single Hal transform, if it exists.
-    if let Ok(mut hal_transform) = hal_query.get_single_mut() {
+    if let Ok(mut hal_transform) = hal_query.single_mut() {
         // If there isn't a target, pick a random castle
         if state.target.is_none() {
             if let Some(castle_transform) = castle_query.iter().choose(&mut rand::thread_rng()) {

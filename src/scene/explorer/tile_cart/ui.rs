@@ -62,7 +62,9 @@ pub fn spawn_selection_info(
                     BlockCountText,
                 ));
             })
-            .set_parent(parent_node);
+            .insert(ChildOf {
+                parent: parent_node,
+            });
 
         let _block_count_node = commands
             .spawn((
@@ -95,8 +97,10 @@ pub fn spawn_selection_info(
                     CartPriceText,
                 ));
             })
-            .set_parent(parent_node);
-        refresh.send(RefreshTileCart);
+            .insert(ChildOf {
+                parent: parent_node,
+            });
+        refresh.write(RefreshTileCart);
     }
 }
 
@@ -139,7 +143,9 @@ pub fn spawn_explorer_buttons_for_tilecart(
                     TextColor(colors.text_color),
                 ));
             })
-            .set_parent(parent_node);
+            .insert(ChildOf {
+                parent: parent_node,
+            });
 
         commands
             .spawn((
@@ -172,6 +178,8 @@ pub fn spawn_explorer_buttons_for_tilecart(
                     TextColor(colors.text_color),
                 ));
             })
-            .set_parent(parent_node);
+            .insert(ChildOf {
+                parent: parent_node,
+            });
     }
 }

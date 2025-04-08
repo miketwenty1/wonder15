@@ -16,7 +16,7 @@ pub fn cancel_selection_btn(
 ) {
     for interaction in &interaction_query {
         if *interaction == Interaction::Pressed {
-            event.send(ClearSelectedTiles);
+            event.write(ClearSelectedTiles);
         }
     }
 }
@@ -32,7 +32,7 @@ pub fn inspect_or_buy_selection_btn(
     for interaction in &interaction_query {
         if *interaction == Interaction::Pressed {
             // state.set(ExplorerSubState::Paused);
-            // event.send(PreviewTileCart);
+            // event.write(PreviewTileCart);
         }
     }
 }

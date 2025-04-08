@@ -4,8 +4,7 @@ use crate::scene::{
     explorer::{
         ecs::{component::SelectedTile, resource::SpriteSheetManualSelectRes},
         input::hard::{AddTileManualSelectionSprite, RemoveTileManualSelectionSprite},
-        map::ecs::component::{MainBaseTileMap, SelectionSprite},
-        tile_cart::state::ExplorerRunningCartSub2State,
+        map::ecs::component::SelectionSprite,
     },
     initer::ecs::component::{AnimationIndicesComp, AnimationTimerComp},
 };
@@ -53,17 +52,17 @@ pub fn read_spawn_manual_select_sprite(
 pub fn read_despawn_manual_select_sprite(
     mut commands: Commands,
     mut entity_to_despawn_from_event: EventReader<RemoveTileManualSelectionSprite>,
-    selection_q: Query<(Entity, &Parent), With<SelectionSprite>>,
+    selection_q: Query<(Entity, &ChildOf), With<SelectionSprite>>,
     mut parent_q: Query<&mut SelectedTile>,
 ) {
     for e in entity_to_despawn_from_event.read() {
-        for (ent, parent) in selection_q.iter() {
-            if e.0 == parent.get() {
+        for (ent, child_of) in selection_q.iter() {
+            if e.0 == child_of.parent {
                 // Despawn the SelectionSprite child
                 commands.entity(ent).despawn();
 
                 // Override SelectedTile on parent
-                if let Ok(mut selected) = parent_q.get_mut(parent.get()) {
+                if let Ok(mut selected) = parent_q.get_mut(child_of.parent) {
                     *selected = SelectedTile(false);
                 }
             }

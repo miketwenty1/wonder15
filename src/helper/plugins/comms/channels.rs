@@ -1,9 +1,9 @@
 use bevy::prelude::*;
 
 use super::ecs::resource::{
-    BlockMessagesStorageChannel, BlockchainMapChannel, BlockchainTileUpdateChannel,
-    BrowserGameCheckpointChannel, BrowserIndexedDBStorageChannel, CheckInvoiceChannel,
-    GameMapChannel, GameTileUpdateChannel, RequestInvoiceChannel, UserBlockInventoryChannel,
+    BlockMessagesStorageChannel, BlockchainTileUpdateChannel, BrowserGameCheckpointChannel,
+    BrowserIndexedDBStorageChannel, CheckInvoiceChannel, GameTileUpdateChannel,
+    RequestInvoiceChannel, UserBlockInventoryChannel,
 };
 
 pub fn init_js_comms_channels(mut commands: Commands) {

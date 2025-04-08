@@ -1,4 +1,6 @@
-use bevy::{prelude::*, utils::HashMap};
+use std::collections::HashMap;
+
+use bevy::prelude::*;
 use serde::Deserialize;
 
 use crate::{
@@ -6,7 +8,9 @@ use crate::{
         format_bytes, format_bytes_string, format_count, format_percent, format_sats, format_time,
         format_vbytes,
     },
-    scene::explorer::{ecs::event::SwapTilesEvent, blockchain_ui::ecs::state::ColorBlockchainKeySubState},
+    scene::explorer::{
+        blockchain_ui::ecs::state::ColorBlockchainKeySubState, ecs::event::SwapTilesEvent,
+    },
 };
 
 #[derive(Resource, Clone, Debug, Default, Deserialize, Deref)]

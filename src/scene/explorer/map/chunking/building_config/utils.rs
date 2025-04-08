@@ -1,4 +1,4 @@
-use bevy::color::{Color, Srgba};
+use bevy::color::Srgba;
 
 use crate::scene::explorer::ecs::hard::DARKEST_ALLOWED_BUILDING;
 pub fn sanitize_building_color(c: Srgba) -> Srgba {

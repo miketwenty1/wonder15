@@ -45,7 +45,7 @@ pub fn api_get_map_tiles(
                             let inner = o.text().await;
                             match inner {
                                 Ok(o_inner) => {
-                                    cc.try_send(o_inner);
+                                    let _ = cc.try_send(o_inner);
                                 }
                                 Err(e) => info!("inner error blockdelta_height {}", e),
                             }
@@ -67,17 +67,17 @@ pub fn api_get_map_tiles(
 
                             match api_response_text_r {
                                 Ok(o) => {
-                                    cc.try_send(o);
+                                    let _ = cc.try_send(o);
                                 }
                                 Err(e) => {
                                     info!("error for request tile ts {:#?}", e);
-                                    cc.try_send(e.to_string());
+                                    let _ = cc.try_send(e.to_string());
                                 }
                             }
                         }
                         Err(e) => {
                             info!("error for request tile ts {:#?}", e);
-                            cc.try_send(e.to_string());
+                            let _ = cc.try_send(e.to_string());
                         }
                     }
                 });
@@ -137,7 +137,7 @@ pub fn api_receive_game_server_tiles_by_height_or_ts(
                         }
 
                         if !new_tile_vec.is_empty() {
-                            update_tile_event.send(UpdateWorldMapTilesEvent(new_tile_vec));
+                            update_tile_event.write(UpdateWorldMapTilesEvent(new_tile_vec));
                             info!("sending UpdateWorldMapTilesEvent");
                             if height_checkpoint.is_some() {
                                 if game_height.0 == height_checkpoint.unwrap() {
@@ -145,12 +145,12 @@ pub fn api_receive_game_server_tiles_by_height_or_ts(
 
                                     if *should_write_local {
                                         info!("writing height trigger local storage");
-                                        game_tiles_browser_write.send(WriteGameTilesIdb);
+                                        game_tiles_browser_write.write(WriteGameTilesIdb);
                                     }
                                 } else {
                                     info!("getting mo Height son");
                                     get_more_tiles
-                                        .send(RequestServerGameTiles(TileUpdatePattern::Height));
+                                        .write(RequestServerGameTiles(TileUpdatePattern::Height));
                                     game_height.0 = height_checkpoint.unwrap();
                                     *should_write_local = true;
                                 }
@@ -160,14 +160,14 @@ pub fn api_receive_game_server_tiles_by_height_or_ts(
 
                                     if *should_write_local {
                                         info!("writing ts trigger local storage");
-                                        game_tiles_browser_write.send(WriteGameTilesIdb);
+                                        game_tiles_browser_write.write(WriteGameTilesIdb);
                                     }
                                 } else {
                                     *should_write_local = true;
                                     game_ts.ts = ts_checkpoint;
                                     info!("getting mo Ts son");
                                     get_more_tiles
-                                        .send(RequestServerGameTiles(TileUpdatePattern::Ts));
+                                        .write(RequestServerGameTiles(TileUpdatePattern::Ts));
                                 }
                             } else {
                                 info!("no mo son");

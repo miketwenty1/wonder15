@@ -12,7 +12,7 @@ pub fn despawn_text(
 ) {
     chunk_manager.spawned_chunks.clear();
     for entity in chunks_query_map.iter() {
-        commands.entity(entity).despawn_recursive();
+        commands.entity(entity).despawn();
     }
 }
 
@@ -23,6 +23,6 @@ pub fn despawn_buildings(
 ) {
     chunk_manager.spawned_chunks.clear();
     for entity in chunks_query_map.iter() {
-        commands.entity(entity).despawn_recursive();
+        commands.entity(entity).despawn();
     }
 }

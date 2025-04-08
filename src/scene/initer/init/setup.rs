@@ -1,14 +1,12 @@
+use std::collections::HashMap;
+
 use bevy::{
     color::palettes::css::{DARK_GREEN, MAROON},
     prelude::*,
-    utils::HashMap,
 };
 
 use crate::{
-    ecs::{
-        resource::{BlockchainHeight, FullMapLength, GameStaticInputs},
-        state::{ExplorerCommsSubState, SceneState},
-    },
+    ecs::{resource::FullMapLength, state::SceneState},
     scene::{
         explorer::ecs::hard::TILE_MAP_LENGTH,
         initer::ecs::{

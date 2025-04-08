@@ -1,8 +1,6 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
-use crate::ecs::resource::TileBlockchainData;
-
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct GameBlockDataFromDB {
     pub blocks: Vec<GameBlockMapData>,

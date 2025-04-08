@@ -1,15 +1,11 @@
 use bevy::prelude::*;
 use bevy_ecs_tilemap::{
-    map::{TilemapGridSize, TilemapId, TilemapType},
+    map::TilemapId,
     tiles::{TileBundle, TileColor, TilePos, TileStorage, TileTextureIndex},
 };
 
 use crate::{
-    ecs::{
-        resource::{BlockchainHeight, FullMapLength, WorldOwnedTileMap},
-        state::ExplorerCommsSubState,
-    },
-    helper::plugins::comms::ecs::{event::RequestServerGameTiles, structy::TileUpdatePattern},
+    ecs::resource::{BlockchainHeight, FullMapLength, WorldOwnedTileMap},
     scene::explorer::{
         ecs::{component::SelectedTile, hard::TILE_SIZE, state::InitSpawnMapState},
         map::ecs::{

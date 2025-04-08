@@ -232,7 +232,7 @@ pub fn spawn_legend(
             }
         });
 
-        side_parent.set_parent(ent);
+        side_parent.insert(ChildOf { parent: ent });
     }
 }
 
@@ -378,7 +378,7 @@ pub fn spawn_tgt_diff_diff_legend(
             }
         });
 
-        side_parent.set_parent(ent);
+        side_parent.insert(ChildOf { parent: ent });
     }
 }
 
@@ -466,7 +466,7 @@ pub fn spawn_tgt_diff_legend(
                 });
         });
 
-        side_parent.set_parent(ent);
+        side_parent.insert(ChildOf { parent: ent });
     }
 }
 
@@ -668,6 +668,6 @@ pub fn spawn_version_legend(
             });
         });
 
-        side_parent.set_parent(ent);
+        side_parent.insert(ChildOf { parent: ent });
     }
 }

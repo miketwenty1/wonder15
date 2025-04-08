@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-use chrono::{NaiveDateTime, Timelike};
 use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen_futures::{spawn_local, JsFuture};
 use web_sys::js_sys;
@@ -97,7 +96,7 @@ pub fn readcheck_game_tiles(
                 // do something here if the data exist
                 //info!("checkpoint_res: {:#?}, map_res: {:#?}", checkpoint_res, o);
                 if o == "errorornotfound" {
-                    request_tiles_event.send(RequestServerGameTiles(TileUpdatePattern::Height));
+                    request_tiles_event.write(RequestServerGameTiles(TileUpdatePattern::Height));
                 } else {
                     let r_result = serde_json::from_str::<TrimGameTileForIdb>(&o); //WorldOwnedTileMap
                     match r_result {
@@ -116,11 +115,11 @@ pub fn readcheck_game_tiles(
                                     init_spawn_map.set(InitSpawnMapState::Done);
                                     comms_state.set(ExplorerCommsSubState::Live);
                                     request_tiles_event
-                                        .send(RequestServerGameTiles(TileUpdatePattern::Ts));
+                                        .write(RequestServerGameTiles(TileUpdatePattern::Ts));
 
                                     let tiles = world_map_converted.to_tiledata_vec();
 
-                                    update_tile_event.send(UpdateWorldMapTilesEvent(tiles));
+                                    update_tile_event.write(UpdateWorldMapTilesEvent(tiles));
                                 }
                                 Err(e) => {
                                     info!("oh no browser pull 3, {}", e);

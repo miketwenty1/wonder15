@@ -33,7 +33,7 @@ pub fn api_get_blockchain_data(
                     let inner = o.text().await;
                     match inner {
                         Ok(o_inner) => {
-                            cc.try_send(o_inner);
+                            let _ = cc.try_send(o_inner);
                         }
                         Err(e) => info!("inner error blockchain data {}", e),
                     }
@@ -105,9 +105,9 @@ pub fn api_receive_blockchain_server_tiles_by_height(
                         }
 
                         if !new_tile_vec.is_empty() {
-                            update_tile_event.send(UpdateWorldBlockchainDataEvent(new_tile_vec));
+                            update_tile_event.write(UpdateWorldBlockchainDataEvent(new_tile_vec));
                             info!("sending UpdateBlockchainWorldMapTilesEvent");
-                            get_more_tiles.send(GetBlockchainUpdates(blockchain_data_height.0));
+                            get_more_tiles.write(GetBlockchainUpdates(blockchain_data_height.0));
                         }
                     }
                     Err(e) => {
@@ -122,7 +122,7 @@ pub fn api_receive_blockchain_server_tiles_by_height(
             Err(e) => {
                 info!("receiving blockchain data tiles: {}", e);
                 // if !e.to_string().contains("EOF") && !e.to_string().contains("empty channel") {
-                //     toast.send(ToastEvent {
+                //     toast.write(ToastEvent {
                 //         ttype: ToastType::Bad,
                 //         message: e.to_string(),
                 //     });

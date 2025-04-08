@@ -3,7 +3,7 @@ use crate::{
     scene::explorer::{
         ecs::{
             component::SelectedTile,
-            hard::{TILE_SIZE, TILE_SPAN_SPAWN_NUMBER, TILE_Z},
+            hard::{TILE_CHUNK_SIZE, TILE_SIZE, TILE_SPAN_SPAWN_NUMBER, TILE_Z},
             resource::{ChunkTypeNumsRes, DespawnTileRangeRes},
         },
         map::ecs::{
@@ -16,7 +16,10 @@ use crate::{
 
 use bevy::prelude::*;
 use bevy_ecs_tilemap::{
-    map::{TilemapGridSize, TilemapId, TilemapRenderSettings, TilemapTexture, TilemapType},
+    anchor::TilemapAnchor,
+    map::{
+        TilemapGridSize, TilemapId, TilemapRenderSettings, TilemapSize, TilemapTexture, TilemapType,
+    },
     tiles::{TileBundle, TileColor, TilePos, TileStorage, TileTextureIndex},
     TilemapBundle,
 };
@@ -33,19 +36,31 @@ fn spawn_chunk(
     let mut tile_storage = TileStorage::empty(chunks.tile.into());
     let mut tile_entities = Vec::with_capacity(chunks.tile.x as usize * chunks.tile.y as usize);
 
+    let map_size = TilemapSize {
+        x: TILE_CHUNK_SIZE.x,
+        y: TILE_CHUNK_SIZE.y,
+    };
+    let grid_size = TilemapGridSize {
+        x: TILE_SIZE.x,
+        y: TILE_SIZE.y,
+    };
+    let tile_size = TILE_SIZE;
+    let map_type = TilemapType::Square;
+    let anchor = TilemapAnchor::BottomLeft;
+
     //let mut random = rand::thread_rng();
     for x in 0..chunks.tile.x {
         for y in 0..chunks.tile.y {
             let tile_pos = TilePos { x, y };
             let ulam_v = ulam::get_value_from_xy(
-                (chunk_pos.x * chunks.tile.x as i32) + tile_pos.x as i32,
-                (chunk_pos.y * chunks.tile.y as i32) + tile_pos.y as i32,
+                (chunk_pos.x * chunks.tile.x as i32), // + tile_pos.x as i32,
+                (chunk_pos.y * chunks.tile.y as i32), // + tile_pos.y as i32,
             );
             if current_blockheight >= ulam_v {
-                let map_type = TilemapType::Square;
                 let tile_center_noz = tile_pos
-                    .center_in_world(&TILE_SIZE.into(), &map_type)
+                    .center_in_world(&map_size, &grid_size, &tile_size, &map_type, &anchor)
                     .extend(1.0);
+
                 let tile_center = Vec3 {
                     x: tile_center_noz.x,
                     y: tile_center_noz.y,
@@ -66,6 +81,7 @@ fn spawn_chunk(
                             color: TileColor(player_color),
                             ..Default::default()
                         },
+                        Visibility::Visible,
                         BaseTile,
                         SelectedTile(false),
                         UlamComp(ulam_v),
@@ -170,7 +186,7 @@ pub fn despawn_tile_outofrange_chunks(
                 let x = (chunk_pos.x / (chunks.tile.x as f32 * TILE_SIZE.x)).floor() as i32;
                 let y = (chunk_pos.y / (chunks.tile.y as f32 * TILE_SIZE.y)).floor() as i32;
                 chunk_manager.spawned_chunks.remove(&IVec2::new(x, y));
-                commands.entity(entity).despawn_recursive();
+                commands.entity(entity).despawn();
             }
         }
     }

@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 use crate::{
-    ecs::resource::{WorldBlockchainTileMap, WorldOwnedTileMap},
+    ecs::resource::WorldBlockchainTileMap,
     scene::explorer::ecs::event::UpdateWorldBlockchainDataEvent,
 };
 

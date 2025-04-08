@@ -2,8 +2,7 @@ use bevy::prelude::*;
 use bevy_ecs_tilemap::tiles::{TileColor, TileTextureIndex};
 
 use crate::{
-    ecs::resource::GameStaticInputs,
-    helper::utils::funs::{get_resource_for_tile, vec_tile_updates_to_hashmap},
+    helper::utils::funs::vec_tile_updates_to_hashmap,
     scene::explorer::{
         ecs::{
             event::{SwapTilesEvent, UpdateWorldMapTilesEvent},
@@ -11,7 +10,7 @@ use crate::{
         },
         map::ecs::{
             component::{LandIndexComp, PlayerTileColorComp, UlamComp},
-            hard::{DEFAULT_UNSET_TILE_INDEX, TEXTURE_INDEX_FOR_PLAYER_COLOR},
+            hard::TEXTURE_INDEX_FOR_PLAYER_COLOR,
         },
     },
 };

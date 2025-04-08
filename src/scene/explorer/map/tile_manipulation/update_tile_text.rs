@@ -1,7 +1,6 @@
 use bevy::prelude::*;
 
 use crate::{
-    ecs::resource::WorldOwnedTileMap,
     helper::utils::funs::{get_text_color_per_tile_color, vec_tile_updates_to_hashmap},
     scene::explorer::{
         ecs::{

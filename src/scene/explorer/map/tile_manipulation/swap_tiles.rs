@@ -1,6 +1,5 @@
 use bevy::prelude::*;
 use bevy_ecs_tilemap::tiles::{TileColor, TileTextureIndex};
-use rand::Rng;
 
 use crate::{
     ecs::resource::WorldBlockchainTileMap,

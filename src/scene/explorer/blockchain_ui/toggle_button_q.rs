@@ -1,18 +1,15 @@
 use bevy::prelude::*;
 
-use crate::scene::{
-    explorer::ecs::{
-        component::{
-            BlockTimeToggleBtn, ByteToggleBtn, ExcessWorkToggleBtn, FeeToggleBtn,
-            LeadZerosToggleBtn, TgtDiffDiffToggleBtn, TgtDiffToggleBtn, TxCountToggleBtn,
-            VersionToggleBtn, WeightToggleBtn,
-        },
-        event::SwapTilesEvent,
+use crate::scene::explorer::ecs::{
+    component::{
+        BlockTimeToggleBtn, ByteToggleBtn, ExcessWorkToggleBtn, FeeToggleBtn, LeadZerosToggleBtn,
+        TgtDiffDiffToggleBtn, TgtDiffToggleBtn, TxCountToggleBtn, VersionToggleBtn,
+        WeightToggleBtn,
     },
-    initer::ecs::resource::UiColorPalette,
+    event::SwapTilesEvent,
 };
 
-use super::{components::ToggleBlockchainBtn, ecs::state::ColorBlockchainKeySubState};
+use super::ecs::state::ColorBlockchainKeySubState;
 
 pub fn fee_btn(
     interaction_query: Query<&Interaction, (Changed<Interaction>, With<FeeToggleBtn>)>,
@@ -21,7 +18,7 @@ pub fn fee_btn(
 ) {
     for interaction in &interaction_query {
         if *interaction == Interaction::Pressed {
-            event.send(SwapTilesEvent::Fee);
+            event.write(SwapTilesEvent::Fee);
             state.set(ColorBlockchainKeySubState::Fee);
         }
     }
@@ -33,7 +30,7 @@ pub fn leadzeros_btn(
 ) {
     for interaction in &interaction_query {
         if *interaction == Interaction::Pressed {
-            event.send(SwapTilesEvent::LeadingZeros);
+            event.write(SwapTilesEvent::LeadingZeros);
             state.set(ColorBlockchainKeySubState::LeadingZeros);
         }
     }
@@ -45,7 +42,7 @@ pub fn tgtdiff_btn(
 ) {
     for interaction in &interaction_query {
         if *interaction == Interaction::Pressed {
-            event.send(SwapTilesEvent::TargetDifficulty);
+            event.write(SwapTilesEvent::TargetDifficulty);
             state.set(ColorBlockchainKeySubState::TargetDifficulty);
         }
     }
@@ -57,7 +54,7 @@ pub fn tgtdiff_diff_btn(
 ) {
     for interaction in &interaction_query {
         if *interaction == Interaction::Pressed {
-            event.send(SwapTilesEvent::TargetDifficultyDiff);
+            event.write(SwapTilesEvent::TargetDifficultyDiff);
             state.set(ColorBlockchainKeySubState::TargetDifficultyDiff);
         }
     }
@@ -69,7 +66,7 @@ pub fn weights_btn(
 ) {
     for interaction in &interaction_query {
         if *interaction == Interaction::Pressed {
-            event.send(SwapTilesEvent::Weight);
+            event.write(SwapTilesEvent::Weight);
             state.set(ColorBlockchainKeySubState::Weight);
         }
     }
@@ -81,7 +78,7 @@ pub fn bytes_btn(
 ) {
     for interaction in &interaction_query {
         if *interaction == Interaction::Pressed {
-            event.send(SwapTilesEvent::Byte);
+            event.write(SwapTilesEvent::Byte);
             state.set(ColorBlockchainKeySubState::Byte);
         }
     }
@@ -93,7 +90,7 @@ pub fn txcount_btn(
 ) {
     for interaction in &interaction_query {
         if *interaction == Interaction::Pressed {
-            event.send(SwapTilesEvent::TxCount);
+            event.write(SwapTilesEvent::TxCount);
             state.set(ColorBlockchainKeySubState::TxCount);
         }
     }
@@ -105,7 +102,7 @@ pub fn blocktime_btn(
 ) {
     for interaction in &interaction_query {
         if *interaction == Interaction::Pressed {
-            event.send(SwapTilesEvent::BlockTime);
+            event.write(SwapTilesEvent::BlockTime);
             state.set(ColorBlockchainKeySubState::BlockTime);
         }
     }
@@ -117,7 +114,7 @@ pub fn excesswork_btn(
 ) {
     for interaction in &interaction_query {
         if *interaction == Interaction::Pressed {
-            event.send(SwapTilesEvent::ExcessWork);
+            event.write(SwapTilesEvent::ExcessWork);
             state.set(ColorBlockchainKeySubState::ExcessWork);
         }
     }
@@ -129,7 +126,7 @@ pub fn version_btn(
 ) {
     for interaction in &interaction_query {
         if *interaction == Interaction::Pressed {
-            event.send(SwapTilesEvent::Version);
+            event.write(SwapTilesEvent::Version);
             state.set(ColorBlockchainKeySubState::Version);
         }
     }

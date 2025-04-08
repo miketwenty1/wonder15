@@ -3,7 +3,6 @@ use wasm_bindgen::JsValue;
 
 use crate::{
     ecs::resource::WorldOwnedTileMap, helper::plugins::comms::ecs::resource::GameTimetamp,
-    scene::explorer::ecs::state::InitSpawnMapState,
 };
 
 use super::event::WriteGameTilesIdb;

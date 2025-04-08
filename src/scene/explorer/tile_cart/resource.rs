@@ -1,4 +1,5 @@
-use bevy::{prelude::*, utils::HashMap};
+use bevy::prelude::*;
+use std::collections::HashMap;
 
 #[derive(Resource, Clone, Debug, Default)]
 pub struct UserPurchaseHistory {

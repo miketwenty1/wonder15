@@ -1,17 +1,14 @@
-use crate::{
-    ecs::resource::FullMapLength,
-    scene::explorer::{
-        ecs::component::SelectedTile,
-        input::hard::RemoveTileManualSelectionSprite,
-        map::ecs::component::{BaseTile, MainBaseTileMap, UlamComp},
-    },
+use crate::scene::explorer::{
+    ecs::component::SelectedTile,
+    input::hard::RemoveTileManualSelectionSprite,
+    map::ecs::component::{BaseTile, MainBaseTileMap, UlamComp},
 };
 
 use super::hard::{
-    AddTileManualSelectionSprite, CursorPosInfo, CursorPosRaw, LastClickedTile, MOVE_VELOCITY,
+    AddTileManualSelectionSprite, CursorPosInfo, CursorPosRaw, LastClickedTile,
     THRESHOLD_SELECT_MANUAL_CLICK,
 };
-use bevy::{input::mouse::MouseMotion, prelude::*};
+use bevy::prelude::*;
 use bevy_ecs_tilemap::prelude::*;
 
 #[allow(clippy::too_many_arguments)]
@@ -34,22 +31,27 @@ pub fn update_cursor_pos(
     }
 }
 
+#[allow(clippy::type_complexity)]
 pub fn cursor_to_tile(
     cursor_pos: Res<CursorPosRaw>,
     tilemap_q: Query<
         (
             &TilemapSize,
             &TilemapGridSize,
+            &TilemapTileSize,
             &TilemapType,
             &TileStorage,
             &Transform,
+            &TilemapAnchor,
         ),
         With<MainBaseTileMap>,
     >,
     tile_q: Query<(&UlamComp, &SelectedTile), With<BaseTile>>,
     mut cursor_ulam_pos: ResMut<CursorPosInfo>,
 ) {
-    for (map_size, grid_size, map_type, tile_storage, map_transform) in tilemap_q.iter() {
+    for (map_size, grid_size, tile_size, map_type, tile_storage, map_transform, anchor) in
+        tilemap_q.iter()
+    {
         let cursor_pos: Vec2 = cursor_pos.0;
         let cursor_in_map_pos: Vec2 = {
             let cursor_pos = Vec4::from((cursor_pos, 0.0, 1.0));
@@ -57,9 +59,14 @@ pub fn cursor_to_tile(
             cursor_in_map_pos.xy()
         };
         // Once we have a world position we can transform it into a possible tile position.
-        if let Some(tile_pos) =
-            TilePos::from_world_pos(&cursor_in_map_pos, map_size, grid_size, map_type)
-        {
+        if let Some(tile_pos) = TilePos::from_world_pos(
+            &cursor_in_map_pos,
+            map_size,
+            grid_size,
+            tile_size,
+            map_type,
+            anchor,
+        ) {
             // BACKUP LOGIC ULAM TRICK
             // cursor_ulam_pos.ulam = ulam::get_value_from_xy(
             //     tile_pos.x as i32 - (map_length.0 / 2) as i32,
@@ -94,7 +101,7 @@ pub fn attribute_click_on_map(
         // );
         if cursor_pos.currently_selected {
             send_remove_manual_selection_event
-                .send(RemoveTileManualSelectionSprite(cursor_pos.ent));
+                .write(RemoveTileManualSelectionSprite(cursor_pos.ent));
             info!(
                 "we have a click on existing selection - removing {}!",
                 cursor_pos.ulam
@@ -102,7 +109,7 @@ pub fn attribute_click_on_map(
         } else if last_clicked_tile.ulam == cursor_pos.ulam
             && elapsed < THRESHOLD_SELECT_MANUAL_CLICK
         {
-            send_add_manual_selection_event.send(AddTileManualSelectionSprite(cursor_pos.ent));
+            send_add_manual_selection_event.write(AddTileManualSelectionSprite(cursor_pos.ent));
             info!(
                 "we have a second click on a tile - adding {}!",
                 cursor_pos.ulam

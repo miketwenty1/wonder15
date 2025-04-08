@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::{
     ecs::{
         resource::{WorldBlockchainTileMap, WorldOwnedTileMap},
@@ -9,7 +11,7 @@ use crate::{
     },
     scene::explorer::ExplorerScenePlugin,
 };
-use bevy::{prelude::*, utils::HashMap};
+use bevy::prelude::*;
 use camera::setup_camera;
 use canvas::fit_canvas_to_parent;
 use setup::{animate_sprite, setup_things};

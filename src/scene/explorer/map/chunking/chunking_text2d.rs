@@ -1,6 +1,7 @@
 use bevy::{math::Vec3A, prelude::*, render::primitives::Aabb, text::FontSmoothing};
 use bevy_ecs_tilemap::{
-    map::{TilemapGridSize, TilemapId, TilemapRenderSettings, TilemapType},
+    anchor::TilemapAnchor,
+    map::{TilemapGridSize, TilemapId, TilemapRenderSettings, TilemapSize, TilemapType},
     tiles::{TileBundle, TilePos, TileStorage},
     TilemapBundle,
 };
@@ -11,7 +12,7 @@ use crate::{
     scene::explorer::{
         ecs::{
             event::SwapTilesEvent,
-            hard::{TEXT_SPAN_SPAWN_NUMBER, TEXT_Z, TILE_SIZE},
+            hard::{TEXT_CHUNK_SIZE, TEXT_SPAN_SPAWN_NUMBER, TEXT_Z, TILE_SIZE},
             resource::{ChunkTypeNumsRes, CurrentTilesRes, DespawnTextRangeRes},
         },
         map::ecs::{
@@ -27,25 +28,36 @@ fn spawn_chunk(
     asset_server: &AssetServer,
     chunk_pos: IVec2,
     current_blockheight: u32,
-    chunks: &Res<ChunkTypeNumsRes>,
     world_map: &Res<WorldOwnedTileMap>,
     current_tiles: &Res<CurrentTilesRes>,
 ) {
     let tilemap_entity = commands.spawn_empty().id();
-    let mut tile_storage = TileStorage::empty(chunks.text.into());
-    let mut tile_entities = Vec::with_capacity(chunks.text.x as usize * chunks.text.y as usize);
+    let mut tile_storage = TileStorage::empty(TEXT_CHUNK_SIZE.into());
+    let mut tile_entities =
+        Vec::with_capacity(TEXT_CHUNK_SIZE.x as usize * TEXT_CHUNK_SIZE.y as usize);
     //let mut random = rand::thread_rng();
-    for x in 0..chunks.text.x {
-        for y in 0..chunks.text.y {
+    let map_size = TilemapSize {
+        x: TEXT_CHUNK_SIZE.x,
+        y: TEXT_CHUNK_SIZE.y,
+    };
+    let grid_size = TilemapGridSize {
+        x: TILE_SIZE.x,
+        y: TILE_SIZE.y,
+    };
+    let tile_size = TILE_SIZE;
+    let map_type = TilemapType::Square;
+    let anchor = TilemapAnchor::BottomLeft;
+
+    for x in 0..TEXT_CHUNK_SIZE.x {
+        for y in 0..TEXT_CHUNK_SIZE.y {
             let tile_pos = TilePos { x, y };
             let ulam_v = ulam::get_value_from_xy(
-                (chunk_pos.x * chunks.text.x as i32) + tile_pos.x as i32,
-                (chunk_pos.y * chunks.text.y as i32) + tile_pos.y as i32,
+                (chunk_pos.x * TEXT_CHUNK_SIZE.x as i32), // + tile_pos.x as i32,
+                (chunk_pos.y * TEXT_CHUNK_SIZE.y as i32), // + tile_pos.y as i32,
             );
             if current_blockheight >= ulam_v {
-                let map_type = TilemapType::Square;
                 let tile_center_noz = tile_pos
-                    .center_in_world(&TILE_SIZE.into(), &map_type)
+                    .center_in_world(&map_size, &grid_size, &tile_size, &map_type, &anchor)
                     .extend(1.0);
                 let tile_center = Vec3 {
                     x: tile_center_noz.x,
@@ -69,7 +81,7 @@ fn spawn_chunk(
                             //  texture_index: TileTextureIndex(num),
                             ..Default::default()
                         },
-                        // Visibility::Visible,
+                        Visibility::Visible,
                         // YoTile,
                         Transform::from_translation(tile_center),
                     ))
@@ -83,7 +95,7 @@ fn spawn_chunk(
                                 font_smoothing: FontSmoothing::AntiAliased,
                                 ..default()
                             },
-                            //text_visi.visi_or_nawh(),
+                            Visibility::Visible,
                             TileText,
                             TextColor(text_color),
                             UlamComp(ulam_v),
@@ -104,8 +116,8 @@ fn spawn_chunk(
     }
 
     let transform = Transform::from_translation(Vec3::new(
-        chunk_pos.x as f32 * chunks.text.x as f32 * (TILE_SIZE.x),
-        chunk_pos.y as f32 * chunks.text.y as f32 * (TILE_SIZE.y),
+        chunk_pos.x as f32 * TEXT_CHUNK_SIZE.x as f32 * (TILE_SIZE.x),
+        chunk_pos.y as f32 * TEXT_CHUNK_SIZE.y as f32 * (TILE_SIZE.y),
         TEXT_Z,
     ));
 
@@ -117,14 +129,14 @@ fn spawn_chunk(
                     x: TILE_SIZE.x,
                     y: TILE_SIZE.y,
                 },
-                size: chunks.text.into(),
+                size: TEXT_CHUNK_SIZE.into(),
                 storage: tile_storage,
                 //texture: TilemapTexture::Single(texture_handle),
                 tile_size: TILE_SIZE,
                 spacing: TILE_SPACING,
                 transform,
                 render_settings: TilemapRenderSettings {
-                    render_chunk_size: chunks.text * 2,
+                    render_chunk_size: TEXT_CHUNK_SIZE * 2,
                     ..Default::default()
                 },
                 ..Default::default()
@@ -134,9 +146,9 @@ fn spawn_chunk(
         .add_children(&tile_entities);
 }
 
-fn camera_pos_to_chunk_pos(camera_pos: &Vec2, chunks: &Res<ChunkTypeNumsRes>) -> IVec2 {
+fn camera_pos_to_chunk_pos(camera_pos: &Vec2) -> IVec2 {
     let camera_pos = camera_pos.as_ivec2();
-    let chunk_size: IVec2 = IVec2::new(chunks.text.x as i32, chunks.text.y as i32);
+    let chunk_size: IVec2 = IVec2::new(TEXT_CHUNK_SIZE.x as i32, TEXT_CHUNK_SIZE.y as i32);
     let tile_size: IVec2 = IVec2::new(TILE_SIZE.x as i32, TILE_SIZE.y as i32);
     camera_pos / (chunk_size * tile_size)
 }
@@ -148,12 +160,11 @@ pub fn spawn_text_chunk_around_camera(
     camera_query: Query<&Transform, With<Camera>>,
     mut chunk_manager: ResMut<ChunkTextManagerRes>,
     current_block_height: Res<BlockchainHeight>,
-    chunks: Res<ChunkTypeNumsRes>,
     world_map: Res<WorldOwnedTileMap>,
     current_tiles: Res<CurrentTilesRes>,
 ) {
     for transform in camera_query.iter() {
-        let camera_chunk_pos = camera_pos_to_chunk_pos(&transform.translation.xy(), &chunks);
+        let camera_chunk_pos = camera_pos_to_chunk_pos(&transform.translation.xy());
         for y in (camera_chunk_pos.y - TEXT_SPAN_SPAWN_NUMBER)
             ..(camera_chunk_pos.y + TEXT_SPAN_SPAWN_NUMBER)
         {
@@ -167,7 +178,6 @@ pub fn spawn_text_chunk_around_camera(
                         &asset_server,
                         IVec2::new(x, y),
                         current_block_height.0,
-                        &chunks,
                         &world_map,
                         &current_tiles,
                     );
@@ -194,7 +204,7 @@ pub fn despawn_text_outofrange_chunks(
                 let x = (chunk_pos.x / (chunks.text.x as f32 * TILE_SIZE.x)).floor() as i32;
                 let y = (chunk_pos.y / (chunks.text.y as f32 * TILE_SIZE.y)).floor() as i32;
                 chunk_manager.spawned_chunks.remove(&IVec2::new(x, y));
-                commands.entity(entity).despawn_recursive();
+                commands.entity(entity).despawn();
             }
         }
     }

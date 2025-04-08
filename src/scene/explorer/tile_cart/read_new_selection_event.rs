@@ -18,7 +18,7 @@ use super::{
 pub fn refresh_tile_cart(
     mut events: EventReader<RefreshTileCart>,
     mut cart_state: ResMut<NextState<ExplorerRunningCartSub2State>>,
-    tile_selected_query: Query<&Parent, With<SelectionSprite>>,
+    tile_selected_query: Query<&ChildOf, With<SelectionSprite>>,
     tile_query: Query<&UlamComp, With<BaseTile>>,
     tile_map: Res<WorldOwnedTileMap>,
     mut block_count_q: Query<&mut Text, With<BlockCountText>>,
@@ -28,8 +28,8 @@ pub fn refresh_tile_cart(
         let mut total_cost = 0;
         let mut total_selected = 0;
 
-        for parent in tile_selected_query.iter() {
-            if let Ok(ulam) = tile_query.get(parent.get()) {
+        for child_of in tile_selected_query.iter() {
+            if let Ok(ulam) = tile_query.get(child_of.parent) {
                 info!("found ulam: {}", ulam.0);
                 if let Some(tile_data) = tile_map.map.get(&ulam.0) {
                     info!("worldmap found ulam val");
@@ -67,7 +67,7 @@ pub fn detect_add_changed_selection_sprite(
 ) {
     if !query.is_empty() {
         info!("detect_add_changed_selection_sprite - time to refresh");
-        event.send(RefreshTileCart);
+        event.write(RefreshTileCart);
     }
 }
 
@@ -77,6 +77,6 @@ pub fn detect_removed_selection_sprites(
 ) {
     for _ in removed.read() {
         info!("detect_removed_selection_sprites - time to refresh");
-        event.send(RefreshTileCart);
+        event.write(RefreshTileCart);
     }
 }

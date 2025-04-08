@@ -7,27 +7,26 @@ use bevy::{
 };
 
 use chrono::{DateTime, Duration, NaiveDateTime, Timelike, Utc};
-use rand::Rng;
 
 use crate::ecs::{
     hard::LIGHTEST_TEXT,
     resource::{TileData, TileResource},
 };
 
-pub fn get_random_color() -> Srgba {
-    let mut rng = rand::thread_rng();
-    let r: f32 = rng.gen_range(0.0..1.0);
-    let g: f32 = rng.gen_range(0.0..1.0);
-    let b: f32 = rng.gen_range(0.0..1.0);
+// pub fn get_random_color() -> Srgba {
+//     let mut rng = rand::thread_rng();
+//     let r: f32 = rng.gen_range(0.0..1.0);
+//     let g: f32 = rng.gen_range(0.0..1.0);
+//     let b: f32 = rng.gen_range(0.0..1.0);
 
-    //info!("getting a random color: {}-{}-{}", r, g, b);
-    Srgba {
-        red: r,
-        green: g,
-        blue: b,
-        alpha: 1.0,
-    }
-}
+//     //info!("getting a random color: {}-{}-{}", r, g, b);
+//     Srgba {
+//         red: r,
+//         green: g,
+//         blue: b,
+//         alpha: 1.0,
+//     }
+// }
 
 pub fn to_millisecond_precision(dt: DateTime<Utc>) -> DateTime<Utc> {
     // Get the total number of milliseconds in the current second

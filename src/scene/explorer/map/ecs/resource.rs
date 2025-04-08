@@ -1,4 +1,6 @@
-use bevy::{prelude::*, utils::HashSet};
+use std::collections::HashSet;
+
+use bevy::prelude::*;
 
 pub struct MapResPlugin;
 

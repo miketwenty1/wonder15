@@ -3,9 +3,21 @@ use bevy::{
     prelude::*,
 };
 
+use crate::scene::explorer::ecs::{
+    hard::{
+        ANIMATED_SPRITE_Z, BUILDING_CHUNK_SIZE, BUILDING_DESPAWN_RANGE_MULTIPLIER,
+        SLIM_BUILDING_CHUNK_SIZE, SLIM_CLOSE_ZOOM_THRESHOLD, SLIM_MAX_ZOOM,
+        SLIM_MEDIUM_ZOOM_THRESHOLD, SLIM_TEXT_CHUNK_SIZE, SLIM_TILE_CHUNK_SIZE, TEXT_CHUNK_SIZE,
+        TEXT_DESPAWN_RANGE_MULTIPLIER, TILE_CHUNK_SIZE, TILE_DESPAWN_RANGE_MULTIPLIER, TILE_SIZE,
+    },
+    resource::{
+        ChunkTypeNumsRes, DespawnBuildingRangeRes, DespawnTextRangeRes, DespawnTileRangeRes,
+        SpriteSheetBuildingRes, ZoomLevelNumsRes,
+    },
+    state::{ExplorerSubState, InitSpawnMapState},
+};
 use crate::{
     ecs::state::FullMapState,
-    helper::plugins::comms::ecs::structy::TileUpdatePattern,
     scene::{
         explorer::ecs::{
             component::RunningHal,
@@ -13,23 +25,6 @@ use crate::{
             resource::SpriteSheetManualSelectRes,
         },
         initer::ecs::component::{AnimationIndicesComp, AnimationTimerComp},
-    },
-};
-use crate::{
-    helper::plugins::comms::ecs::event::RequestServerGameTiles,
-    scene::explorer::ecs::{
-        hard::{
-            ANIMATED_SPRITE_Z, BUILDING_CHUNK_SIZE, BUILDING_DESPAWN_RANGE_MULTIPLIER,
-            SLIM_BUILDING_CHUNK_SIZE, SLIM_CLOSE_ZOOM_THRESHOLD, SLIM_MAX_ZOOM,
-            SLIM_MEDIUM_ZOOM_THRESHOLD, SLIM_TEXT_CHUNK_SIZE, SLIM_TILE_CHUNK_SIZE,
-            TEXT_CHUNK_SIZE, TEXT_DESPAWN_RANGE_MULTIPLIER, TILE_CHUNK_SIZE,
-            TILE_DESPAWN_RANGE_MULTIPLIER, TILE_SIZE,
-        },
-        resource::{
-            ChunkTypeNumsRes, DespawnBuildingRangeRes, DespawnTextRangeRes, DespawnTileRangeRes,
-            SpriteSheetBuildingRes, ZoomLevelNumsRes,
-        },
-        state::{ExplorerSubState, InitSpawnMapState},
     },
 };
 

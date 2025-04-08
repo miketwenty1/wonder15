@@ -83,6 +83,6 @@ pub fn left_ui(
             spawn_game_toggle_button(parent, VersionToggleBtn, "Version Header", &colors, &font);
         });
 
-        side_parent.set_parent(ent);
+        side_parent.insert(ChildOf { parent: ent });
     }
 }

@@ -26,8 +26,8 @@ pub fn spawn(
         Vec3::new(x, y, BUILDING_Z - (y / 10_000.)),
         1.,
     );
-    let x: f32 = rng.gen_range(-10.0..-3.0);
-    let y: f32 = rng.gen_range(-10.0..-1.0);
+    // let x: f32 = rng.gen_range(-10.0..-3.0);
+    // let y: f32 = rng.gen_range(-10.0..-1.0);
 
     let place_val = TILE_SIZE.x / 2.3 - 10.;
     let x: f32 = rng.gen_range(-place_val..place_val);

@@ -1,6 +1,5 @@
 use bevy::prelude::*;
 
-use event::{ReadGameTilesIdb, WriteGameTilesIdb};
 use read::{readcheck_game_tiles, request_local_storage};
 use resource::{tick_browser_receive_timer, BrowserPollingTimer};
 use state::BrowserStorageState;
