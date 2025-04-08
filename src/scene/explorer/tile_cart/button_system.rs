@@ -31,8 +31,8 @@ pub fn inspect_or_buy_selection_btn(
 ) {
     for interaction in &interaction_query {
         if *interaction == Interaction::Pressed {
-            state.set(ExplorerSubState::Paused);
-            event.send(PreviewTileCart);
+            // state.set(ExplorerSubState::Paused);
+            // event.send(PreviewTileCart);
         }
     }
 }

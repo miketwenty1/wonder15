@@ -40,3 +40,9 @@ pub struct SelectedTile(pub bool);
 
 #[derive(Component)]
 pub struct GeneralUiBtn;
+
+#[derive(Component)]
+pub struct RunningHal;
+
+#[derive(Component)]
+pub struct Castle;

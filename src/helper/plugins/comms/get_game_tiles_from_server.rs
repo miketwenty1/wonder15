@@ -36,7 +36,7 @@ pub fn api_get_map_tiles(
                 info!("get height tiles sending {}", game_height);
                 spawn_local(async move {
                     let api_response_text = reqwest::get(format!(
-                        "{}/comms/blockdelta_height/{}",
+                        "{}/comms15/blockdelta_height15/{}",
                         server, game_height
                     ))
                     .await;
@@ -58,7 +58,8 @@ pub fn api_get_map_tiles(
                 info!("ts request - {}", ts_str);
                 spawn_local(async move {
                     let api_response_r =
-                        reqwest::get(format!("{}/comms/blockdelta_ts/{}", server, ts_str)).await;
+                        reqwest::get(format!("{}/comms15/blockdelta_ts15/{}", server, ts_str))
+                            .await;
 
                     match api_response_r {
                         Ok(o) => {

@@ -24,7 +24,7 @@ pub fn api_get_blockchain_data(
         info!("get blockchain data starting at height {}", request_height);
         spawn_local(async move {
             let api_response_text = reqwest::get(format!(
-                "{}/comms/blockchain_data_by_height/{}",
+                "{}/comms15/blockchain_data_by_height/{}",
                 server, request_height
             ))
             .await;

@@ -1,5 +1,7 @@
 use bevy::prelude::*;
 
+use crate::scene::explorer::ecs::component::Castle;
+
 #[allow(clippy::too_many_arguments)]
 pub fn spawn_castle(
     texture: &Handle<Image>,
@@ -29,6 +31,6 @@ pub fn spawn_castle(
             ..Default::default()
         },
         transform,
-        //BuildingStructure::Castle,
+        Castle,
     ));
 }

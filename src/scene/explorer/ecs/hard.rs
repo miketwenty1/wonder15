@@ -4,7 +4,7 @@ use bevy_ecs_tilemap::map::TilemapTileSize;
 pub const TILE_Z: f32 = 2.0;
 pub const BUILDING_Z: f32 = 3.0;
 pub const TEXT_Z: f32 = 8.0;
-pub const ANIMATED_SPRITE_Z: f32 = 4.5;
+pub const ANIMATED_SPRITE_Z: f32 = 30.5;
 
 pub const MAX_ZOOM: f32 = 94.0;
 pub const MIN_ZOOM: f32 = 0.40;

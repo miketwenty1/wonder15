@@ -1,4 +1,4 @@
-use animate::animate_sprite;
+use animate::{animate_sprite, random_hal_to_castle};
 use bevy::prelude::*;
 use blockchain_ui::ExplorerUiPlugin;
 use ecs::{
@@ -31,7 +31,7 @@ impl Plugin for ExplorerScenePlugin {
             .add_sub_state::<ExplorerRunningZoomSub2State>()
             .add_systems(
                 Update,
-                (animate_sprite).run_if(in_state(ExplorerSubState::Running)),
+                (animate_sprite, random_hal_to_castle).run_if(in_state(ExplorerSubState::Running)),
             )
             .add_systems(Update, general_btn)
             .insert_resource(CurrentTilesRes(SwapTilesEvent::PlayerColor))

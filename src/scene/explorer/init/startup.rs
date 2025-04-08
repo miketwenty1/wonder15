@@ -8,6 +8,7 @@ use crate::{
     helper::plugins::comms::ecs::structy::TileUpdatePattern,
     scene::{
         explorer::ecs::{
+            component::RunningHal,
             hard::{CLOSE_ZOOM_THRESHOLD, MAX_ZOOM, MEDIUM_ZOOM_THRESHOLD, MIN_ZOOM},
             resource::SpriteSheetManualSelectRes,
         },
@@ -60,6 +61,7 @@ pub fn setup_animation(
         }),
         animation_indices,
         AnimationTimerComp(Timer::from_seconds(0.1, TimerMode::Repeating)),
+        RunningHal,
     ));
 }
 
