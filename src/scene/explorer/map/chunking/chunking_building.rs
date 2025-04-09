@@ -53,8 +53,8 @@ fn spawn_chunk(
     for x in 0..BUILDING_CHUNK_SIZE.x {
         for y in 0..BUILDING_CHUNK_SIZE.y {
             let ulam_v = ulam::get_value_from_xy(
-                (chunk_pos.x * BUILDING_CHUNK_SIZE.x as i32), // + x as i32,
-                (chunk_pos.y * BUILDING_CHUNK_SIZE.y as i32), // + y as i32,
+                (chunk_pos.x * BUILDING_CHUNK_SIZE.x as i32) + x as i32,
+                (chunk_pos.y * BUILDING_CHUNK_SIZE.y as i32) + y as i32,
             );
 
             if let Some(s) = world_values.map.get(&ulam_v) {

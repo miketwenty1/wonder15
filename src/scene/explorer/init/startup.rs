@@ -50,8 +50,8 @@ pub fn setup_animation(
             ..default()
         },
         Transform::from_translation(Vec3 {
-            x: 0.0,
-            y: 0.0,
+            x: TILE_SIZE.x / 2.,
+            y: TILE_SIZE.x / 2.,
             z: ANIMATED_SPRITE_Z,
         }),
         animation_indices,

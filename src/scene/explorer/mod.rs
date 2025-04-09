@@ -4,7 +4,7 @@ use blockchain_ui::ExplorerUiPlugin;
 use ecs::{
     event::{ExplorerEventPlugin, SwapTilesEvent},
     resource::{CurrentTilesRes, CurrentZoomLevelRes, MouseSelectedTile},
-    state::{ExplorerRunningZoomSub2State, ExplorerSubState},
+    state::{ExplorerRunningZoomSub2State, ExplorerSubState, InitSpawnMapState},
 };
 use general_button_behavior::general_btn;
 use init::ExplorerInitPlugin;
@@ -31,7 +31,9 @@ impl Plugin for ExplorerScenePlugin {
             .add_sub_state::<ExplorerRunningZoomSub2State>()
             .add_systems(
                 Update,
-                (animate_sprite, random_hal_to_castle).run_if(in_state(ExplorerSubState::Running)),
+                (animate_sprite, random_hal_to_castle).run_if(
+                    in_state(ExplorerSubState::Running).and(in_state(InitSpawnMapState::Done)),
+                ),
             )
             .add_systems(Update, general_btn)
             .insert_resource(CurrentTilesRes(SwapTilesEvent::PlayerColor))

@@ -52,8 +52,8 @@ fn spawn_chunk(
         for y in 0..TEXT_CHUNK_SIZE.y {
             let tile_pos = TilePos { x, y };
             let ulam_v = ulam::get_value_from_xy(
-                (chunk_pos.x * TEXT_CHUNK_SIZE.x as i32), // + tile_pos.x as i32,
-                (chunk_pos.y * TEXT_CHUNK_SIZE.y as i32), // + tile_pos.y as i32,
+                (chunk_pos.x * TEXT_CHUNK_SIZE.x as i32) + tile_pos.x as i32,
+                (chunk_pos.y * TEXT_CHUNK_SIZE.y as i32) + tile_pos.y as i32,
             );
             if current_blockheight >= ulam_v {
                 let tile_center_noz = tile_pos
