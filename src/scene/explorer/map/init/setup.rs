@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use bevy_ecs_tilemap::{
+    anchor::TilemapAnchor,
     map::{TilemapGridSize, TilemapSize, TilemapTexture, TilemapType},
     prelude::get_tilemap_center_transform,
     tiles::TileStorage,
@@ -34,12 +35,17 @@ pub fn spawn_startup_fullmap(
     let texture_handle: Handle<Image> =
         asset_server.load("spritesheet/ss-land-v12-gimp-96-spaced.png");
 
-    let center = get_tilemap_center_transform(&map_size, &TILE_SIZE.into(), &map_type, 0.0);
+    //let center = get_tilemap_center_transform(&map_size, &TILE_SIZE.into(), &map_type, 0.0);
     // need to do an offset so it lines up with the chunking logic overlay sprites and tiles. Right now it's off by half the distance of a tile in both x/y directions
     // given a 66 pixel tile, the offset would be +33., +33. in for x/y.
+    // let offset_tran = Vec3::new(
+    //     center.translation.x, // - (TILE_SIZE.x / 2.), //
+    //     center.translation.y, // - (TILE_SIZE.y / 2.), //
+    //     0.,
+    // );
     let offset_tran = Vec3::new(
-        center.translation.x - (TILE_SIZE.x / 2.), //
-        center.translation.y - (TILE_SIZE.y / 2.), //
+        0., // - (TILE_SIZE.x / 2.), //
+        0., // - (TILE_SIZE.y / 2.), //
         0.,
     );
     let transform_for_map = Transform::from_translation(offset_tran);
@@ -55,6 +61,7 @@ pub fn spawn_startup_fullmap(
         tile_size: TILE_SIZE,
         spacing: TILE_SPACING,
         transform: transform_for_map,
+        anchor: TilemapAnchor::Center,
         ..Default::default()
     });
 

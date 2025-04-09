@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use crate::scene::{
     explorer::{
-        ecs::{component::SelectedTile, resource::SpriteSheetManualSelectRes},
+        ecs::{component::SelectedTile, hard::TILE_SIZE, resource::SpriteSheetManualSelectRes},
         input::hard::{AddTileManualSelectionSprite, RemoveTileManualSelectionSprite},
         map::ecs::component::SelectionSprite,
     },
@@ -21,7 +21,7 @@ pub fn read_spawn_manual_select_sprite(
         let ent: Entity = e.0;
         let animation_indices = AnimationIndicesComp { first: 0, last: 7 };
         let transform = Transform {
-            translation: Vec3::new(0., 0., 100.),
+            translation: Vec3::new(TILE_SIZE.x / 2., TILE_SIZE.x / 2., 100.),
             scale: Vec3::new(3.0, 3.0, 1.0),
             ..Default::default()
         };
