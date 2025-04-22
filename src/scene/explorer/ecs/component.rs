@@ -1,4 +1,4 @@
-use bevy::prelude::Component;
+use bevy::prelude::*;
 
 #[derive(Component)]
 pub struct BlockchainFilterToggleParent;
@@ -40,6 +40,27 @@ pub struct GeneralUiBtn;
 
 #[derive(Component)]
 pub struct RunningHal;
+
+#[derive(Component)]
+pub struct HalTargetBlock(pub u32);
+
+#[derive(Component, Deref, DerefMut)]
+pub struct HalTargetXY(pub Vec2);
+
+#[derive(Component)]
+pub struct HalSpeed(pub f32);
+
+#[derive(Component)]
+pub struct HalThere(pub bool);
+
+#[derive(Component)]
+pub struct HalPower(pub u32);
+
+#[derive(Component)]
+pub struct HomeTile(pub u32);
+
+#[derive(Component)]
+pub struct BuildingTileComp;
 
 #[derive(Component)]
 pub struct Castle;

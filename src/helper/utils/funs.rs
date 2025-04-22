@@ -348,3 +348,11 @@ pub fn convert_color_to_hexstring(c: Srgba) -> String {
     // removes #
     s.chars().filter(|&c| c != '#').collect()
 }
+
+pub fn ulam_to_real_world_xy(ulam: u32, tile_size: f32, offset: Vec2) -> Vec2 {
+    let (x, y) = ulam::get_xy_from_value(ulam);
+    Vec2 {
+        x: x as f32 * tile_size + offset.x,
+        y: y as f32 * tile_size + offset.y,
+    }
+}

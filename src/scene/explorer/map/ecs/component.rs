@@ -1,4 +1,4 @@
-use bevy::{color::Color, prelude::Component};
+use bevy::prelude::*;
 use bevy_ecs_tilemap::tiles::TileColor;
 
 #[derive(Component, Debug)]
@@ -15,6 +15,9 @@ pub struct ChunkBuildingMapComp;
 
 #[derive(Component, Debug)]
 pub struct UlamComp(pub u32);
+
+#[derive(Component, Debug)]
+pub struct RealTileXY(pub Vec2);
 
 #[derive(Component, Debug)]
 pub struct PlayerTileColorComp(pub TileColor);

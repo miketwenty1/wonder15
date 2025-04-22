@@ -8,14 +8,17 @@ use bevy_ecs_tilemap::{
 
 use crate::{
     ecs::resource::WorldOwnedTileMap,
+    helper::utils::funs::ulam_to_real_world_xy,
     scene::{
         explorer::{
             ecs::{
+                component::BuildingTileComp,
                 hard::{BUILDING_CHUNK_SIZE, BUILDING_SPAN_SPAWN_NUMBER, BUILDING_Z, TILE_SIZE},
                 resource::{ChunkTypeNumsRes, DespawnBuildingRangeRes, SpriteSheetBuildingRes},
             },
             map::ecs::{
-                component::ChunkBuildingMapComp, hard::TILE_SPACING,
+                component::{ChunkBuildingMapComp, RealTileXY, UlamComp},
+                hard::TILE_SPACING,
                 resource::ChunkBuildingManagerRes,
             },
         },
@@ -48,14 +51,13 @@ fn spawn_chunk(
     };
     let tile_size = TILE_SIZE;
     let map_type = TilemapType::Square;
-    let anchor = TilemapAnchor::BottomLeft;
+    let anchor = TilemapAnchor::BottomLeft; //TilemapAnchor::BottomLeft;
 
     for x in 0..BUILDING_CHUNK_SIZE.x {
         for y in 0..BUILDING_CHUNK_SIZE.y {
-            let ulam_v = ulam::get_value_from_xy(
-                (chunk_pos.x * BUILDING_CHUNK_SIZE.x as i32) + x as i32,
-                (chunk_pos.y * BUILDING_CHUNK_SIZE.y as i32) + y as i32,
-            );
+            let real_x = (chunk_pos.x * BUILDING_CHUNK_SIZE.x as i32) + x as i32;
+            let real_y = (chunk_pos.y * BUILDING_CHUNK_SIZE.y as i32) + y as i32;
+            let ulam_v = ulam::get_value_from_xy(real_x, real_y);
 
             if let Some(s) = world_values.map.get(&ulam_v) {
                 let tile_pos = TilePos { x, y };
@@ -63,10 +65,21 @@ fn spawn_chunk(
                     .center_in_world(&map_size, &grid_size, &tile_size, &map_type, &anchor)
                     .extend(1.0);
 
-                let tile_center = Vec3 {
+                let tile_center_for_tile = Vec3 {
                     x: tile_center_noz.x,
                     y: tile_center_noz.y,
                     z: BUILDING_Z,
+                };
+
+                let offset = Vec2 {
+                    x: TILE_SIZE.x / 2.,
+                    y: TILE_SIZE.y / 2.,
+                };
+                let tile_center = ulam_to_real_world_xy(ulam_v, TILE_SIZE.x, offset);
+
+                let tile_center = Vec2 {
+                    x: tile_center.x,
+                    y: tile_center.y,
                 };
                 let tile_entity = commands
                     .spawn((
@@ -76,7 +89,10 @@ fn spawn_chunk(
                             ..Default::default()
                         },
                         Visibility::Visible,
-                        Transform::from_translation(tile_center),
+                        Transform::from_translation(tile_center_for_tile),
+                        RealTileXY(tile_center),
+                        UlamComp(ulam_v),
+                        BuildingTileComp,
                     ))
                     .with_children(|parent| {
                         let level_val = building_value_mapper.get(&s.value).unwrap();

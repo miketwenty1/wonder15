@@ -57,12 +57,12 @@ pub fn read_despawn_manual_select_sprite(
 ) {
     for e in entity_to_despawn_from_event.read() {
         for (ent, child_of) in selection_q.iter() {
-            if e.0 == child_of.parent {
+            if e.0 == child_of.parent() {
                 // Despawn the SelectionSprite child
                 commands.entity(ent).despawn();
 
                 // Override SelectedTile on parent
-                if let Ok(mut selected) = parent_q.get_mut(child_of.parent) {
+                if let Ok(mut selected) = parent_q.get_mut(child_of.parent()) {
                     *selected = SelectedTile(false);
                 }
             }

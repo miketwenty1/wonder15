@@ -8,8 +8,10 @@ edition = "2021"
 # tracy-client = "0.18"
 # tracy-client-sys = "0.24"
 #bevy = {git = "https://github.com/bevyengine/bevy.git", tag = "v0.16.0-rc.3"}
-bevy = { version = "0.16.0-rc.3", default-features = true }
-bevy_ecs_tilemap = { git = "https://github.com/ChristopherBiscardi/bevy_ecs_tilemap", branch = "bevy-0.16" }
+bevy = { version = "0.16.0-rc.5", default-features = true }
+# bevy_ecs_tilemap = { git = "https://github.com/ChristopherBiscardi/bevy_ecs_tilemap", branch = "bevy-0.16" }
+# bevy_ecs_tilemap = { git = "https://github.com/miketwenty1/bevy_ecs_tilemap", branch = "16.4rc-update" }
+bevy_ecs_tilemap = { path = "../../miketwenty1/bevy_ecs_tilemap" }
 # bevy = { version = "0.16.0-rc.3"}
 
 ulam = { git = "https://github.com/miketwenty1/ulam", branch = "master" }
@@ -66,4 +68,3 @@ opt-level = 3
 lto = true
 opt-level = 'z'
 codegen-units = 1
-

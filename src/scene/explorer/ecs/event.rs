@@ -10,7 +10,8 @@ impl Plugin for ExplorerEventPlugin {
             .add_event::<SwapTilesEvent>()
             .add_event::<BuildingToggleEvent>()
             .add_event::<UpdateWorldMapTilesEvent>()
-            .add_event::<UpdateWorldBlockchainDataEvent>();
+            .add_event::<UpdateWorldBlockchainDataEvent>()
+            .add_event::<SpawnRunnerMan>();
     }
 }
 
@@ -61,3 +62,6 @@ pub struct UpdateWorldMapTilesEvent(pub Vec<TileData>);
 
 #[derive(Event, Debug, Clone)]
 pub struct UpdateWorldBlockchainDataEvent(pub Vec<TileBlockchainData>);
+
+#[derive(Event, Debug)]
+pub struct SpawnRunnerMan;

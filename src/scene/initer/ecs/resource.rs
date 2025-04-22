@@ -8,9 +8,7 @@ use crate::{
         format_bytes, format_bytes_string, format_count, format_percent, format_sats, format_time,
         format_vbytes,
     },
-    scene::explorer::{
-        blockchain_ui::ecs::state::ColorBlockchainKeySubState, ecs::event::SwapTilesEvent,
-    },
+    scene::explorer::{ecs::event::SwapTilesEvent, ui::ecs::state::ColorBlockchainKeySubState},
 };
 
 #[derive(Resource, Clone, Debug, Default, Deserialize, Deref)]

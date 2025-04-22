@@ -4,7 +4,7 @@ use crate::{
     helper::plugins::comms::ecs::event::GetBlockchainUpdates,
     scene::explorer::ecs::{
         component::BlockchainFilterToggleParent,
-        event::{BuildingToggleEvent, SwapTilesEvent, TextToggleEvent},
+        event::{BuildingToggleEvent, SpawnRunnerMan, SwapTilesEvent, TextToggleEvent},
         resource::ZoomLevelNumsRes,
     },
 };
@@ -21,6 +21,7 @@ pub fn map_keyboard_hotkeys(
     zooms: Res<ZoomLevelNumsRes>,
     mut blockchain: EventWriter<GetBlockchainUpdates>,
     mut blockchain_filter_parent_node_q: Query<&mut Node, With<BlockchainFilterToggleParent>>,
+    mut spawn_man: EventWriter<SpawnRunnerMan>,
 ) {
     let mut binding = cam.into_inner();
     let ortho = if let Projection::Orthographic(ref mut ortho) = *binding {
@@ -42,6 +43,28 @@ pub fn map_keyboard_hotkeys(
         blockchain.write(GetBlockchainUpdates(0));
         let mut di = blockchain_filter_parent_node_q.single_mut().unwrap();
         di.display = Display::Flex;
+    }
+    if keyboard_input.pressed(KeyCode::KeyO) {
+        spawn_man.write(SpawnRunnerMan);
+        spawn_man.write(SpawnRunnerMan);
+        spawn_man.write(SpawnRunnerMan);
+        spawn_man.write(SpawnRunnerMan);
+        spawn_man.write(SpawnRunnerMan);
+        spawn_man.write(SpawnRunnerMan);
+        spawn_man.write(SpawnRunnerMan);
+        spawn_man.write(SpawnRunnerMan);
+        spawn_man.write(SpawnRunnerMan);
+        spawn_man.write(SpawnRunnerMan);
+        spawn_man.write(SpawnRunnerMan);
+        spawn_man.write(SpawnRunnerMan);
+        spawn_man.write(SpawnRunnerMan);
+        spawn_man.write(SpawnRunnerMan);
+        spawn_man.write(SpawnRunnerMan);
+        spawn_man.write(SpawnRunnerMan);
+        spawn_man.write(SpawnRunnerMan);
+        spawn_man.write(SpawnRunnerMan);
+        spawn_man.write(SpawnRunnerMan);
+        spawn_man.write(SpawnRunnerMan);
     }
     // digits 1-4
     if keyboard_input.just_pressed(KeyCode::Digit1) {

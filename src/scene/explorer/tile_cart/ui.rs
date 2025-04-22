@@ -2,11 +2,11 @@ use bevy::{prelude::*, text::FontSmoothing};
 
 use crate::scene::{
     explorer::{
-        blockchain_ui::components::{ExplorerUiNodeBottom, ExplorerUiNodeTop},
         ecs::{
             component::GeneralUiBtn,
             hard::{UI_MEDIUM_TEXT_SIZE, UI_SMALL_TEXT_SIZE},
         },
+        ui::components::{ExplorerUiNodeBottom, ExplorerUiNodeTop},
     },
     initer::ecs::resource::UiColorPalette,
 };
@@ -62,9 +62,7 @@ pub fn spawn_selection_info(
                     BlockCountText,
                 ));
             })
-            .insert(ChildOf {
-                parent: parent_node,
-            });
+            .insert(ChildOf(parent_node));
 
         let _block_count_node = commands
             .spawn((
@@ -97,9 +95,7 @@ pub fn spawn_selection_info(
                     CartPriceText,
                 ));
             })
-            .insert(ChildOf {
-                parent: parent_node,
-            });
+            .insert(ChildOf(parent_node));
         refresh.write(RefreshTileCart);
     }
 }
@@ -143,9 +139,7 @@ pub fn spawn_explorer_buttons_for_tilecart(
                     TextColor(colors.text_color),
                 ));
             })
-            .insert(ChildOf {
-                parent: parent_node,
-            });
+            .insert(ChildOf(parent_node));
 
         commands
             .spawn((
@@ -178,8 +172,6 @@ pub fn spawn_explorer_buttons_for_tilecart(
                     TextColor(colors.text_color),
                 ));
             })
-            .insert(ChildOf {
-                parent: parent_node,
-            });
+            .insert(ChildOf(parent_node));
     }
 }

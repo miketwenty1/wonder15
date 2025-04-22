@@ -1,12 +1,23 @@
+use std::collections::{HashMap, HashSet};
+
 use bevy::prelude::*;
 use bevy_ecs_tilemap::prelude::*;
-use rand::seq::IteratorRandom;
+use rand::{seq::IteratorRandom, thread_rng};
 
-use crate::scene::initer::ecs::component::{AnimationIndicesComp, AnimationTimerComp};
+use crate::scene::{
+    explorer::ecs::hard::ANIMATED_SPRITE_Z,
+    initer::ecs::component::{AnimationIndicesComp, AnimationTimerComp},
+};
 
 use super::{
-    ecs::component::{Castle, RunningHal},
-    map::ecs::component::ChunkBuildingMapComp,
+    ecs::{
+        component::{
+            BuildingTileComp, HalPower, HalSpeed, HalTargetBlock, HalTargetXY, HalThere, HomeTile,
+            RunningHal,
+        },
+        hard::{BUILDING_CHUNK_SIZE, TILE_SIZE},
+    },
+    map::ecs::component::{ChunkBuildingMapComp, RealTileXY, UlamComp},
 };
 
 pub fn animate_sprite(
@@ -28,89 +39,175 @@ pub fn animate_sprite(
     }
 }
 
-#[derive(Default)]
-pub struct HalMoveState {
-    target: Option<Vec2>,
-    speed: f32,
-}
-
 #[allow(clippy::type_complexity)]
-pub fn random_hal_to_castle(
+pub fn random_hal_walk(
     time: Res<Time>,
-    mut hal_query: Query<&mut Transform, With<RunningHal>>,
-    castle_q: Query<&mut TilePos, With<Castle>>,
-    tilemap_q: Query<
+    mut hal_query: Query<
         (
-            &Transform,
-            &TilemapType,
-            &TilemapGridSize,
-            &TilemapTileSize,
-            &TileStorage,
-            &TilemapSize,
-            &TilemapAnchor,
+            &mut Transform,
+            &HalSpeed,
+            &mut HalThere,
+            &mut HalTargetBlock,
+            &mut HalTargetXY,
+            &mut Sprite,
         ),
-        (With<ChunkBuildingMapComp>, Without<RunningHal>),
+        With<RunningHal>,
     >,
-    mut state: Local<HalMoveState>,
+    building_tile_q: Query<(&UlamComp, &RealTileXY), With<BuildingTileComp>>,
+    //castle_q: Query<&ChildOf, With<Castle>>,
+    // building_map_q: Query<
+    //     (
+    //         &TilemapType,
+    //         &TilemapGridSize,
+    //         &TilemapTileSize,
+    //         &TileStorage,
+    //         &TilemapSize,
+    //         &TilemapAnchor,
+    //     ),
+    //     With<ChunkBuildingMapComp>,
+    // >,
 ) {
     let dt = time.delta_secs();
 
-    // Get the single Hal transform, if it exists.
-    if let Ok(mut hal_transform) = hal_query.single_mut() {
-        // If there isn't a target, pick a random castle
-        if state.target.is_none() {
-            for (
-                map_transform,
-                map_type,
-                grid_size,
-                tile_size,
-                tilemap_storage,
-                map_size,
-                anchor,
-            ) in tilemap_q.iter()
-            {
-                if let Some(tile_entity) = tilemap_storage.iter().choose(&mut rand::thread_rng()) {
-                    match tile_entity {
-                        Some(s) => {
-                            let tile_pos = castle_q.get(*s);
-                            match tile_pos {
-                                Ok(r) => {
-                                    let tile_center = r
-                                        .center_in_world(
-                                            map_size, grid_size, tile_size, map_type, anchor,
-                                        )
-                                        .extend(1.0);
-                                    let castle_transform =
-                                        *map_transform * Transform::from_translation(tile_center);
+    for (mut transform, speed, mut there, mut target_block, mut target_xy, mut sprite) in
+        hal_query.iter_mut()
+    {
+        if there.0 {
+            // if hal is at his target let's give him a new destination
+            let mut rng = thread_rng();
+            // let mut all_tiles = building_map_q.iter().flat_map(
+            //     |(map_type, grid_size, tile_size, tilemap_storage, map_size, anchor)| {
+            //         tilemap_storage.iter().flatten().map(move |&tile_entity| {
+            //             (
+            //                 tile_entity,
+            //                 // *map_type,
+            //                 // *grid_size,
+            //                 // *tile_size,
+            //                 // *map_size,
+            //                 // *anchor,
+            //             )
+            //         })
+            //     },
+            // );
+            // pick a random tile with a buidling and set it for hal
 
-                                    state.target = Some(castle_transform.translation.xy());
-                                    state.speed = 100.0; // or whatever speed you want
-                                    info!("hal now targeting {:?}", state.target);
-                                }
-                                Err(_) => {}
+            // // pick a specific tile
+            // if let Some((tile_entity, map_type, grid_size, tile_size, map_size, anchor)) = all_tiles
+            //     .find(|(tile_entity, _, _, _, _, _)| {
+            //         if let Ok((_, ulam, _)) = building_tile_q.get(*tile_entity) {
+            //             ulam.0 == 265
+            //         } else {
+            //             false
+            //         }
+            //     })
+
+            // if let Some((tile_entity, map_type, grid_size, tile_size, map_size, anchor)) =
+            //     building_tile_q.choose(&mut rng)
+            // {
+            if let Some((ulam, real_xy)) = building_tile_q.iter().choose(&mut rand::thread_rng()) {
+                // if let Ok((tp, ulam, real_xy)) = building_tile_q.get(tile_entity) {
+                // let tile_center = tp
+                //     .center_in_world(&map_size, &grid_size, &tile_size, &map_type, &anchor)
+                //     .extend(1.0);
+                **target_xy = Vec2 {
+                    x: real_xy.0.x,
+                    y: real_xy.0.y,
+                };
+                // info!(
+                //     "target set to block {} - xy:{},{}",
+                //     ulam.0, real_xy.0.x, real_xy.0.y
+                // );
+                // }
+            }
+
+            // for (map_type, grid_size, tile_size, tilemap_storage, map_size, anchor) in
+            //     building_map_q.iter()
+            // {
+            //     if let Some(&tile_entity) =
+            //         tilemap_storage.iter().flatten().choose(&mut thread_rng())
+            //     {
+            //         let tile_pos = building_tile_q.get(tile_entity);
+            //         if let Ok((tp, ulam)) = tile_pos {
+            //             let tile_center = tp
+            //                 .center_in_world(map_size, grid_size, tile_size, map_type, anchor)
+            //                 .extend(1.0);
+            //             **target_xy = Vec2 {
+            //                 x: tile_center.x,
+            //                 y: -tile_center.y + (BUILDING_CHUNK_SIZE.x as f32 * TILE_SIZE.x / 2.),
+            //             };
+            //             info!("target set to block {}", ulam.0);
+            //         }
+            //     }
+            // }
+            there.0 = false;
+        }
+
+        if !there.0 {
+            let distance_left = transform.translation.xy().distance(**target_xy);
+            if distance_left < 20.0 {
+                there.0 = true;
+                //info!("a hal now unset");
+            } else {
+                let starting_xy = transform.translation.xy();
+                // Fix the direction by normalizing the vector from starting to target
+                let direction = (**target_xy - starting_xy).normalize();
+                sprite.flip_x = direction.x < 0.;
+                let change = direction * speed.0 * dt;
+                let new_pos = starting_xy + change;
+
+                // info!(
+                //     "starting_xy {} change {} new_pos {} distance_left {} tgt {}",
+                //     starting_xy,
+                //     change,
+                //     new_pos,
+                //     distance_left,
+                //     target_pos.xy()
+                // );
+
+                transform.translation = Vec3::new(new_pos.x, new_pos.y, ANIMATED_SPRITE_Z);
+            }
+        }
+    }
+}
+
+const CELL_SIZE: f32 = 10.0;
+
+pub fn detect_fight(
+    mut commands: Commands,
+    hal_query: Query<(Entity, &HomeTile, &Transform), With<RunningHal>>,
+) {
+    let mut grid: HashMap<(i32, i32), Vec<(Entity, &HomeTile, Vec2)>> = HashMap::new();
+
+    for (entity, home, transform) in hal_query.iter() {
+        let pos = transform.translation.truncate();
+        let cell = (
+            (pos.x / CELL_SIZE).floor() as i32,
+            (pos.y / CELL_SIZE).floor() as i32,
+        );
+        grid.entry(cell).or_default().push((entity, home, pos));
+    }
+
+    for ((cx, cy), entities) in &grid {
+        for dx in -1..=1 {
+            for dy in -1..=1 {
+                let neighbor_cell = (cx + dx, cy + dy);
+                if let Some(neighbors) = grid.get(&neighbor_cell) {
+                    for (e1, h1, p1) in entities {
+                        for (e2, h2, p2) in neighbors {
+                            if e1 == e2 || h1.0 == h2.0 {
+                                continue;
                             }
-                        }
-                        None => {
-                            // info!("CASTLE NONE");
+                            if p1.distance_squared(*p2) <= 100.0 {
+                                if rand::random() {
+                                    commands.entity(*e1).despawn();
+                                } else {
+                                    commands.entity(*e2).despawn();
+                                }
+                                // Optional: return if only one fight per frame
+                            }
                         }
                     }
                 }
-            }
-        }
-
-        // If we have a target, move toward it
-        if let Some(target_pos) = state.target {
-            let direction = (target_pos - hal_transform.translation.xy()).normalize_or_zero();
-            let new_pos = hal_transform.translation.xy() + direction * state.speed * dt;
-            hal_transform.translation =
-                Vec3::new(new_pos.x, new_pos.y, hal_transform.translation.z);
-
-            info!("hal going in this direction: {}", direction);
-
-            // If we're close enough to the castle, clear the target so we can pick another next time
-            if hal_transform.translation.xy().distance(target_pos.xy()) < 10.0 {
-                state.target = None;
-                info!("hal now unset");
             }
         }
     }

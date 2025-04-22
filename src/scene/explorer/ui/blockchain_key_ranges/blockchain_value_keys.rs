@@ -11,10 +11,8 @@ use crate::{
     helper::utils::funs::{make_gradient_image, make_gradient_image_corners},
     scene::{
         explorer::{
-            blockchain_ui::{
-                components::ExplorerUiNodeRight, ecs::state::ColorBlockchainKeySubState,
-            },
             ecs::event::SwapTilesEvent,
+            ui::{components::ExplorerUiNodeRight, ecs::state::ColorBlockchainKeySubState},
         },
         initer::ecs::resource::{BlockchainFilterKeys, FilterLegend, UiColorPalette},
     },
@@ -232,7 +230,7 @@ pub fn spawn_legend(
             }
         });
 
-        side_parent.insert(ChildOf { parent: ent });
+        side_parent.insert(ChildOf(ent));
     }
 }
 
@@ -378,7 +376,7 @@ pub fn spawn_tgt_diff_diff_legend(
             }
         });
 
-        side_parent.insert(ChildOf { parent: ent });
+        side_parent.insert(ChildOf(ent));
     }
 }
 
@@ -466,7 +464,7 @@ pub fn spawn_tgt_diff_legend(
                 });
         });
 
-        side_parent.insert(ChildOf { parent: ent });
+        side_parent.insert(ChildOf(ent));
     }
 }
 
@@ -668,6 +666,6 @@ pub fn spawn_version_legend(
             });
         });
 
-        side_parent.insert(ChildOf { parent: ent });
+        side_parent.insert(ChildOf(ent));
     }
 }

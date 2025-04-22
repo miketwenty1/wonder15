@@ -17,10 +17,10 @@ pub fn init_js_comms_channels(mut commands: Commands) {
     commands.insert_resource(CheckInvoiceChannel { tx, rx });
     let (tx, rx) = async_channel::bounded(1);
     commands.insert_resource(UserBlockInventoryChannel { tx, rx });
-    let (tx, rx) = async_channel::bounded(1);
-    commands.insert_resource(BrowserGameCheckpointChannel { tx, rx });
+    // let (tx, rx) = async_channel::bounded(1);
+    // commands.insert_resource(BrowserGameCheckpointChannel { tx, rx });
     let (tx, rx) = async_channel::bounded(10);
     commands.insert_resource(BlockMessagesStorageChannel { tx, rx });
-    let (tx, rx) = async_channel::bounded(1);
+    let (tx, rx) = async_channel::bounded(10);
     commands.insert_resource(BrowserIndexedDBStorageChannel { tx, rx });
 }

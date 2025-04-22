@@ -29,7 +29,7 @@ pub fn refresh_tile_cart(
         let mut total_selected = 0;
 
         for child_of in tile_selected_query.iter() {
-            if let Ok(ulam) = tile_query.get(child_of.parent) {
+            if let Ok(ulam) = tile_query.get(child_of.parent()) {
                 info!("found ulam: {}", ulam.0);
                 if let Some(tile_data) = tile_map.map.get(&ulam.0) {
                     info!("worldmap found ulam val");

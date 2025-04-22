@@ -1,6 +1,5 @@
-use animate::{animate_sprite, random_hal_to_castle};
+use animate::{animate_sprite, detect_fight, random_hal_walk};
 use bevy::prelude::*;
-use blockchain_ui::ExplorerUiPlugin;
 use ecs::{
     event::{ExplorerEventPlugin, SwapTilesEvent},
     resource::{CurrentTilesRes, CurrentZoomLevelRes, MouseSelectedTile},
@@ -11,10 +10,10 @@ use init::ExplorerInitPlugin;
 use input::ExplorerInputPlugin;
 use map::ExplorerMapPlugin;
 use tile_cart::TileCartPlugin;
+use ui::ExplorerUiPlugin;
 
 mod animate;
 //mod blockchain_color;
-pub mod blockchain_ui;
 mod cart_details_menu;
 pub mod ecs;
 pub mod general_button_behavior;
@@ -22,6 +21,7 @@ mod init;
 mod input;
 mod map;
 pub mod tile_cart;
+pub mod ui;
 
 pub struct ExplorerScenePlugin;
 
@@ -31,7 +31,7 @@ impl Plugin for ExplorerScenePlugin {
             .add_sub_state::<ExplorerRunningZoomSub2State>()
             .add_systems(
                 Update,
-                (animate_sprite, random_hal_to_castle).run_if(
+                (animate_sprite, random_hal_walk, detect_fight).run_if(
                     in_state(ExplorerSubState::Running).and(in_state(InitSpawnMapState::Done)),
                 ),
             )

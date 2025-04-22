@@ -1,7 +1,7 @@
 use bevy::{prelude::*, text::FontSmoothing};
 
 use crate::scene::{
-    explorer::{blockchain_ui::components::ToggleBlockchainBtn, ecs::component::GeneralUiBtn},
+    explorer::{ecs::component::GeneralUiBtn, ui::components::ToggleBlockchainBtn},
     initer::ecs::resource::UiColorPalette,
 };
 
