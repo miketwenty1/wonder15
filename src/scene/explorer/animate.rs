@@ -1,7 +1,6 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 
 use bevy::prelude::*;
-use bevy_ecs_tilemap::prelude::*;
 use rand::{seq::IteratorRandom, thread_rng};
 
 use crate::scene::{
@@ -10,14 +9,10 @@ use crate::scene::{
 };
 
 use super::{
-    ecs::{
-        component::{
-            BuildingTileComp, HalPower, HalSpeed, HalTargetBlock, HalTargetXY, HalThere, HomeTile,
-            RunningHal,
-        },
-        hard::{BUILDING_CHUNK_SIZE, TILE_SIZE},
+    ecs::component::{
+        BuildingTileComp, HalSpeed, HalTargetBlock, HalTargetXY, HalThere, HomeTile, RunningHal,
     },
-    map::ecs::component::{ChunkBuildingMapComp, RealTileXY, UlamComp},
+    map::ecs::component::{RealTileXY, UlamComp},
 };
 
 pub fn animate_sprite(
@@ -74,7 +69,6 @@ pub fn random_hal_walk(
     {
         if there.0 {
             // if hal is at his target let's give him a new destination
-            let mut rng = thread_rng();
             // let mut all_tiles = building_map_q.iter().flat_map(
             //     |(map_type, grid_size, tile_size, tilemap_storage, map_size, anchor)| {
             //         tilemap_storage.iter().flatten().map(move |&tile_entity| {
@@ -104,7 +98,7 @@ pub fn random_hal_walk(
             // if let Some((tile_entity, map_type, grid_size, tile_size, map_size, anchor)) =
             //     building_tile_q.choose(&mut rng)
             // {
-            if let Some((ulam, real_xy)) = building_tile_q.iter().choose(&mut rand::thread_rng()) {
+            if let Some((_ulam, real_xy)) = building_tile_q.iter().choose(&mut rand::thread_rng()) {
                 // if let Ok((tp, ulam, real_xy)) = building_tile_q.get(tile_entity) {
                 // let tile_center = tp
                 //     .center_in_world(&map_size, &grid_size, &tile_size, &map_type, &anchor)

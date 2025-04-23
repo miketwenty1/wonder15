@@ -9,13 +9,7 @@ use crate::{
         state::ExplorerCommsSubState,
     },
     helper::{
-        plugins::comms::ecs::{
-            event::RequestServerGameTiles,
-            resource::{
-                BrowserGameCheckpointChannel, BrowserIndexedDBStorageChannel, GameTimetamp,
-            },
-            structy::TileUpdatePattern,
-        },
+        plugins::comms::ecs::{event::RequestServerGameTiles, structy::TileUpdatePattern},
         utils::funs::str_to_dateutc,
     },
     scene::explorer::ecs::{event::UpdateWorldMapTilesEvent, state::InitSpawnMapState},
@@ -32,7 +26,7 @@ extern "C" {
     fn retrieveCheckpoint() -> js_sys::Promise;
 }
 
-pub fn request_local_storage(
+pub fn request_local_game_storage(
     mut event: EventReader<ReadGameTilesIdb>,
     map_channel: Res<BrowserIndexedDBStorageChannel>,
     checkpoint_channel: Res<BrowserGameCheckpointChannel>,

@@ -2,7 +2,6 @@ use bevy::prelude::*;
 use bevy_ecs_tilemap::{
     anchor::TilemapAnchor,
     map::{TilemapGridSize, TilemapSize, TilemapTexture, TilemapType},
-    prelude::get_tilemap_center_transform,
     tiles::TileStorage,
     TilemapBundle,
 };

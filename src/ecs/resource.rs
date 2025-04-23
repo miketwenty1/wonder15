@@ -162,3 +162,8 @@ impl TileResource {
 
 #[derive(Resource, Clone, Debug, Default, Deserialize, Deref)]
 pub struct FullMapLength(pub u32);
+
+#[derive(Resource, Clone, Debug, Default, Serialize, Deserialize)]
+pub struct GameTimetamp {
+    pub ts: Option<DateTime<Utc>>,
+}
