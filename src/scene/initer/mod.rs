@@ -15,7 +15,7 @@ pub struct InitScenePlugin;
 impl Plugin for InitScenePlugin {
     fn build(&self, app: &mut App) {
         app.init_state::<ExplorerCommsSubState>()
-            .add_plugins((TilemapPlugin, IniterInitPlugin, CommsPlugin, BrowserPlugin))
+            .add_plugins((TilemapPlugin, IniterInitPlugin, BrowserPlugin, CommsPlugin))
             .enable_state_scoped_entities::<SceneState>();
     }
 }

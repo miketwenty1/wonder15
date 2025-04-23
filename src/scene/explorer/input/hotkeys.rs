@@ -1,12 +1,9 @@
 use bevy::prelude::*;
 
-use crate::{
-    helper::plugins::comms::ecs::event::GetBlockchainUpdates,
-    scene::explorer::ecs::{
-        component::BlockchainFilterToggleParent,
-        event::{BuildingToggleEvent, SpawnRunnerMan, SwapTilesEvent, TextToggleEvent},
-        resource::ZoomLevelNumsRes,
-    },
+use crate::scene::explorer::ecs::{
+    component::BlockchainFilterToggleParent,
+    event::{BuildingToggleEvent, SpawnRunnerMan, SwapTilesEvent, TextToggleEvent},
+    resource::ZoomLevelNumsRes,
 };
 
 #[allow(clippy::too_many_arguments)]
@@ -19,7 +16,7 @@ pub fn map_keyboard_hotkeys(
     // zoom_level_e: EventWriter<ZoomLevelEvent>,
     // zoom_res: ResMut<ZoomLevelRes>,
     zooms: Res<ZoomLevelNumsRes>,
-    mut blockchain: EventWriter<GetBlockchainUpdates>,
+    // mut blockchain: EventWriter<GetBlockchainUpdates>,
     mut blockchain_filter_parent_node_q: Query<&mut Node, With<BlockchainFilterToggleParent>>,
     mut spawn_man: EventWriter<SpawnRunnerMan>,
 ) {
@@ -40,7 +37,7 @@ pub fn map_keyboard_hotkeys(
         building_toggle.write(BuildingToggleEvent::KeyPressToggle);
     }
     if keyboard_input.just_pressed(KeyCode::KeyP) {
-        blockchain.write(GetBlockchainUpdates(0));
+        // blockchain.write(GetBlockchainUpdates(0));
         let mut di = blockchain_filter_parent_node_q.single_mut().unwrap();
         di.display = Display::Flex;
     }

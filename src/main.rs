@@ -6,13 +6,13 @@ use ecs::{
     },
     state::{FullMapState, SceneState},
 };
-use helper::utils::funs::str_to_dateutc;
+use helper::{plugins::comms::CommsPlugin, utils::funs::str_to_dateutc};
 use scene::initer::InitScenePlugin;
 
 use wasm_bindgen::prelude::wasm_bindgen;
 
 pub mod ecs;
-mod helper;
+pub mod helper;
 pub mod scene;
 
 pub fn main() {}

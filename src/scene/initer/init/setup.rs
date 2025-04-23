@@ -7,6 +7,7 @@ use bevy::{
 
 use crate::{
     ecs::{resource::FullMapLength, state::SceneState},
+    helper::plugins::comms::ecs::resource::CommsChannel,
     scene::{
         explorer::ecs::hard::TILE_MAP_LENGTH,
         initer::ecs::{
@@ -48,6 +49,9 @@ pub fn setup_things(
     // mut comm_map_state: ResMut<NextState<ExplorerCommsSubState>>,
     // static_inputs: Res<GameStaticInputs>,
 ) {
+    let (tx, rx) = async_channel::bounded(20);
+    commands.insert_resource(CommsChannel { tx, rx });
+
     // let map_side_length = 1000; //((current_blockheight.0 as f64).sqrt().ceil()) as u32 + 2;
     commands.insert_resource(FullMapLength(TILE_MAP_LENGTH));
     let texture = asset_server.load("spritesheet/gabe-idle-run.png");
