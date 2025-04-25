@@ -72,11 +72,11 @@ pub fn test_send_api_req(
     }
 
     let endpoints = vec![
-        "browser_blockchain_data",
-        "browser_game_tiles",
-        "server_blockchain_data",
-        "game_tiles_by_ts",
-        "game_tiles_by_height",
+        // "browser_blockchain_data",
+        // "browser_game_tiles",
+        // "server_blockchain_data",
+        // "game_tiles_by_ts",
+        // "game_tiles_by_height",
         "check_ln_payment",
         "ln_invoice",
         "user_inventory",
